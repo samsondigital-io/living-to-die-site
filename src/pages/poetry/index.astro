@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const poems = await getCollection('poetry');
+const sortedPoems = poems.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const featuredPoems = sortedPoems.filter(poem => poem.data.featured);
+---
+
+<BaseLayout title="Poetry">
+  <section class="poetry-hero">
+    <div class="container">
+      <h1>Poetry & Reflections</h1>
+      <p>Words that capture the essence of faith, loss, resilience, and hope.</p>
+    </div>
+  </section>
+
+  {featuredPoems.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Featured Poems</h2>
+        <div class="featured-grid">
+          {featuredPoems.map(poem => (
+            <article class="poem-card poem-card--featured">
+              <div class="poem-card__content">
+                <h3 class="poem-card__title">
+                  <a href={`/poetry/${poem.slug}`}>{poem.data.title}</a>
+                </h3>
+                {poem.data.description && (
+                  <p class="poem-card__description">{poem.data.description}</p>
+                )}
+                {poem.data.publication && (
+                  <p class="poem-card__publication">Published in {poem.data.publication}</p>
+                )}
+                <time class="poem-card__date">
+                  {new Date(poem.data.pubDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--alt">
+    <div class="container">
+      <h2 class="section-title">All Poems</h2>
+      <div class="poems-grid">
+        {sortedPoems.map(poem => (
+          <article class="poem-card">
+            <div class="poem-card__content">
+              <h3 class="poem-card__title">
+                <a href={`/poetry/${poem.slug}`}>{poem.data.title}</a>
+              </h3>
+              {poem.data.description && (
+                <p class="poem-card__description">{poem.data.description}</p>
+              )}
+              <div class="poem-card__footer">
+                {poem.data.publication && (
+                  <span class="poem-card__publication">{poem.data.publication}</span>
+                )}
+                <time class="poem-card__date">
+                  {new Date(poem.data.pubDate).getFullYear()}
+                </time>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .poetry-hero {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    text-align: center;
+  }
+
+  .poetry-hero h1 {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .poetry-hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+    text-align: center;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .poems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .poem-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+    border-left: 4px solid var(--color-accent);
+  }
+
+  .poem-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .poem-card--featured {
+    background: linear-gradient(135deg, var(--color-surface) 0%, white 100%);
+    border-left: 6px solid var(--color-accent);
+  }
+
+  .poem-card__title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-heading);
+  }
+
+  .poem-card__title a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .poem-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .poem-card__description {
+    color: var(--color-text-light);
+    font-style: italic;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .poem-card__publication {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .poem-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    margin-top: 1rem;
+  }
+
+  .poem-card__date {
+    font-size: 0.875rem;
+    color: var(--color-text-lighter);
+  }
+
+  @media (max-width: 640px) {
+    .featured-grid,
+    .poems-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .poem-card__footer {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>

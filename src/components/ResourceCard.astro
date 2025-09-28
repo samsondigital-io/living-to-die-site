@@ -1,0 +1,147 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  url: string;
+  primaryLink: string;
+  secondaryLink?: string;
+  primaryLinkText: string;
+  secondaryLinkText?: string;
+}
+
+const { title, description, url, primaryLink, secondaryLink, primaryLinkText, secondaryLinkText } = Astro.props;
+---
+
+<article class="resource-card">
+  <div class="resource-card__image">
+    <img
+      src={`/api/og-image?url=${encodeURIComponent(url)}`}
+      alt={title}
+      loading="lazy"
+      onerror="this.src='https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200&q=80'"
+    />
+  </div>
+  <div class="resource-card__content">
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <div class="resource-card__actions">
+      <a href={primaryLink} target="_blank" rel="noopener" class="btn btn--primary">
+        {primaryLinkText}
+      </a>
+      {secondaryLink && secondaryLinkText && (
+        <a href={secondaryLink} target="_blank" rel="noopener" class="btn btn--secondary">
+          {secondaryLinkText}
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .resource-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resource-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .resource-card__image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .resource-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .resource-card:hover .resource-card__image img {
+    transform: scale(1.05);
+  }
+
+  .resource-card__content {
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resource-card__content h3 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+  }
+
+  .resource-card__content p {
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex: 1;
+  }
+
+  .resource-card__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 0.95rem;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .btn--primary {
+    background: var(--color-accent);
+    color: white;
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn--primary:hover {
+    background: var(--color-accent-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+  }
+
+  .btn--secondary {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .btn--secondary:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .resource-card__actions {
+      flex-direction: column;
+    }
+
+    .resource-card__content {
+      padding: 1.5rem;
+    }
+  }
+</style>

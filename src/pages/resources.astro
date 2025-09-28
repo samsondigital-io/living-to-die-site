@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResourceCard from '../components/ResourceCard.astro';
+import { getCollection } from 'astro:content';
+
+const resources = await getCollection('resources');
+
+// Group resources by category
+const categorizedResources = {
+  'medical-advocacy': resources.filter(r => r.data.category === 'medical-advocacy'),
+  'legal-resources': resources.filter(r => r.data.category === 'legal-resources'),
+  'medical-research': resources.filter(r => r.data.category === 'medical-research'),
+  'support-communities': resources.filter(r => r.data.category === 'support-communities'),
+};
+
+const categoryTitles = {
+  'medical-advocacy': 'Medical Advocacy Organizations',
+  'legal-resources': 'Legal Resources & Patient Rights',
+  'medical-research': 'Medical Research & Information',
+  'support-communities': 'Support Communities',
+};
+---
+
+<BaseLayout title="Resources & Support">
+  <section class="resources-hero">
+    <div class="container">
+      <h1>Resources & Support</h1>
+      <p>Organizations, information, and support for those affected by medical negligence and breast cancer advocacy.</p>
+    </div>
+  </section>
+
+  {Object.entries(categorizedResources).map(([category, categoryResources]) =>
+    categoryResources.length > 0 && (
+      <section class={`section ${category === 'legal-resources' || category === 'support-communities' ? 'section--alt' : ''}`}>
+        <div class="container">
+          <h2 class="section-title">{categoryTitles[category]}</h2>
+          <div class="resource-grid">
+            {categoryResources.map(resource => (
+              <ResourceCard
+                title={resource.data.title}
+                description={resource.data.description}
+                url={resource.data.url}
+                primaryLink={resource.data.primaryLink}
+                secondaryLink={resource.data.secondaryLink}
+                primaryLinkText={resource.data.primaryLinkText}
+                secondaryLinkText={resource.data.secondaryLinkText}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  )}
+
+  <!-- Newsletter -->
+  <section class="section">
+    <div class="container">
+      <div class="newsletter">
+        <div class="newsletter__content">
+          <h2 class="newsletter__title">Stay Informed</h2>
+          <p class="newsletter__text">
+            Subscribe to receive updates about advocacy efforts, new resources, and important developments in patient rights.
+          </p>
+          <form class="newsletter__form">
+            <input type="email" class="newsletter__input" placeholder="Enter your email" required />
+            <button type="submit" class="btn btn--primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .resources-hero {
+    padding: 8rem 0 4rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: white;
+    text-align: center;
+  }
+
+  .resources-hero h1 {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .resources-hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .section {
+    padding: 5rem 0;
+  }
+
+  .section--alt {
+    background: var(--color-surface);
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--color-primary);
+    text-align: center;
+    font-family: var(--font-heading);
+  }
+
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  /* Newsletter */
+  .newsletter {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    color: white;
+    text-align: center;
+  }
+
+  .newsletter__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .newsletter__text {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+  }
+
+  .newsletter__form {
+    display: flex;
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .newsletter__input {
+    flex: 1;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+  }
+
+  .newsletter__input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .resource-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .resource-card__actions {
+      flex-direction: column;
+    }
+
+    .newsletter__form {
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .resource-card__content {
+      padding: 1.5rem;
+    }
+
+    .newsletter {
+      padding: 2rem;
+    }
+  }
+</style>

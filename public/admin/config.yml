@@ -1,0 +1,88 @@
+backend:
+  name: git-gateway
+  branch: main # Branch to update (optional; defaults to master)
+
+# This line should *not* be indented
+publish_mode: editorial_workflow
+
+# These lines should *not* be indented
+media_folder: "public/images/uploads" # Media files will be stored in the repo under static/images/uploads
+public_folder: "/images/uploads" # The src attribute for uploaded media will begin with /images/uploads
+
+collections:
+  - name: "blog" # Used in routes, e.g., /admin/collections/blog
+    label: "Blog Posts" # Used in the UI
+    folder: "src/content/blog" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}" # Filename template
+    fields: # The fields for each document
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Publish Date", name: "pubDate", widget: "datetime"}
+      - {label: "Updated Date", name: "updatedDate", widget: "datetime", required: false}
+      - {label: "Hero Image", name: "heroImage", widget: "image", required: false}
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["news", "reflections", "updates", "events"]
+      - {label: "Tags", name: "tags", widget: "list", default: []}
+      - {label: "Author", name: "author", widget: "string", default: "Diane Melton"}
+      - {label: "Featured", name: "featured", widget: "boolean", default: false}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "poetry"
+    label: "Poetry"
+    folder: "src/content/poetry"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - {label: "Publish Date", name: "pubDate", widget: "datetime"}
+      - {label: "Publication", name: "publication", widget: "string", required: false}
+      - {label: "Featured", name: "featured", widget: "boolean", default: false}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "publications"
+    label: "Publications"
+    folder: "src/content/publications"
+    create: true
+    slug: "{{year}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publication", name: "publication", widget: "string"}
+      - {label: "Publish Date", name: "pubDate", widget: "datetime"}
+      - {label: "Link", name: "link", widget: "string", required: false}
+      - {label: "Description", name: "description", widget: "text"}
+      - label: "Type"
+        name: "type"
+        widget: "select"
+        options: ["essay", "article", "story", "review"]
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "About Page"
+        name: "about"
+        file: "src/content/pages/about.md"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+          - {label: "Author Image", name: "authorImage", widget: "image"}
+
+      - label: "Book Info"
+        name: "book"
+        file: "src/content/pages/book.md"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Subtitle", name: "subtitle", widget: "string"}
+          - {label: "Release Date", name: "releaseDate", widget: "date"}
+          - {label: "Cover Image", name: "coverImage", widget: "image"}
+          - {label: "Summary", name: "summary", widget: "markdown"}
+          - label: "Buy Links"
+            name: "buyLinks"
+            widget: "list"
+            fields:
+              - {label: "Store", name: "store", widget: "string"}
+              - {label: "URL", name: "url", widget: "string"}

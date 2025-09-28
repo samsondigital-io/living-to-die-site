@@ -1,0 +1,12 @@
+---
+title: "Society of Breast Imaging"
+description: "Professional organization dedicated to breast imaging, providing guidelines and education to improve breast cancer detection."
+url: "https://www.sbi-online.org/"
+category: "medical-research"
+primaryLink: "https://www.sbi-online.org/"
+secondaryLink: "https://www.sbi-online.org/PatientInformation"
+primaryLinkText: "Visit Site"
+secondaryLinkText: "Patient Info"
+---
+
+The Society of Breast Imaging is dedicated to saving lives through excellence in breast imaging.
