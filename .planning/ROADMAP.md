@@ -18,7 +18,7 @@ None
 - [x] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
 - [x] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
 - [x] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
-- [ ] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
+- [x] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
 
 ## Phase Details
 
@@ -84,7 +84,10 @@ Key work:
 **Goal**: Professional, cohesive visual presentation
 **Depends on**: Phase 4
 **Research**: Unlikely (CSS refinements)
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [x] 05-01: Author photo, resource OG images, spacing fixes
 
 Key work:
 - Polish spacing throughout
@@ -103,4 +106,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Resource Cleanup | 1/1 | Complete | 2026-01-22 |
 | 3. Content Updates | 1/1 | Complete | 2026-01-22 |
 | 4. Footer Refinements | 1/1 | Complete | 2026-01-22 |
-| 5. Visual Polish | 0/TBD | Not started | - |
+| 5. Visual Polish | 1/1 | Complete | 2026-01-22 |
