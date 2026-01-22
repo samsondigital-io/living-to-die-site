@@ -17,7 +17,7 @@ None
 - [x] **Phase 1: Navigation & Structure** - Streamline nav, add Contact to header, implement scroll behavior
 - [x] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
 - [x] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
-- [ ] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
+- [x] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
 - [ ] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
 
 ## Phase Details
@@ -73,7 +73,7 @@ Key work:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: Remove social icons, fix broken links
+- [x] 04-01: Remove social icons, fix broken links
 
 Key work:
 - Remove social media links
@@ -102,5 +102,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Navigation & Structure | 1/1 | Complete | 2026-01-22 |
 | 2. Resource Cleanup | 1/1 | Complete | 2026-01-22 |
 | 3. Content Updates | 1/1 | Complete | 2026-01-22 |
-| 4. Footer Refinements | 0/TBD | Not started | - |
+| 4. Footer Refinements | 1/1 | Complete | 2026-01-22 |
 | 5. Visual Polish | 0/TBD | Not started | - |
