@@ -41,7 +41,10 @@ Key work:
 **Goal**: Trustworthy, verified resource links
 **Depends on**: Phase 1
 **Research**: Unlikely (content audit and verification)
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 02-01: Remove questionable resources and simplify to single-link cards
 
 Key work:
 - Review all resources for legitimacy (remove fake sites)
