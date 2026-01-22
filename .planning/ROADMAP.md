@@ -26,7 +26,10 @@ None
 **Goal**: Clean, focused navigation with intuitive UX
 **Depends on**: Nothing (first phase)
 **Research**: Unlikely (internal Astro patterns, CSS)
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 01-01: Streamline nav items and add hide-on-scroll behavior
 
 Key work:
 - Streamline nav to: Home, About, Resources, Contact
@@ -87,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Navigation & Structure | 0/TBD | Not started | - |
+| 1. Navigation & Structure | 0/1 | Not started | - |
 | 2. Resource Cleanup | 0/TBD | Not started | - |
 | 3. Content Updates | 0/TBD | Not started | - |
 | 4. Footer Refinements | 0/TBD | Not started | - |
