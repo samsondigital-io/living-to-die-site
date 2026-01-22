@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false; // Server-side only
+
 export const GET: APIRoute = async ({ url }) => {
   const targetUrl = url.searchParams.get('url');
 
@@ -9,12 +11,18 @@ export const GET: APIRoute = async ({ url }) => {
 
   try {
     // Fetch the HTML page
-    const response = await fetch(targetUrl);
+    const response = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; OGImageFetcher/1.0)'
+      }
+    });
     const html = await response.text();
 
-    // Extract Open Graph image
-    const ogImageMatch = html.match(/<meta[^>]*property=["\']og:image["\'][^>]*content=["\']([^"\']*)["\'][^>]*>/i);
-    const twitterImageMatch = html.match(/<meta[^>]*name=["\']twitter:image["\'][^>]*content=["\']([^"\']*)["\'][^>]*>/i);
+    // Extract Open Graph image - handle both attribute orders
+    const ogImageMatch = html.match(/<meta[^>]*property=["\']og:image["\'][^>]*content=["\']([^"\']*)["\'][^>]*>/i)
+      || html.match(/<meta[^>]*content=["\']([^"\']*)["\'][^>]*property=["\']og:image["\'][^>]*>/i);
+    const twitterImageMatch = html.match(/<meta[^>]*name=["\']twitter:image["\'][^>]*content=["\']([^"\']*)["\'][^>]*>/i)
+      || html.match(/<meta[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']twitter:image["\'][^>]*>/i);
 
     let imageUrl = ogImageMatch?.[1] || twitterImageMatch?.[1];
 
