@@ -56,7 +56,10 @@ Key work:
 **Goal**: Accurate, current content across the site
 **Depends on**: Phase 2
 **Research**: Unlikely (content changes, Astro templates)
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 03-01: Fix dates, remove testimonials, add Contact section
 
 Key work:
 - Fix book release date: 2026 not 2024

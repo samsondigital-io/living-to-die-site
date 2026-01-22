@@ -161,68 +161,6 @@ const latestPosts = allBlogPosts
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section class="section section--alt" id="contact">
-    <div class="container">
-      <div class="section__header">
-        <h2 class="section__title">Get in Touch</h2>
-        <p class="section__subtitle">
-          For speaking engagements, book club visits, or media inquiries.
-        </p>
-      </div>
-
-      <div class="contact">
-        <div class="contact__card">
-          <h3>Speaking Engagements</h3>
-          <p>
-            Diane is available for speaking engagements at book clubs, faith communities, healthcare organizations, and advocacy groups. Topics include patient advocacy, navigating medical systems, and the writing process.
-          </p>
-        </div>
-        <div class="contact__card">
-          <h3>Media & Press</h3>
-          <p>
-            For interview requests, review copies, or press inquiries, please reach out via the contact form below.
-          </p>
-        </div>
-        <div class="contact__card">
-          <h3>Connect</h3>
-          <p>
-            Have questions or want to share your story? Diane welcomes hearing from readers and advocates.
-          </p>
-        </div>
-      </div>
-
-      <div class="contact__form-wrapper">
-        <form class="contact__form" action="#" method="POST">
-          <div class="contact__form-row">
-            <div class="contact__form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required />
-            </div>
-            <div class="contact__form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-          </div>
-          <div class="contact__form-group">
-            <label for="subject">Subject</label>
-            <select id="subject" name="subject">
-              <option value="speaking">Speaking Engagement</option>
-              <option value="media">Media Inquiry</option>
-              <option value="bookclub">Book Club Visit</option>
-              <option value="general">General Message</option>
-            </select>
-          </div>
-          <div class="contact__form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
-          </div>
-          <button type="submit" class="btn btn--primary">Send Message</button>
-        </form>
-      </div>
-    </div>
-  </section>
-
   <!-- Newsletter -->
   <section class="section section--alt">
     <div class="container">
@@ -669,102 +607,6 @@ const latestPosts = allBlogPosts
     color: var(--color-text-lighter);
   }
 
-  /* Contact Section */
-  .contact {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-  }
-
-  .contact__card {
-    background: var(--color-pure-white);
-    padding: var(--space-lg);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    border-top: 3px solid var(--color-rose);
-    transition: all var(--transition-base);
-  }
-
-  .contact__card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .contact__card h3 {
-    font-family: var(--font-display);
-    color: var(--color-sage);
-    font-size: var(--text-xl);
-    margin-bottom: var(--space-sm);
-    font-weight: 500;
-  }
-
-  .contact__card p {
-    color: var(--color-text-light);
-    line-height: var(--leading-relaxed);
-    margin: 0;
-  }
-
-  .contact__form-wrapper {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .contact__form {
-    background: var(--color-pure-white);
-    padding: var(--space-xl);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
-  }
-
-  .contact__form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .contact__form-group {
-    margin-bottom: 1.25rem;
-  }
-
-  .contact__form-group label {
-    display: block;
-    font-weight: 500;
-    color: var(--color-soft-black);
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-  }
-
-  .contact__form-group input,
-  .contact__form-group select,
-  .contact__form-group textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-family: var(--font-body);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  }
-
-  .contact__form-group input:focus,
-  .contact__form-group select:focus,
-  .contact__form-group textarea:focus {
-    outline: none;
-    border-color: var(--color-sage);
-    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.1);
-  }
-
-  .contact__form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
-
-  .contact__form button {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-
   /* Newsletter */
   .newsletter {
     background: var(--gradient-warm);
@@ -881,10 +723,6 @@ const latestPosts = allBlogPosts
       grid-template-columns: 1fr;
       gap: 3rem;
       text-align: center;
-    }
-
-    .contact__form-row {
-      grid-template-columns: 1fr;
     }
 
     .preorder__links {
