@@ -47,6 +47,10 @@ const navItems = [
     box-shadow: var(--shadow-md);
   }
 
+  .nav.hidden {
+    transform: translateY(-100%);
+  }
+
   .nav__container {
     display: flex;
     align-items: center;
@@ -173,17 +177,34 @@ const navItems = [
 </style>
 
 <script>
-  // Navigation scroll effect
+  // Navigation scroll effect with hide/show
   let lastScroll = 0;
   const navbar = document.getElementById('navbar');
+  const scrollThreshold = 5; // Minimum scroll delta to trigger hide/show
 
   window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
+    const scrollDelta = currentScroll - lastScroll;
 
+    // Add shadow when scrolled past 50px
     if (currentScroll > 50) {
       navbar?.classList.add('scrolled');
     } else {
       navbar?.classList.remove('scrolled');
+    }
+
+    // Hide/show based on scroll direction (only after initial 100px)
+    if (currentScroll > 100) {
+      if (scrollDelta > scrollThreshold) {
+        // Scrolling down - hide nav
+        navbar?.classList.add('hidden');
+      } else if (scrollDelta < -scrollThreshold) {
+        // Scrolling up - show nav
+        navbar?.classList.remove('hidden');
+      }
+    } else {
+      // Always show nav at top of page
+      navbar?.classList.remove('hidden');
     }
 
     lastScroll = currentScroll;
