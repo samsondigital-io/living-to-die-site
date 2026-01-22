@@ -15,7 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Navigation & Structure** - Streamline nav, add Contact to header, implement scroll behavior
-- [ ] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
+- [x] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
 - [ ] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
 - [ ] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
 - [ ] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
@@ -44,7 +44,7 @@ Key work:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: Remove questionable resources and simplify to single-link cards
+- [x] 02-01: Remove questionable resources and simplify to single-link cards
 
 Key work:
 - Review all resources for legitimacy (remove fake sites)
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Navigation & Structure | 1/1 | Complete | 2026-01-22 |
-| 2. Resource Cleanup | 0/TBD | Not started | - |
+| 2. Resource Cleanup | 1/1 | Complete | 2026-01-22 |
 | 3. Content Updates | 0/TBD | Not started | - |
 | 4. Footer Refinements | 0/TBD | Not started | - |
 | 5. Visual Polish | 0/TBD | Not started | - |
