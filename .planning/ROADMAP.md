@@ -1,0 +1,94 @@
+# Roadmap: Living to Die Author Website
+
+## Overview
+
+Transform the existing Astro site from a rough draft into a polished author platform. We'll streamline navigation, clean up resources, update content, refine the footer, and apply visual polish—delivering a trustworthy presence for Diane Melton's upcoming book.
+
+## Domain Expertise
+
+None
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+- [ ] **Phase 1: Navigation & Structure** - Streamline nav, add Contact to header, implement scroll behavior
+- [ ] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
+- [ ] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
+- [ ] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
+- [ ] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
+
+## Phase Details
+
+### Phase 1: Navigation & Structure
+**Goal**: Clean, focused navigation with intuitive UX
+**Depends on**: Nothing (first phase)
+**Research**: Unlikely (internal Astro patterns, CSS)
+**Plans**: TBD
+
+Key work:
+- Streamline nav to: Home, About, Resources, Contact
+- Hide Poetry, Musings, Publications from nav (preserve functionality)
+- Add Contact section/link to header
+- Implement header scroll behavior (slide up on scroll down)
+
+### Phase 2: Resource Cleanup
+**Goal**: Trustworthy, verified resource links
+**Depends on**: Phase 1
+**Research**: Unlikely (content audit and verification)
+**Plans**: TBD
+
+Key work:
+- Review all resources for legitimacy (remove fake sites)
+- Revise to single button links to main sites
+- Ensure all links open in new tab (target _blank)
+- Pull proper OG images for all resource organizations
+
+### Phase 3: Content Updates
+**Goal**: Accurate, current content across the site
+**Depends on**: Phase 2
+**Research**: Unlikely (content changes, Astro templates)
+**Plans**: TBD
+
+Key work:
+- Fix book release date: 2026 not 2024
+- Remove "praise" section (placeholder content)
+- Create Contact section with speaking engagements / booking info
+
+### Phase 4: Footer Refinements
+**Goal**: Focused footer with newsletter signup
+**Depends on**: Phase 3
+**Research**: Unlikely (form UI without backend)
+**Plans**: TBD
+
+Key work:
+- Remove social media links
+- Remove media kit link
+- Change "Stay Connected" to Newsletter signup form (UI only, no Mailchimp backend)
+
+### Phase 5: Visual Polish
+**Goal**: Professional, cohesive visual presentation
+**Depends on**: Phase 4
+**Research**: Unlikely (CSS refinements)
+**Plans**: TBD
+
+Key work:
+- Polish spacing throughout
+- Refine typography
+- Ensure visual consistency
+- Enhance presentation where opportunity exists
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Navigation & Structure | 0/TBD | Not started | - |
+| 2. Resource Cleanup | 0/TBD | Not started | - |
+| 3. Content Updates | 0/TBD | Not started | - |
+| 4. Footer Refinements | 0/TBD | Not started | - |
+| 5. Visual Polish | 0/TBD | Not started | - |
