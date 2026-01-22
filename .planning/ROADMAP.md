@@ -70,7 +70,10 @@ Key work:
 **Goal**: Focused footer with newsletter signup
 **Depends on**: Phase 3
 **Research**: Unlikely (form UI without backend)
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04-01: Remove social icons, fix broken links
 
 Key work:
 - Remove social media links
