@@ -45,10 +45,6 @@ const resources = defineCollection({
     description: z.string(),
     url: z.string().url(),
     category: z.enum(['medical-advocacy', 'legal-resources', 'medical-research', 'support-communities']),
-    primaryLink: z.string().url(),
-    secondaryLink: z.string().url().optional(),
-    primaryLinkText: z.string().default('Visit Site'),
-    secondaryLinkText: z.string().optional(),
     featured: z.boolean().default(false),
   }),
 });
