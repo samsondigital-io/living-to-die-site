@@ -113,56 +113,6 @@ const latestPosts = allBlogPosts
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="section section--alt">
-    <div class="container">
-      <div class="section__header">
-        <h2 class="section__title">Praise for Living to Die</h2>
-      </div>
-
-      <div class="testimonials-grid">
-        <div class="testimonial-card">
-          <p class="testimonial-card__quote">
-            "An unflinching account of one family's fight for dignity. Melton's prose shimmers with both reverence and righteous anger."
-          </p>
-          <div class="testimonial-card__author">
-            <div class="testimonial-card__avatar">SM</div>
-            <div>
-              <div class="testimonial-card__name">Sarah Mitchell</div>
-              <div class="testimonial-card__title">Investigative Journalist, NYT</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="testimonial-card">
-          <p class="testimonial-card__quote">
-            "Living to Die should be required reading for anyone in healthcare. It's as instructive as it is unforgettable."
-          </p>
-          <div class="testimonial-card__author">
-            <div class="testimonial-card__avatar">DR</div>
-            <div>
-              <div class="testimonial-card__name">Dr. Rebecca Chen</div>
-              <div class="testimonial-card__title">Author of "Patient Advocacy"</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="testimonial-card">
-          <p class="testimonial-card__quote">
-            "A luminous testament to the power of faith and family in the face of systemic failure."
-          </p>
-          <div class="testimonial-card__author">
-            <div class="testimonial-card__avatar">JW</div>
-            <div>
-              <div class="testimonial-card__name">Jennifer Walsh</div>
-              <div class="testimonial-card__title">Founder, Women's Health Alliance</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Resources Preview -->
   <section class="section">
     <div class="container">
@@ -653,67 +603,6 @@ const latestPosts = allBlogPosts
   }
 
   .blog-card__date {
-    font-size: 0.875rem;
-    color: var(--color-text-lighter);
-  }
-
-  /* Testimonials */
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-
-  .testimonial-card {
-    background: var(--color-pure-white);
-    padding: var(--space-lg);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border);
-    transition: all var(--transition-base);
-  }
-
-  .testimonial-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .testimonial-card__quote {
-    font-family: var(--font-display);
-    font-size: var(--text-base);
-    font-style: italic;
-    color: var(--color-warm-gray);
-    margin-bottom: var(--space-md);
-    line-height: var(--leading-relaxed);
-  }
-
-  .testimonial-card__author {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .testimonial-card__avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-rose);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-family: var(--font-accent);
-    font-weight: 600;
-    font-size: var(--text-sm);
-  }
-
-  .testimonial-card__name {
-    font-weight: 600;
-    color: var(--color-primary);
-    font-size: 0.95rem;
-  }
-
-  .testimonial-card__title {
     font-size: 0.875rem;
     color: var(--color-text-lighter);
   }
