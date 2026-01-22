@@ -1,0 +1,614 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Living to Die - A Memoir by Diane Melton">
+  <!-- Hero Section with Book -->
+  <section class="hero">
+    <div class="hero__gradient"></div>
+    <div class="container hero__container">
+      <div class="hero__content">
+        <span class="hero__label">New Memoir 2024</span>
+        <h1 class="hero__title">Living to Die</h1>
+        <p class="hero__subtitle">My Journey with Metastatic Breast Cancer</p>
+        <p class="hero__description">
+          A powerful memoir chronicling one woman's battle against medical negligence
+          and her determination to find meaning in the face of terminal illness.
+        </p>
+        <div class="hero__buttons">
+          <a href="/preorder" class="btn btn--primary">Pre-order Now</a>
+          <a href="#preview" class="btn btn--secondary">Read Preview</a>
+        </div>
+      </div>
+      <div class="hero__book">
+        <div class="book-mockup">
+          <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80" alt="Living to Die Book Cover" />
+          <div class="book-shadow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features">
+    <div class="container">
+      <div class="features__grid">
+        <div class="feature-card">
+          <div class="feature-card__icon">📖</div>
+          <h3>Powerful Narrative</h3>
+          <p>A raw, honest account of facing mortality</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card__icon">💪</div>
+          <h3>Inspiring Journey</h3>
+          <p>Finding strength in the darkest moments</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card__icon">🎯</div>
+          <h3>Medical Advocacy</h3>
+          <p>Fighting for patient rights and awareness</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card__icon">❤️</div>
+          <h3>Human Connection</h3>
+          <p>The power of love, family, and community</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote Cards Section -->
+  <section class="quotes">
+    <div class="container">
+      <div class="quotes__header">
+        <h2>Early Praise</h2>
+        <p>What readers are saying about Living to Die</p>
+      </div>
+      <div class="quotes__grid">
+        <div class="quote-card">
+          <div class="quote-card__content">
+            <p>"A deeply moving and profoundly human story that will stay with you long after the last page."</p>
+            <div class="quote-card__author">
+              <strong>Sarah Johnson</strong>
+              <span>Early Reader</span>
+            </div>
+          </div>
+        </div>
+        <div class="quote-card quote-card--featured">
+          <div class="quote-card__content">
+            <p>"It is during our darkest moments that we must focus to see the light."</p>
+            <div class="quote-card__author">
+              <strong>Diane Melton</strong>
+              <span>Author's Note</span>
+            </div>
+          </div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-card__content">
+            <p>"This book should be required reading for every medical professional."</p>
+            <div class="quote-card__author">
+              <strong>Dr. Michael Chen</strong>
+              <span>Oncologist</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview Section -->
+  <section id="preview" class="preview">
+    <div class="container">
+      <div class="preview__content">
+        <div class="preview__text">
+          <h2>From the Introduction</h2>
+          <blockquote>
+            "When the radiologist dismissed the lump in my breast as 'nothing to worry about,'
+            I wanted to believe him. Seven months later, I was diagnosed with aggressive,
+            late-stage breast cancer. This is my story of fighting not just cancer,
+            but a medical system that failed me when I needed it most."
+          </blockquote>
+          <a href="/preview" class="link-arrow">Read Full Preview →</a>
+        </div>
+        <div class="preview__image">
+          <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=600&q=80" alt="Book pages" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Author Section -->
+  <section class="author">
+    <div class="container">
+      <div class="author__content">
+        <div class="author__image">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Diane Melton" />
+        </div>
+        <div class="author__bio">
+          <span class="section-label">About the Author</span>
+          <h2>Diane Melton</h2>
+          <p>
+            Diane Melton is a wife, mother, and breast cancer warrior. Diagnosed with
+            metastatic breast cancer after months of medical dismissal, she has become
+            a fierce advocate for patient rights and medical accountability.
+          </p>
+          <p>
+            Through her writing, Diane shares her journey with raw honesty and unexpected
+            humor, offering hope and guidance to others facing similar battles. She lives
+            with her family in the Pacific Northwest, where she continues to write, advocate,
+            and cherish every moment.
+          </p>
+          <div class="author__links">
+            <a href="/about" class="btn btn--text">Full Biography →</a>
+            <a href="/blog" class="btn btn--text">Read Blog →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter">
+    <div class="container">
+      <div class="newsletter__card">
+        <h2>Stay Connected</h2>
+        <p>Get updates on the book launch, events, and exclusive content</p>
+        <form class="newsletter__form">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit" class="btn btn--primary">Subscribe</button>
+        </form>
+        <span class="newsletter__note">We respect your privacy. Unsubscribe anytime.</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Custom properties for this design */
+  :root {
+    --color-cream: #faf8f3;
+    --color-sage: #7c9885;
+    --color-rose: #d4a5a5;
+    --color-charcoal: #2c3e50;
+    --gradient-soft: linear-gradient(135deg, #ffeaa7 0%, #dfe6e9 100%);
+    --gradient-warm: linear-gradient(135deg, #f5f3f0 0%, #e8dfd2 100%);
+  }
+
+  /* Hero Section */
+  .hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--color-cream);
+  }
+
+  .hero__gradient {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 100%;
+    height: 150%;
+    background: radial-gradient(circle at center, rgba(212, 165, 165, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__label {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--color-rose);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 1rem;
+    color: var(--color-charcoal);
+  }
+
+  .hero__subtitle {
+    font-size: 1.75rem;
+    color: var(--color-sage);
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero__description {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    max-width: 500px;
+  }
+
+  .hero__buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .book-mockup {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .book-mockup img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    transform: perspective(1000px) rotateY(-5deg);
+  }
+
+  .book-shadow {
+    position: absolute;
+    bottom: -20px;
+    left: 10%;
+    right: 10%;
+    height: 40px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
+    filter: blur(20px);
+  }
+
+  /* Features */
+  .features {
+    padding: 5rem 0;
+    background: white;
+  }
+
+  .features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature-card {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 16px;
+    background: var(--color-cream);
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .feature-card__icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-charcoal);
+  }
+
+  .feature-card p {
+    color: var(--color-text-light);
+    line-height: 1.6;
+  }
+
+  /* Quotes Section */
+  .quotes {
+    padding: 5rem 0;
+    background: var(--gradient-warm);
+  }
+
+  .quotes__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .quotes__header h2 {
+    font-size: 2.5rem;
+    color: var(--color-charcoal);
+    margin-bottom: 0.5rem;
+  }
+
+  .quotes__header p {
+    color: var(--color-text-light);
+    font-size: 1.125rem;
+  }
+
+  .quotes__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .quote-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+  }
+
+  .quote-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .quote-card--featured {
+    background: var(--color-sage);
+    color: white;
+  }
+
+  .quote-card__content p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .quote-card--featured p {
+    color: white;
+  }
+
+  .quote-card__author strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .quote-card__author span {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+  }
+
+  .quote-card--featured .quote-card__author span {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Preview Section */
+  .preview {
+    padding: 5rem 0;
+    background: white;
+  }
+
+  .preview__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .preview__text h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-charcoal);
+  }
+
+  .preview__text blockquote {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: var(--color-text-light);
+    border-left: 4px solid var(--color-rose);
+    padding-left: 2rem;
+    margin: 0 0 2rem 0;
+    font-style: italic;
+  }
+
+  .link-arrow {
+    color: var(--color-sage);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .link-arrow:hover {
+    color: var(--color-rose);
+  }
+
+  .preview__image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Author Section */
+  .author {
+    padding: 5rem 0;
+    background: var(--color-cream);
+  }
+
+  .author__content {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .author__image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-label {
+    display: inline-block;
+    color: var(--color-sage);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .author__bio h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-charcoal);
+  }
+
+  .author__bio p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .author__links {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  /* Newsletter */
+  .newsletter {
+    padding: 5rem 0;
+    background: white;
+  }
+
+  .newsletter__card {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 3rem;
+    background: var(--gradient-warm);
+    border-radius: 16px;
+  }
+
+  .newsletter__card h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-charcoal);
+  }
+
+  .newsletter__card p {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+  }
+
+  .newsletter__form {
+    display: flex;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .newsletter__form input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  .newsletter__note {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-text-lighter);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .btn--primary {
+    background: var(--color-sage);
+    color: white;
+  }
+
+  .btn--primary:hover {
+    background: var(--color-charcoal);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .btn--secondary {
+    background: transparent;
+    color: var(--color-sage);
+    border: 2px solid var(--color-sage);
+  }
+
+  .btn--secondary:hover {
+    background: var(--color-sage);
+    color: white;
+  }
+
+  .btn--text {
+    background: none;
+    color: var(--color-sage);
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .btn--text:hover {
+    color: var(--color-rose);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .hero__container,
+    .preview__content,
+    .author__content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero__book {
+      max-width: 300px;
+      margin: 2rem auto 0;
+    }
+
+    .author__image {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero__title {
+      font-size: 3rem;
+    }
+
+    .hero__subtitle {
+      font-size: 1.25rem;
+    }
+
+    .quotes__grid,
+    .features__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .newsletter__form {
+      flex-direction: column;
+    }
+
+    .author__content {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
