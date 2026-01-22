@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Navigation & Structure** - Streamline nav, add Contact to header, implement scroll behavior
+- [x] **Phase 1: Navigation & Structure** - Streamline nav, add Contact to header, implement scroll behavior
 - [ ] **Phase 2: Resource Cleanup** - Audit resources for legitimacy, simplify to single-button links, fix external linking
 - [ ] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
 - [ ] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
@@ -29,7 +29,7 @@ None
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: Streamline nav items and add hide-on-scroll behavior
+- [x] 01-01: Streamline nav items and add hide-on-scroll behavior
 
 Key work:
 - Streamline nav to: Home, About, Resources, Contact
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Navigation & Structure | 0/1 | Not started | - |
+| 1. Navigation & Structure | 1/1 | Complete | 2026-01-22 |
 | 2. Resource Cleanup | 0/TBD | Not started | - |
 | 3. Content Updates | 0/TBD | Not started | - |
 | 4. Footer Refinements | 0/TBD | Not started | - |
