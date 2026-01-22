@@ -3,13 +3,9 @@ interface Props {
   title: string;
   description: string;
   url: string;
-  primaryLink: string;
-  secondaryLink?: string;
-  primaryLinkText: string;
-  secondaryLinkText?: string;
 }
 
-const { title, description, url, primaryLink, secondaryLink, primaryLinkText, secondaryLinkText } = Astro.props;
+const { title, description, url } = Astro.props;
 ---
 
 <article class="resource-card">
@@ -25,14 +21,9 @@ const { title, description, url, primaryLink, secondaryLink, primaryLinkText, se
     <h3>{title}</h3>
     <p>{description}</p>
     <div class="resource-card__actions">
-      <a href={primaryLink} target="_blank" rel="noopener" class="btn btn--primary">
-        {primaryLinkText}
+      <a href={url} target="_blank" rel="noopener" class="btn btn--primary">
+        Visit Site
       </a>
-      {secondaryLink && secondaryLinkText && (
-        <a href={secondaryLink} target="_blank" rel="noopener" class="btn btn--secondary">
-          {secondaryLinkText}
-        </a>
-      )}
     </div>
   </div>
 </article>
@@ -121,17 +112,6 @@ const { title, description, url, primaryLink, secondaryLink, primaryLinkText, se
     background: var(--color-accent-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    color: white;
-  }
-
-  .btn--secondary {
-    background: transparent;
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-  }
-
-  .btn--secondary:hover {
-    background: var(--color-primary);
     color: white;
   }
 
