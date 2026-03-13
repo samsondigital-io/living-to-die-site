@@ -1,0 +1,30 @@
+fragment HomepageParts on Homepage {
+  __typename
+  hero {
+    __typename
+    title
+    subtitle
+    releaseDate
+  }
+  summary {
+    __typename
+    heading
+    paragraph1
+    paragraph2
+    keyThemesHeading
+    themes
+  }
+  author {
+    __typename
+    heading
+    bio1
+    bio2
+    bio3
+  }
+  newsletter {
+    __typename
+    heading
+    text
+    buttonText
+  }
+}
