@@ -19,6 +19,7 @@ None
 - [x] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
 - [x] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
 - [x] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
+- [ ] **Phase 6: Mailing List** - Implement functional mailing list integration
 
 ## Phase Details
 
@@ -95,10 +96,25 @@ Key work:
 - Ensure visual consistency
 - Enhance presentation where opportunity exists
 
+### Phase 6: Mailing List
+**Goal**: Functional mailing list signup with backend integration
+**Depends on**: Phase 5
+**Research**: Likely (email service provider options, API integration)
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 6 to break down)
+
+Key work:
+- Connect newsletter form to email service provider
+- Handle form submission and validation
+- Implement success/error states
+- Consider double opt-in flow
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -107,3 +123,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Content Updates | 1/1 | Complete | 2026-01-22 |
 | 4. Footer Refinements | 1/1 | Complete | 2026-01-22 |
 | 5. Visual Polish | 1/1 | Complete | 2026-01-22 |
+| 6. Mailing List | 0/0 | Not Started | — |

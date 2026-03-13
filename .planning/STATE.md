@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 5 of 5 (Visual Polish)
-Plan: 05-01 complete
-Status: **MILESTONE COMPLETE**
-Last activity: 2026-01-22 — Phase 5 complete
+Phase: 6 of 6 (Mailing List)
+Plan: Not started
+Status: **Ready for planning**
+Last activity: 2026-03-13 — Phase 6 added
 
-Progress: ██████████ 100%
+Progress: ████████░░ 83%
 
 ## Performance Metrics
 
@@ -57,8 +57,12 @@ None yet.
 
 None yet.
 
+### Roadmap Evolution
+
+- Phase 6 added: Mailing List (2026-03-13)
+
 ## Session Continuity
 
-Last session: 2026-01-22
-Stopped at: Phase 4 complete, ready for Phase 5
+Last session: 2026-03-13
+Stopped at: Phase 6 added, ready for planning
 Resume file: None
