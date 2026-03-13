@@ -3,8 +3,7 @@
    Publisher/Book Website Aesthetic
    =========================== */
 
-/* Import Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+/* Fonts loaded via BaseLayout head */
 
 /* ===========================
    CSS Variables - Style System
@@ -18,13 +17,13 @@
   --color-pure-white: #ffffff;
 
   /* Colors - Accent Palette */
-  --color-sage: #7c9885;
-  --color-sage-dark: #6a8473;
-  --color-sage-light: #a4b5aa;
-  --color-rose: #d4a5a5;
-  --color-rose-dark: #c09090;
-  --color-beige: #f5f3f0;
-  --color-cream: #faf8f3;
+  --color-sage: #d63384;
+  --color-sage-dark: #b52a6f;
+  --color-sage-light: #e85da0;
+  --color-rose: #d63384;
+  --color-rose-dark: #b52a6f;
+  --color-beige: #fdf2f7;
+  --color-cream: #fef7fb;
 
   /* Semantic Colors */
   --color-primary: var(--color-sage);
@@ -45,9 +44,9 @@
   --gradient-hero: linear-gradient(180deg, rgba(253,253,249,0) 0%, rgba(245,243,240,0.5) 100%);
 
   /* Typography */
-  --font-display: 'Crimson Text', Georgia, serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-accent: 'DM Sans', -apple-system, sans-serif;
+  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-accent: 'Montserrat', -apple-system, sans-serif;
 
   /* Font Sizes */
   --text-xs: 0.75rem;     /* 12px */
