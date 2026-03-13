@@ -19,7 +19,7 @@ None
 - [x] **Phase 3: Content Updates** - Fix book date, remove placeholders, create Contact section
 - [x] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
 - [x] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
-- [ ] **Phase 6: Mailing List** - Implement functional mailing list integration
+- [x] **Phase 6: Mailing List** - Implement functional mailing list integration
 
 ## Phase Details
 
@@ -99,11 +99,11 @@ Key work:
 ### Phase 6: Mailing List
 **Goal**: Functional mailing list signup with backend integration
 **Depends on**: Phase 5
-**Research**: Likely (email service provider options, API integration)
-**Plans**: 0 plans
+**Research**: Complete (MailerLite selected)
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 6 to break down)
+- [x] 06-01: Connect newsletter forms to MailerLite
 
 Key work:
 - Connect newsletter form to email service provider
@@ -123,4 +123,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Content Updates | 1/1 | Complete | 2026-01-22 |
 | 4. Footer Refinements | 1/1 | Complete | 2026-01-22 |
 | 5. Visual Polish | 1/1 | Complete | 2026-01-22 |
-| 6. Mailing List | 0/0 | Not Started | — |
+| 6. Mailing List | 1/1 | Complete | 2026-03-13 |
