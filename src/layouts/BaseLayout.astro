@@ -51,6 +51,33 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <title>{title} | Living to Die</title>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "Living To Die",
+          "url": "https://livingtodie.com",
+          "description": "Official website for Living To Die by Diane Melton"
+        },
+        {
+          "@type": "Person",
+          "name": "Diane Melton",
+          "@id": "https://livingtodie.com/#author",
+          "url": "https://livingtodie.com",
+          "description": "Author of Living To Die"
+        },
+        {
+          "@type": "Book",
+          "name": "Living To Die",
+          "author": { "@id": "https://livingtodie.com/#author" },
+          "genre": "Non-fiction",
+          "description": "A non-fiction account of hope, medical negligence, and the fight for justice."
+        }
+      ]
+    })} />
   </head>
   <body>
     <Navigation />
