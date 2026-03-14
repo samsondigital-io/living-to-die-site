@@ -1,0 +1,6 @@
+# Robots.txt for livingtodie.com
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://livingtodie.com/sitemap-index.xml

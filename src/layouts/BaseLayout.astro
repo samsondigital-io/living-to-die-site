@@ -11,9 +11,11 @@ export interface Props {
 
 const {
   title,
-  description = 'Living to Die - A powerful memoir of faith, justice, and medical accountability by Diane Melton',
+  description = 'Living To Die - A non-fiction account of hope, justice, and medical accountability by Diane Melton. Coming 2026.',
   image = '/og-image.jpg'
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
@@ -22,6 +24,8 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="author" content="Diane Melton" />
+    <link rel="canonical" href={canonicalURL} />
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
