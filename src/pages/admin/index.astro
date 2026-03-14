@@ -221,7 +221,7 @@ if (Astro.request.method === 'POST') {
       // Load existing content
       async function loadContent() {
         try {
-          const res = await fetch('/api/content');
+          const res = await fetch('/api/content', { credentials: 'same-origin' });
           if (res.ok) {
             const data = await res.json();
             Object.keys(data).forEach(key => {
@@ -249,7 +249,8 @@ if (Astro.request.method === 'POST') {
           const res = await fetch('/api/content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'same-origin'
           });
 
           if (res.ok) {
