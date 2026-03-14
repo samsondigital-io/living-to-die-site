@@ -43,9 +43,9 @@ const content = await getHomepageContent();
   <section class="section section--contrast" id="preorder">
     <div class="container preorder">
       <div class="preorder__headline">
-        <h2>Reserve Your Copy</h2>
+        <h2>{content.preorder_heading}</h2>
         <p>
-          Living to Die draws readers into the Sawicki family's fourteen-year-long odyssey through aggressive breast cancer, medical injustice, and the relentless pursuit of truth.
+          {content.preorder_text}
         </p>
       </div>
       <div class="preorder__links">
@@ -70,9 +70,9 @@ const content = await getHomepageContent();
       <aside class="summary__highlights">
         <h3>Key Themes</h3>
         <ul>
-          <li>Patient advocacy and systemic accountability</li>
-          <li>Motherhood, legacy, and preparing a family for goodbye</li>
-          <li>Faith as anchor through grief and uncertainty</li>
+          <li>{content.theme1}</li>
+          <li>{content.theme2}</li>
+          <li>{content.theme3}</li>
         </ul>
       </aside>
     </div>
@@ -82,16 +82,16 @@ const content = await getHomepageContent();
   <section class="section section--muted" id="structure">
     <div class="container structure">
       <div class="structure__card">
-        <h3>Inside the Book</h3>
-        <p>a narrative spanning the diagnosis, trial preparation, courtroom testimony, jury misconduct, and the reverberations that followed.</p>
+        <h3>{content.structure1_heading}</h3>
+        <p>{content.structure1_text}</p>
       </div>
       <div class="structure__card">
-        <h3>For Readers Who</h3>
-        <p>champion women's health,  and believe in the power of legal reform.</p>
+        <h3>{content.structure2_heading}</h3>
+        <p>{content.structure2_text}</p>
       </div>
       <div class="structure__card">
-        <h3>Ideal For</h3>
-        <p>book clubs, faith communities, advocacy organizations, and graduate ethics programs.</p>
+        <h3>{content.structure3_heading}</h3>
+        <p>{content.structure3_text}</p>
       </div>
     </div>
   </section>

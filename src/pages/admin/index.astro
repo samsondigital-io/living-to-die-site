@@ -101,6 +101,12 @@ if (Astro.request.method === 'POST') {
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .section h2 { margin-top: 0; color: #8B3A62; }
+    .section--preorder { background: linear-gradient(135deg, #d4e8f2 0%, #c4dce8 100%); }
+    .section--newsletter { background: linear-gradient(135deg, #f5e6ec 0%, #ead4de 100%); }
+    .subsection-title { color: #8B3A62; margin: 1.5rem 0 1rem; font-size: 1.1rem; border-top: 1px solid #eee; padding-top: 1.5rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .card-edit { background: #f9f9f9; padding: 1rem; border-radius: 6px; border-top: 3px solid #8B3A62; }
+    .card-edit textarea { min-height: 80px; }
 
     .save-btn {
       background: #8B3A62;
@@ -146,8 +152,13 @@ if (Astro.request.method === 'POST') {
         <div id="status" class="status"></div>
 
         <form id="content-form">
-          <div class="section">
+          <!-- Hero Section -->
+          <div class="section section--hero">
             <h2>Hero Section</h2>
+            <div class="field">
+              <label for="hero_badge">Badge Text</label>
+              <input type="text" id="hero_badge" name="hero_badge" placeholder="Coming 2026" />
+            </div>
             <div class="field">
               <label for="hero_title">Title</label>
               <input type="text" id="hero_title" name="hero_title" />
@@ -156,12 +167,22 @@ if (Astro.request.method === 'POST') {
               <label for="hero_subtitle">Subtitle</label>
               <textarea id="hero_subtitle" name="hero_subtitle"></textarea>
             </div>
+          </div>
+
+          <!-- Pre-order Section -->
+          <div class="section section--preorder">
+            <h2>Reserve Your Copy</h2>
             <div class="field">
-              <label for="hero_badge">Badge Text (e.g., "Coming 2026")</label>
-              <input type="text" id="hero_badge" name="hero_badge" />
+              <label for="preorder_heading">Heading</label>
+              <input type="text" id="preorder_heading" name="preorder_heading" />
+            </div>
+            <div class="field">
+              <label for="preorder_text">Description</label>
+              <textarea id="preorder_text" name="preorder_text"></textarea>
             </div>
           </div>
 
+          <!-- Summary + Key Themes Section -->
           <div class="section">
             <h2>Book Summary</h2>
             <div class="field">
@@ -176,8 +197,59 @@ if (Astro.request.method === 'POST') {
               <label for="summary_paragraph2">Second Paragraph</label>
               <textarea id="summary_paragraph2" name="summary_paragraph2"></textarea>
             </div>
+            <h3 class="subsection-title">Key Themes</h3>
+            <div class="field">
+              <label for="theme1">Theme 1</label>
+              <input type="text" id="theme1" name="theme1" />
+            </div>
+            <div class="field">
+              <label for="theme2">Theme 2</label>
+              <input type="text" id="theme2" name="theme2" />
+            </div>
+            <div class="field">
+              <label for="theme3">Theme 3</label>
+              <input type="text" id="theme3" name="theme3" />
+            </div>
           </div>
 
+          <!-- Book Structure Cards -->
+          <div class="section section--cards">
+            <h2>Book Structure Cards</h2>
+            <div class="card-grid">
+              <div class="card-edit">
+                <div class="field">
+                  <label for="structure1_heading">Card 1 Heading</label>
+                  <input type="text" id="structure1_heading" name="structure1_heading" />
+                </div>
+                <div class="field">
+                  <label for="structure1_text">Card 1 Text</label>
+                  <textarea id="structure1_text" name="structure1_text"></textarea>
+                </div>
+              </div>
+              <div class="card-edit">
+                <div class="field">
+                  <label for="structure2_heading">Card 2 Heading</label>
+                  <input type="text" id="structure2_heading" name="structure2_heading" />
+                </div>
+                <div class="field">
+                  <label for="structure2_text">Card 2 Text</label>
+                  <textarea id="structure2_text" name="structure2_text"></textarea>
+                </div>
+              </div>
+              <div class="card-edit">
+                <div class="field">
+                  <label for="structure3_heading">Card 3 Heading</label>
+                  <input type="text" id="structure3_heading" name="structure3_heading" />
+                </div>
+                <div class="field">
+                  <label for="structure3_text">Card 3 Text</label>
+                  <textarea id="structure3_text" name="structure3_text"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Author Section -->
           <div class="section">
             <h2>About the Author</h2>
             <div class="field">
@@ -194,7 +266,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <div class="section">
+          <!-- Newsletter Section -->
+          <div class="section section--newsletter">
             <h2>Newsletter Section</h2>
             <div class="field">
               <label for="newsletter_heading">Heading</label>
