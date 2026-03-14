@@ -4,27 +4,27 @@ const CONTENT_KEY = 'homepage_content';
 
 // Default content (used if nothing in Redis yet)
 export const defaultContent = {
-  hero_title: 'Living to Die',
-  hero_subtitle: 'A powerful memoir of faith, justice, and a mother\'s relentless fight against medical negligence.',
+  hero_title: 'Living To Die',
+  hero_subtitle: 'A powerful non-fiction account of hope, justice, and a mother\'s relentless fight against medical negligence.',
   hero_badge: 'Coming 2026',
   preorder_heading: 'Reserve Your Copy',
-  preorder_text: 'Living to Die draws readers into the Sawicki family\'s fourteen-year-long odyssey through aggressive breast cancer, medical injustice, and the relentless pursuit of truth.',
+  preorder_text: 'Living To Die draws readers into the Sawicki family\'s fourteen-year-long odyssey through aggressive breast cancer, medical negligence, and the relentless pursuit of truth.',
   summary_heading: 'An Unconventional Journey',
-  summary_paragraph1: 'On August 8, 2000, a follow-up mammogram missed an abnormality. Ten months later, by the time her cancer was finally diagnosed, it had spread to her lymph nodes. Drawing on deep wells of faith, and raw grit, Brenda waged a fight for her life and for accountability— challenging a medical system that failed her.',
-  summary_paragraph2: 'Through meticulous reporting and intimate storytelling, Living to Die chronicles Brenda\'s unconventional journey from diagnosis to refusing traditional treatment, the legal crusade against negligence, and the fierce love that kept a family whole. This memoir bears witness to the cost of institutional failure and to the incandescent strength of a woman determined to leave a legacy of justice.',
+  summary_paragraph1: 'On August 8, 2000, a follow-up mammogram missed an abnormality. Ten months later, by the time her cancer was finally diagnosed, it had spread to her lymph nodes. Drawing on deep wells of hope and grit, Brenda waged a fight for her life and for accountability— challenging a medical system that failed her.',
+  summary_paragraph2: 'Through meticulous reporting and intimate storytelling, Living To Die chronicles Brenda\'s unconventional journey from diagnosis to refusing traditional treatment, the legal crusade against negligence, and the fierce love that kept a family whole. This non-fiction account bears witness to the cost of institutional failure and to the incandescent strength of a woman determined to leave a legacy of justice.',
   theme1: 'Patient advocacy and systemic accountability',
   theme2: 'Motherhood, legacy, and preparing a family for goodbye',
-  theme3: 'Faith as anchor through grief and uncertainty',
+  theme3: 'Hope as anchor through grief and uncertainty',
   structure1_heading: 'Inside the Book',
   structure1_text: 'a narrative spanning the diagnosis, trial preparation, courtroom testimony, jury misconduct, and the reverberations that followed.',
   structure2_heading: 'For Readers Who',
   structure2_text: 'champion women\'s health, and believe in the power of legal reform.',
   structure3_heading: 'Ideal For',
-  structure3_text: 'book clubs, faith communities, advocacy organizations, and graduate ethics programs.',
+  structure3_text: 'book clubs, advocacy organizations, and graduate ethics programs.',
   author_bio1: 'Diane Melton\'s devotion to writing began in third grade when a teacher spotlighted her writing. She later earned a Master of Arts in Liberal Studies from Wesleyan University, concentrating in creative writing, and went on to teach writing and poetry at Central Connecticut State University.',
   author_bio2: 'Her essays and narrative nonfiction have appeared in The New York Times, The Hartford Courant, Northeast Magazine, Seasons Magazine, and Latitudes. She was honored by the Connecticut Society of Professional Journalists for outstanding feature writing.',
-  author_bio3: 'Away from the page, Diane is an avid street photographer who loves welcoming friends around the table, walking, swimming, training at the gym, and escaping to the beach. Living to Die marks her debut nonfiction book, and she invites readers to join her on Brenda Sawicki\'s incredible journey.',
-  newsletter_heading: 'Stay Connected',
+  author_bio3: 'Away from the page, Diane is an avid street photographer who loves welcoming friends around the table, walking, swimming, training at the gym, and escaping to the beach. Living To Die marks her debut nonfiction book, and she invites readers to join her on Brenda Sawicki\'s incredible journey.',
+  newsletter_heading: 'Join the Newsletter',
   newsletter_text: 'Join our community for book updates, events, and resources for advocates and caregivers.',
 };
 
@@ -46,7 +46,19 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     });
 
     const content = await redis.get<HomepageContent>(CONTENT_KEY);
-    return content || defaultContent;
+
+    if (!content) {
+      return defaultContent;
+    }
+
+    // Merge with defaults - use default value if stored value is empty string
+    const merged: HomepageContent = { ...defaultContent };
+    for (const key of Object.keys(defaultContent) as Array<keyof HomepageContent>) {
+      if (content[key] && content[key].trim() !== '') {
+        merged[key] = content[key];
+      }
+    }
+    return merged;
   } catch (error) {
     console.error('Redis GET error:', error);
     return defaultContent;
