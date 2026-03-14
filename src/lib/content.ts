@@ -20,15 +20,18 @@ export const defaultContent = {
 export type HomepageContent = typeof defaultContent;
 
 export async function getHomepageContent(): Promise<HomepageContent> {
-  // Check if Redis is configured
-  if (!import.meta.env.UPSTASH_REDIS_REST_URL) {
+  // Check if Redis is configured (support both Vercel KV and direct Upstash names)
+  const redisUrl = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!redisUrl) {
     return defaultContent;
   }
 
   try {
     const redis = new Redis({
-      url: import.meta.env.UPSTASH_REDIS_REST_URL,
-      token: import.meta.env.UPSTASH_REDIS_REST_TOKEN || '',
+      url: redisUrl,
+      token: redisToken || '',
     });
 
     const content = await redis.get<HomepageContent>(CONTENT_KEY);
@@ -40,13 +43,16 @@ export async function getHomepageContent(): Promise<HomepageContent> {
 }
 
 export async function saveHomepageContent(data: HomepageContent): Promise<boolean> {
-  if (!import.meta.env.UPSTASH_REDIS_REST_URL) {
+  const redisUrl = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!redisUrl) {
     throw new Error('Redis not configured');
   }
 
   const redis = new Redis({
-    url: import.meta.env.UPSTASH_REDIS_REST_URL,
-    token: import.meta.env.UPSTASH_REDIS_REST_TOKEN || '',
+    url: redisUrl,
+    token: redisToken || '',
   });
 
   await redis.set(CONTENT_KEY, data);
