@@ -48,10 +48,23 @@ const content = await getHomepageContent();
           {content.preorder_text}
         </p>
       </div>
-      <div class="preorder__links">
-        <a class="btn btn--primary" href="#newsletter">Notify Me When Available</a>
-
-      </div>
+      <form class="preorder__form" id="preorder-form">
+        <div class="preorder__input-group">
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            autocomplete="email"
+          />
+          <button type="submit" class="btn btn--primary">Notify Me</button>
+        </div>
+        <label class="preorder__checkbox">
+          <input type="checkbox" name="also_newsletter" />
+          <span>Also subscribe to general updates</span>
+        </label>
+        <p class="preorder__success" id="preorder-success">Thanks! We'll notify you when the book is available.</p>
+      </form>
     </div>
   </section>
 
@@ -323,22 +336,72 @@ const content = await getHomepageContent();
     font-family: var(--font-display);
     font-size: var(--text-3xl);
     font-weight: 700;
-    color: var(--color-soft-black);
+    color: white;
     margin-bottom: var(--space-md);
   }
 
   .preorder__headline p {
     font-size: 1.2rem;
     max-width: 600px;
-    margin: 0 auto 3rem;
+    margin: 0 auto 2rem;
     color: var(--color-warm-gray);
   }
 
-  .preorder__links {
+  .preorder__form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .preorder__input-group {
     display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .preorder__input-group input[type="email"] {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+  }
+
+  .preorder__input-group input[type="email"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: white;
+  }
+
+  .preorder__checkbox {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--color-warm-gray);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .preorder__checkbox input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+
+  .preorder__success {
+    display: none;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-top: 1rem;
+  }
+
+  .preorder__success.show {
+    display: block;
+  }
+
+  .preorder__form.hidden {
+    display: none;
   }
 
   /* Summary Section */
@@ -684,9 +747,12 @@ const content = await getHomepageContent();
       text-align: center;
     }
 
-    .preorder__links {
+    .preorder__input-group {
       flex-direction: column;
-      align-items: center;
+    }
+
+    .preorder__input-group button {
+      width: 100%;
     }
 
     .newsletter__form {
@@ -730,6 +796,46 @@ const content = await getHomepageContent();
       successEl?.classList.add('show');
     } catch (error) {
       form.submit();
+    }
+  });
+
+  // Preorder/Book Release notification form
+  const BOOK_RELEASE_FORM = 'https://assets.mailerlite.com/jsonp/2188276/forms/181934546956060628/subscribe';
+  const GENERAL_NEWSLETTER_FORM = 'https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe';
+
+  document.getElementById('preorder-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value;
+    const alsoNewsletter = (form.querySelector('input[name="also_newsletter"]') as HTMLInputElement).checked;
+    const successEl = document.getElementById('preorder-success');
+
+    const formData = new FormData();
+    formData.append('fields[email]', email);
+    formData.append('ml-submit', '1');
+    formData.append('anticsrf', 'true');
+
+    try {
+      // Always submit to Book Release Notification list
+      await fetch(BOOK_RELEASE_FORM, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      });
+
+      // If checkbox checked, also submit to general newsletter
+      if (alsoNewsletter) {
+        await fetch(GENERAL_NEWSLETTER_FORM, {
+          method: 'POST',
+          body: formData,
+          mode: 'no-cors'
+        });
+      }
+
+      form.classList.add('hidden');
+      successEl?.classList.add('show');
+    } catch (error) {
+      console.error('Form submission error:', error);
     }
   });
 </script>
