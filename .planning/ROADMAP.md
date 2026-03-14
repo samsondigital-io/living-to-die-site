@@ -23,6 +23,7 @@ None
 - [x] **Phase 6: Mailing List** - Implement functional mailing list integration
 - [x] **Phase 7: Content Changes** - Apply copy edits from stakeholder review meeting
 - [x] **Phase 8: SEO** - Search engine optimization and discoverability
+- [ ] **Phase 9: Email Templates** - Custom MailerLite email templates matching site branding
 
 ## Phase Details
 
@@ -176,10 +177,30 @@ Key work:
 - Image alt text audit
 - Performance optimization for Core Web Vitals
 
+### Phase 9: Email Templates
+
+**Goal**: Custom MailerLite email templates matching site branding
+**Depends on**: Phase 8
+**Research**: Likely (MailerLite template system, HTML email best practices)
+**Plans**: 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 9 to break down)
+
+Key work:
+
+- Welcome email template for new subscribers
+- Book release notification template
+- General newsletter template
+- Brand-aligned design (rose/sage colors, typography)
+- Mobile-responsive HTML email structure
+- Upload and configure templates in MailerLite
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 
 | Phase                     | Plans Complete | Status   | Completed  |
 | ------------------------- | -------------- | -------- | ---------- |
@@ -191,3 +212,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 6. Mailing List           | 1/1            | Complete | 2026-03-13 |
 | 7. Content Changes        | 1/1            | Complete | 2026-03-14 |
 | 8. SEO                    | 1/1            | Complete | 2026-03-14 |
+| 9. Email Templates        | 0/0            | Not Started | — |

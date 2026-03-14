@@ -19,7 +19,7 @@ const previewResources = allResources.filter(r =>
 const content = await getHomepageContent();
 ---
 
-<BaseLayout title="Home" description="Living To Die by Diane Melton tells a story of hope, medical negligence, and the fight for justice. A non-fiction account coming 2026.">
+<BaseLayout title="Home" description="Living To Die by Diane Melton tells a story of hope, medical negligence, and the fight for justice. A non-fiction account coming 2026." minimalNav={true}>
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero__background">
@@ -63,8 +63,8 @@ const content = await getHomepageContent();
           <input type="checkbox" name="also_newsletter" />
           <span>Also subscribe to general updates</span>
         </label>
-        <p class="preorder__success" id="preorder-success">Thanks! We'll notify you when the book is available.</p>
       </form>
+      <p class="preorder__success" id="preorder-success">Please check your email to confirm.</p>
     </div>
   </section>
 
@@ -192,7 +192,7 @@ const content = await getHomepageContent();
             />
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
-          <p class="newsletter__success" id="homepage-newsletter-success">Thanks for subscribing!</p>
+          <p class="newsletter__success" id="homepage-newsletter-success">Please check your email to confirm.</p>
         </div>
       </div>
     </div>
@@ -350,6 +350,14 @@ const content = await getHomepageContent();
   .preorder__form {
     max-width: 500px;
     margin: 0 auto;
+    min-height: 120px;
+  }
+
+  .preorder__form.hidden + .preorder__success {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .preorder__input-group {

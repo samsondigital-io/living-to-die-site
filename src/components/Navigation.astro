@@ -1,4 +1,10 @@
 ---
+interface Props {
+  minimal?: boolean;
+}
+
+const { minimal = false } = Astro.props;
+
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/#author' },
@@ -7,7 +13,7 @@ const navItems = [
 ];
 ---
 
-<nav class="nav nav--transparent" id="navbar">
+<nav class:list={["nav", { "nav--transparent": true, "nav--minimal": minimal }]} id="navbar" data-minimal={minimal}>
   <div class="nav__container">
     <ul class="nav__menu" id="nav-menu">
       {navItems.map(item => (
@@ -39,8 +45,8 @@ const navItems = [
   }
 
   .nav--transparent {
-    background: transparent;
-    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
     border-bottom-color: transparent;
   }
 
@@ -104,21 +110,80 @@ const navItems = [
   .nav__toggle {
     display: none;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
   }
 
   .nav__toggle span {
-    width: 24px;
-    height: 2px;
+    width: 26px;
+    height: 2.5px;
     background: var(--color-primary);
+    border-radius: 2px;
     transition: all var(--transition-fast);
   }
 
+  /* Minimal mode - hamburger only, always visible */
+  .nav--minimal {
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+
+  .nav--minimal .nav__container {
+    justify-content: flex-end;
+  }
+
+  .nav--minimal .nav__menu {
+    display: none;
+  }
+
+  .nav--minimal .nav__toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav--minimal .nav__menu.active {
+    display: flex;
+    position: fixed;
+    top: 70px;
+    right: 1.5rem;
+    left: auto;
+    width: auto;
+    min-width: 200px;
+    background: white;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: none;
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .nav--minimal.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav--minimal.scrolled .nav__toggle {
+    background: transparent;
+    box-shadow: none;
+  }
+
   @media (max-width: 768px) {
+    .nav__container {
+      justify-content: flex-end;
+    }
+
     .nav__menu {
       position: fixed;
       top: 60px;
@@ -156,6 +221,15 @@ const navItems = [
     .nav__toggle.active span:nth-child(3) {
       transform: rotate(-45deg) translate(5px, -5px);
     }
+
+    /* Minimal mode on mobile */
+    .nav--minimal .nav__menu.active {
+      top: 70px;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+      border-radius: 12px;
+    }
   }
 </style>
 
@@ -163,7 +237,8 @@ const navItems = [
   // Navigation scroll effect with hide/show
   let lastScroll = 0;
   const navbar = document.getElementById('navbar');
-  const scrollThreshold = 5; // Minimum scroll delta to trigger hide/show
+  const isMinimal = navbar?.dataset.minimal === 'true';
+  const scrollThreshold = 5;
 
   window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
@@ -178,17 +253,14 @@ const navItems = [
       navbar?.classList.add('nav--transparent');
     }
 
-    // Hide/show based on scroll direction (only after initial 100px)
-    if (currentScroll > 100) {
+    // Hide/show based on scroll direction (only after initial 100px, and not in minimal mode)
+    if (!isMinimal && currentScroll > 100) {
       if (scrollDelta > scrollThreshold) {
-        // Scrolling down - hide nav
         navbar?.classList.add('hidden');
       } else if (scrollDelta < -scrollThreshold) {
-        // Scrolling up - show nav
         navbar?.classList.remove('hidden');
       }
     } else {
-      // Always show nav at top of page
       navbar?.classList.remove('hidden');
     }
 
@@ -210,5 +282,14 @@ const navItems = [
       navToggle?.classList.remove('active');
       navMenu?.classList.remove('active');
     });
+  });
+
+  // Close menu when clicking outside (for minimal mode dropdown)
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.nav__toggle') && !target.closest('.nav__menu')) {
+      navToggle?.classList.remove('active');
+      navMenu?.classList.remove('active');
+    }
   });
 </script>
