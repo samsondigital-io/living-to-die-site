@@ -9,7 +9,7 @@ featured: true
 heroImage: "/images/blog/welcome-hero.jpg"
 ---
 
-Welcome to the official blog for *Living to Die*. I'm Diane Melton, and I'm thrilled to have you join me on this journey as we prepare to share Brenda Sawicki's remarkable story with the world.
+Welcome to the official blog for _Living to Die_. I'm Diane Melton, and I'm thrilled to have you join me on this journey as we prepare to share Brenda Sawicki's remarkable story with the world.
 
 ## About This Space
 
@@ -25,7 +25,7 @@ This blog will serve as our central hub for:
 Brenda Sawicki's fight wasn't just about her own battle with cancer and medical negligence. It was about creating a legacy of accountability, advocacy, and hope for future patients. Through this blog, we'll explore the themes that made her story so powerful:
 
 - **Patient advocacy** and the importance of being heard in healthcare settings
-- **Faith and resilience** in the face of overwhelming challenges
+- **Hope and resilience** in the face of overwhelming challenges
 - **Family strength** and the bonds that hold us together during crisis
 - **Legal reform** and the pursuit of justice in medical malpractice
 
@@ -42,10 +42,10 @@ Over the next few months, you can expect:
 
 I believe the best books create communities, and I hope this space becomes a place for meaningful dialogue about healthcare, advocacy, and hope. Please feel free to share your thoughts in the comments, and don't hesitate to reach out with your own stories.
 
-*Living to Die* isn't just Brenda's story—it's a call to action for all of us who believe in the power of speaking truth to power.
+_Living to Die_ isn't just Brenda's story—it's a call to action for all of us who believe in the power of speaking truth to power.
 
 Thank you for being here. Let's make sure Brenda's voice continues to be heard.
 
 ---
 
-*Subscribe to our newsletter below to stay updated on all book news and events.*
+_Subscribe to our newsletter below to stay updated on all book news and events._
