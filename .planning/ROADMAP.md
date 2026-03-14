@@ -20,6 +20,8 @@ None
 - [x] **Phase 4: Footer Refinements** - Newsletter form UI, remove social/media kit links
 - [x] **Phase 5: Visual Polish** - Spacing, typography, and consistency improvements
 - [x] **Phase 6: Mailing List** - Implement functional mailing list integration
+- [x] **Phase 7: Content Changes** - Apply copy edits from stakeholder review meeting
+- [ ] **Phase 8: SEO** - Search engine optimization and discoverability
 
 ## Phase Details
 
@@ -111,10 +113,48 @@ Key work:
 - Implement success/error states
 - Consider double opt-in flow
 
+### Phase 7: Content Changes
+**Goal**: Apply all copy edits from stakeholder review meeting
+**Depends on**: Phase 6
+**Research**: None (changes specified)
+**Plans**: 1 plan
+
+Plans:
+- [x] 07-01: Apply copy changes from meeting review
+
+Key work:
+- Replace "faith" with "hope" sitewide
+- Capitalize "T" in "Living To Die"
+- Change "medical injustice" → "medical negligence"
+- Change "memoir" → "non-fiction account"
+- Change "devotion to storytelling" → "devotion to writing"
+- Remove "faith communities" from Ideal For
+- Change "Reserve Your Copy" → "Notify Me When Available"
+- Remove "final years" from book description
+- Change "Stay Connected" → "Join the Newsletter"
+- Replace author photo with realistic version
+
+### Phase 8: SEO
+**Goal**: Search engine optimization and discoverability
+**Depends on**: Phase 7
+**Research**: None needed (using existing Astro patterns and installed packages)
+**Plans**: 1 plan
+
+Plans:
+- [ ] 08-01: Meta optimization, robots.txt, and structured data
+
+Key work:
+- Meta tags and Open Graph optimization
+- Sitemap and robots.txt configuration
+- Structured data (schema.org)
+- Page titles and descriptions
+- Image alt text audit
+- Performance optimization for Core Web Vitals
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -124,3 +164,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Footer Refinements | 1/1 | Complete | 2026-01-22 |
 | 5. Visual Polish | 1/1 | Complete | 2026-01-22 |
 | 6. Mailing List | 1/1 | Complete | 2026-03-13 |
+| 7. Content Changes | 1/1 | Complete | 2026-03-14 |
+| 8. SEO | 0/1 | Planned | - |
