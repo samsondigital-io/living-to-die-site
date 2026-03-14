@@ -29,6 +29,7 @@ if (Astro.request.method === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>Admin - Living to Die</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -132,6 +133,28 @@ if (Astro.request.method === 'POST') {
 
     .logout { float: right; color: #666; text-decoration: none; }
     .logout:hover { color: #333; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .header-actions h1 { margin-bottom: 0; }
+    .external-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #09c269;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .external-link:hover { background: #07a358; }
+    .external-link svg { width: 16px; height: 16px; }
   </style>
 </head>
 <body>
@@ -147,7 +170,16 @@ if (Astro.request.method === 'POST') {
     ) : (
       <>
         <a href="/admin/logout" class="logout">Logout</a>
-        <h1>Edit Homepage Content</h1>
+        <div class="header-actions">
+          <h1>Edit Homepage Content</h1>
+          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener noreferrer" class="external-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            MailerLite
+          </a>
+        </div>
 
         <div id="status" class="status"></div>
 
