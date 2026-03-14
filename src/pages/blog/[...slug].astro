@@ -26,6 +26,7 @@ const relatedPosts = allPosts
   description={post.data.description}
   image={post.data.heroImage}
 >
+  <meta slot="head" name="robots" content="noindex, nofollow" />
   <article class="blog-post">
     {post.data.heroImage && (
       <div class="post-hero">

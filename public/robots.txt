@@ -2,6 +2,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /blog
+Disallow: /poetry
 
 # Sitemap location
 Sitemap: https://livingtodie.com/sitemap-index.xml
