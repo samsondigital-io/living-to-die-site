@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 10 of 10 (Newsletter Publishing)
-Plan: 0 of 2 complete
-Status: **Phase 10 planned, ready for execution**
-Next Step: Execute 10-01-PLAN.md (MailerLite API setup + Newsletter backend)
-Last activity: 2026-03-19 — Planned Phase 10 (2 plans)
+Plan: 1 of 2 complete
+Status: **In progress**
+Next Step: Execute 10-02-PLAN.md (Newsletter Admin UI)
+Last activity: 2026-03-19 — Completed 10-01-PLAN.md
 
-Progress: ████████░░ 89%
+Progress: █████████░ 95%
 
 ## Performance Metrics
 
@@ -46,6 +46,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - Used set:html directive for JSON-LD to avoid HTML escaping (08-01)
+- MailerLite-only approach for MVP newsletters (10-01)
+- Dual-mode newsletter API: pre-built HTML or template-based (10-01)
 
 ### Deferred Issues
 
@@ -72,6 +74,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-14
-Stopped at: Milestone complete - all 8 phases finished
+Last session: 2026-03-19
+Stopped at: Completed 10-01-PLAN.md
 Resume file: None

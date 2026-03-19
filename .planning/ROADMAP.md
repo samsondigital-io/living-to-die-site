@@ -207,7 +207,7 @@ Key work:
 
 Plans:
 
-- [ ] 10-01: MailerLite API setup + Newsletter backend
+- [x] 10-01: MailerLite API setup + Newsletter backend
 - [ ] 10-02: Newsletter admin UI with compose and send
 
 Key work:
@@ -236,4 +236,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Content Changes        | 1/1            | Complete | 2026-03-14 |
 | 8. SEO                    | 1/1            | Complete | 2026-03-14 |
 | 9. Email Templates        | 0/0            | Not Started | — |
-| 10. Newsletter Publishing | 0/2            | Planned | — |
+| 10. Newsletter Publishing | 1/2            | In Progress | — |
