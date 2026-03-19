@@ -1,21 +1,21 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: post,
-  }));
-}
-type Props = CollectionEntry<'blog'>;
+const { slug } = Astro.params;
 
-const post = Astro.props;
-const { Content } = await post.render();
+// Fetch all posts and find the one matching the slug
+const allPosts = await getCollection('blog');
+const post = allPosts.find(p => p.slug === slug);
+
+// 404 if post not found
+if (!post) {
+  return Astro.redirect('/blog');
+}
+
+const { Content } = await render(post);
 
 // Get related posts
-const allPosts = await getCollection('blog');
 const relatedPosts = allPosts
   .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
   .slice(0, 3);
