@@ -6,7 +6,7 @@ export async function GET(context) {
   const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return rss({
-    title: 'Living to Die | Blog',
+    title: 'Living to Die | Newsletter',
     description: 'Updates, reflections, and insights from the author of Living to Die',
     site: context.site,
     items: sortedPosts.map((post) => ({
