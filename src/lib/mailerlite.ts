@@ -71,11 +71,17 @@ export function buildNewsletterHtml(
     params.preheader
   );
 
-  // Replace issue info
+  // Replace issue info or remove placeholder
   if (params.issueInfo) {
     html = html.replace(
       '[ISSUE_NUMBER - e.g., "Issue #1 | March 2026"]',
       params.issueInfo
+    );
+  } else {
+    // Remove the issue info line entirely
+    html = html.replace(
+      /<p style="margin: 10px[^>]*>\s*\[ISSUE_NUMBER[^\]]*\]\s*<\/p>/,
+      ''
     );
   }
 
@@ -92,19 +98,31 @@ export function buildNewsletterHtml(
     params.section1Content
   );
 
-  // Replace section 2 if provided
+  // Replace section 2 if provided, otherwise remove the entire section
   if (params.section2Title && params.section2Content) {
     html = html.replace('[SECTION_2_TITLE]', params.section2Title);
     html = html.replace(
       '[SECTION_2_CONTENT - Additional content, news, or reflections. Delete this section if not needed.]',
       params.section2Content
     );
+  } else {
+    // Remove the entire section 2 block (including divider before it)
+    html = html.replace(
+      /<!-- Divider -->[\s\S]*?<!-- Content Section 2 \(Optional\) -->[\s\S]*?<\/tr>\s*(?=<!-- Optional CTA Button -->)/,
+      ''
+    );
   }
 
-  // Replace CTA if provided
+  // Replace CTA if provided, otherwise remove the entire CTA block
   if (params.ctaUrl && params.ctaText) {
     html = html.replace('[CTA_URL]', params.ctaUrl);
     html = html.replace('[CTA_BUTTON_TEXT]', params.ctaText);
+  } else {
+    // Remove the entire CTA button block
+    html = html.replace(
+      /<!-- Optional CTA Button -->[\s\S]*?<\/tr>\s*(?=<!-- Closing -->)/,
+      ''
+    );
   }
 
   // Replace closing message
