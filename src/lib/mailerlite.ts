@@ -148,13 +148,17 @@ export async function createAndSendNewsletter(
 
   try {
     // Step 1: Create the campaign
+    // Note: from email must be verified in MailerLite
+    const fromEmail = import.meta.env.MAILERLITE_FROM_EMAIL || 'mattmelton@gmail.com';
+    const fromName = import.meta.env.MAILERLITE_FROM_NAME || 'Diane Melton';
+
     const campaignResponse = await mailerlite.campaigns.create({
       name: `Newsletter: ${params.subject}`,
       type: 'regular',
       emails: [{
         subject: params.subject,
-        from_name: 'Diane Melton',
-        from: import.meta.env.MAILERLITE_FROM_EMAIL || 'hello@livingtodie.com',
+        from_name: fromName,
+        from: fromEmail,
         content: params.htmlContent,
       }],
       groups: [groupId],
@@ -179,13 +183,18 @@ export async function createAndSendNewsletter(
       campaignId: String(campaignId)
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('MailerLite API error:', error);
 
-    // Extract error message if available
-    const errorMessage = error instanceof Error
-      ? error.message
-      : 'Unknown MailerLite API error';
+    // Extract detailed error info from MailerLite response
+    let errorMessage = 'Unknown MailerLite API error';
+
+    if (error?.response?.data) {
+      console.error('MailerLite response data:', JSON.stringify(error.response.data, null, 2));
+      errorMessage = error.response.data.message || JSON.stringify(error.response.data);
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
 
     return {
       success: false,
