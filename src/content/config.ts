@@ -8,7 +8,7 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     heroImage: z.string().optional(),
-    category: z.enum(['news', 'reflections', 'updates', 'events']),
+    category: z.enum(['news', 'reflections', 'updates', 'events', 'newsletter']),
     tags: z.array(z.string()).default([]),
     author: z.string().default('Diane Melton'),
     featured: z.boolean().default(false),
