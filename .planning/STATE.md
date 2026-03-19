@@ -9,11 +9,11 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 
 ## Current Position
 
-Phase: 8 of 9 (SEO complete)
-Plan: 1 of 1 complete
-Status: **Phase 9 pending**
-Next Phase: Phase 9 - Email Templates
-Last activity: 2026-03-14 — Completed 08-01-PLAN.md
+Phase: 10 of 10 (Newsletter Publishing)
+Plan: 0 of 2 complete
+Status: **Phase 10 planned, ready for execution**
+Next Step: Execute 10-01-PLAN.md (MailerLite API setup + Newsletter backend)
+Last activity: 2026-03-19 — Planned Phase 10 (2 plans)
 
 Progress: ████████░░ 89%
 
@@ -66,6 +66,9 @@ None.
 - Phase 8 added: SEO (2026-03-14)
 - Phase 8 completed: SEO (2026-03-14)
 - Phase 9 added: Email Templates (2026-03-14)
+- Phase 10 added: Blog Admin & Publishing (2026-03-19)
+- Phase 10 renamed: Newsletter Publishing (2026-03-19)
+- Phase 10 planned: 2 plans created (2026-03-19)
 
 ## Session Continuity
 

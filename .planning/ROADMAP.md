@@ -24,6 +24,7 @@ None
 - [x] **Phase 7: Content Changes** - Apply copy edits from stakeholder review meeting
 - [x] **Phase 8: SEO** - Search engine optimization and discoverability
 - [ ] **Phase 9: Email Templates** - Custom MailerLite email templates matching site branding
+- [ ] **Phase 10: Newsletter Publishing** - Admin page to compose and send newsletters via MailerLite
 
 ## Phase Details
 
@@ -197,10 +198,32 @@ Key work:
 - Mobile-responsive HTML email structure
 - Upload and configure templates in MailerLite
 
+### Phase 10: Newsletter Publishing
+
+**Goal**: Admin interface to compose newsletters that send via MailerLite to subscribers
+**Depends on**: Phase 9
+**Research**: Complete (MailerLite API documented)
+**Plans**: 2 plans
+
+Plans:
+
+- [ ] 10-01: MailerLite API setup + Newsletter backend
+- [ ] 10-02: Newsletter admin UI with compose and send
+
+Key work:
+
+- Install MailerLite Node.js SDK
+- Add 'newsletter' category to blog schema
+- Create MailerLite API wrapper for campaign creation
+- Newsletter API endpoint (POST /api/newsletter)
+- Admin page at /admin/newsletter with compose form
+- Preview and send functionality
+- Uses branded email template from Phase 9
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
 
 | Phase                     | Plans Complete | Status   | Completed  |
 | ------------------------- | -------------- | -------- | ---------- |
@@ -213,3 +236,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Content Changes        | 1/1            | Complete | 2026-03-14 |
 | 8. SEO                    | 1/1            | Complete | 2026-03-14 |
 | 9. Email Templates        | 0/0            | Not Started | — |
+| 10. Newsletter Publishing | 0/2            | Planned | — |
