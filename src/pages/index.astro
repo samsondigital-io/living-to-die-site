@@ -32,6 +32,7 @@ const content = await getHomepageContent();
       <p class="hero__subtitle">
         {content.hero_subtitle}
       </p>
+      <p class="hero__author">A book by Diane Melton</p>
       <div class="hero__buttons">
         <a href="#summary" class="btn btn--primary">Discover the Story</a>
         <a href="#author" class="btn btn--secondary">Meet the Author</a>
@@ -48,21 +49,24 @@ const content = await getHomepageContent();
           {content.preorder_text}
         </p>
       </div>
-      <form class="preorder__form" id="preorder-form">
+      <form
+        class="preorder__form"
+        id="preorder-form"
+        action="https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe"
+        method="POST"
+      >
+        <input type="hidden" name="ml-submit" value="1" />
+        <input type="hidden" name="anticsrf" value="true" />
         <div class="preorder__input-group">
           <input
             type="email"
-            name="email"
+            name="fields[email]"
             placeholder="Enter your email"
             required
             autocomplete="email"
           />
           <button type="submit" class="btn btn--primary">Notify Me</button>
         </div>
-        <label class="preorder__checkbox">
-          <input type="checkbox" name="also_newsletter" />
-          <span>Also subscribe to general updates</span>
-        </label>
       </form>
       <p class="preorder__success" id="preorder-success">Please check your email to confirm.</p>
     </div>
@@ -114,6 +118,7 @@ const content = await getHomepageContent();
     <div class="container author">
       <div class="author__portrait">
         <img src="/diane-melton.webp" alt="Diane Melton" />
+        <p class="author__caption">Diane Melton</p>
       </div>
       <div class="author__bio">
         <h2>About the Author</h2>
@@ -277,9 +282,17 @@ const content = await getHomepageContent();
     font-family: var(--font-body);
     font-size: var(--text-lg);
     color: var(--color-warm-gray);
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-md);
     line-height: var(--leading-relaxed);
     font-weight: 400;
+  }
+
+  .hero__author {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-rose);
+    font-style: italic;
+    margin-bottom: var(--space-xl);
   }
 
   .hero__buttons {
@@ -520,6 +533,15 @@ const content = await getHomepageContent();
     width: 100%;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
+  }
+
+  .author__caption {
+    text-align: center;
+    margin-top: var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-warm-gray);
+    font-style: italic;
   }
 
   .author__bio h2 {
@@ -807,43 +829,24 @@ const content = await getHomepageContent();
     }
   });
 
-  // Preorder/Book Release notification form
-  const BOOK_RELEASE_FORM = 'https://assets.mailerlite.com/jsonp/2188276/forms/181934546956060628/subscribe';
-  const GENERAL_NEWSLETTER_FORM = 'https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe';
-
+  // Preorder/Newsletter form
   document.getElementById('preorder-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value;
-    const alsoNewsletter = (form.querySelector('input[name="also_newsletter"]') as HTMLInputElement).checked;
+    const formData = new FormData(form);
     const successEl = document.getElementById('preorder-success');
 
-    const formData = new FormData();
-    formData.append('fields[email]', email);
-    formData.append('ml-submit', '1');
-    formData.append('anticsrf', 'true');
-
     try {
-      // Always submit to Book Release Notification list
-      await fetch(BOOK_RELEASE_FORM, {
+      await fetch(form.action, {
         method: 'POST',
         body: formData,
         mode: 'no-cors'
       });
 
-      // If checkbox checked, also submit to general newsletter
-      if (alsoNewsletter) {
-        await fetch(GENERAL_NEWSLETTER_FORM, {
-          method: 'POST',
-          body: formData,
-          mode: 'no-cors'
-        });
-      }
-
       form.classList.add('hidden');
       successEl?.classList.add('show');
     } catch (error) {
-      console.error('Form submission error:', error);
+      form.submit();
     }
   });
 </script>

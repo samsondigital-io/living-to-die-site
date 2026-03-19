@@ -125,7 +125,7 @@ const navItems = [
     transition: all var(--transition-fast);
   }
 
-  /* Minimal mode - hamburger only, always visible */
+  /* Minimal mode - hamburger only at top, links when scrolled */
   .nav--minimal {
     background: transparent;
     backdrop-filter: none;
@@ -149,6 +149,7 @@ const navItems = [
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  /* Hamburger dropdown when clicked (at top, before scroll) */
   .nav--minimal .nav__menu.active {
     display: flex;
     position: fixed;
@@ -163,20 +164,25 @@ const navItems = [
     gap: 1rem;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    transform: none;
-    opacity: 1;
-    pointer-events: all;
   }
 
+  /* When scrolled on desktop - show links, hide hamburger */
   .nav--minimal.scrolled {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
     box-shadow: var(--shadow-md);
   }
 
+  .nav--minimal.scrolled .nav__container {
+    justify-content: center;
+  }
+
+  .nav--minimal.scrolled .nav__menu {
+    display: flex;
+  }
+
   .nav--minimal.scrolled .nav__toggle {
-    background: transparent;
-    box-shadow: none;
+    display: none;
   }
 
   @media (max-width: 768px) {
@@ -222,13 +228,46 @@ const navItems = [
       transform: rotate(-45deg) translate(5px, -5px);
     }
 
-    /* Minimal mode on mobile */
-    .nav--minimal .nav__menu.active {
-      top: 70px;
-      right: 1rem;
-      left: 1rem;
-      width: auto;
-      border-radius: 12px;
+    /* Minimal mode on mobile - always hamburger, even when scrolled */
+    .nav--minimal .nav__container,
+    .nav--minimal.scrolled .nav__container {
+      justify-content: flex-end;
+    }
+
+    .nav--minimal .nav__menu,
+    .nav--minimal.scrolled .nav__menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: white;
+      flex-direction: column;
+      padding: 2rem;
+      gap: 1rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: all var(--transition-base);
+    }
+
+    .nav--minimal .nav__menu.active,
+    .nav--minimal.scrolled .nav__menu.active {
+      display: flex;
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .nav--minimal .nav__toggle,
+    .nav--minimal.scrolled .nav__toggle {
+      display: flex;
+    }
+
+    .nav--minimal.scrolled .nav__toggle {
+      background: transparent;
+      box-shadow: none;
     }
   }
 </style>
