@@ -12,16 +12,19 @@ if (Astro.request.method === 'POST') {
   const password = formData.get('password');
 
   if (password === ADMIN_PASSWORD) {
+    const isProduction = import.meta.env.PROD;
     Astro.cookies.set('admin_auth', 'true', {
       path: '/',
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24,
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       sameSite: 'strict'
     });
     return Astro.redirect('/admin');
   }
 }
+
+const currentPath = Astro.url.pathname;
 ---
 
 <!DOCTYPE html>
@@ -33,167 +36,374 @@ if (Astro.request.method === 'POST') {
   <title>Admin - Living to Die</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: #f5f5f5;
+      background: #f8f9fa;
       min-height: 100vh;
-      padding: 2rem;
     }
-    .container { max-width: 800px; margin: 0 auto; }
-    h1 { color: #333; margin-bottom: 1.5rem; }
-    h2 { color: #555; margin: 2rem 0 1rem; font-size: 1.25rem; }
 
+    /* Login Form */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fef7fb 0%, #f8f9fa 100%);
+    }
     .login-form {
       background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 400px;
-      margin: 4rem auto;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 380px;
     }
-    .login-form h1 { text-align: center; }
+    .login-form h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+    .login-form .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
     .login-form input {
       width: 100%;
-      padding: 0.75rem;
-      margin: 1rem 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 0.875rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
       font-size: 1rem;
+    }
+    .login-form input:focus {
+      outline: none;
+      border-color: #8B3A62;
+      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
     }
     .login-form button {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.875rem;
       background: #8B3A62;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
+      transition: background 0.2s;
     }
     .login-form button:hover { background: #6d2e4d; }
 
-    .field { margin-bottom: 1.5rem; }
+    /* Admin Layout */
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 0 1.5rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #d63384;
+    }
+    .sidebar-header span {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1rem 0;
+    }
+    .nav-section {
+      padding: 0.5rem 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .nav-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.75rem;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin: 0.25rem 0;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .nav-link:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+    .nav-link.active {
+      background: rgba(214, 51, 132, 0.2);
+      color: #d63384;
+    }
+    .nav-link svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.8;
+    }
+    .nav-link.external {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+    }
+    .nav-link.external:hover {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .logout-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .logout-link:hover { color: white; }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    .page-header h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 0.25rem;
+    }
+    .page-header p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* Content Editor Styles */
+    .section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #eee;
+    }
+    .section h3 {
+      font-size: 1rem;
+      color: #8B3A62;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .section--highlight {
+      background: linear-gradient(135deg, #fef7fb 0%, #fff 100%);
+      border-color: #f5e6ec;
+    }
+
+    .field { margin-bottom: 1.25rem; }
+    .field:last-child { margin-bottom: 0; }
     label {
       display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #333;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #444;
+      font-size: 0.875rem;
     }
     input[type="text"], textarea {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.65rem 0.875rem;
       border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
       font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    textarea { min-height: 120px; resize: vertical; }
+    textarea { min-height: 100px; resize: vertical; }
     input:focus, textarea:focus {
       outline: none;
       border-color: #8B3A62;
       box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
     }
 
-    .section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    .subsection-title {
+      color: #666;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 1.5rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #f0f0f0;
     }
-    .section h2 { margin-top: 0; color: #8B3A62; }
-    .section--preorder { background: linear-gradient(135deg, #d4e8f2 0%, #c4dce8 100%); }
-    .section--newsletter { background: linear-gradient(135deg, #f5e6ec 0%, #ead4de 100%); }
-    .subsection-title { color: #8B3A62; margin: 1.5rem 0 1rem; font-size: 1.1rem; border-top: 1px solid #eee; padding-top: 1.5rem; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-    .card-edit { background: #f9f9f9; padding: 1rem; border-radius: 6px; border-top: 3px solid #8B3A62; }
-    .card-edit textarea { min-height: 80px; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .card-edit {
+      background: #fafafa;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .card-edit textarea { min-height: 70px; }
 
     .save-btn {
       background: #8B3A62;
       color: white;
       border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      border-radius: 4px;
+      padding: 0.875rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 1rem;
+      transition: background 0.2s;
     }
     .save-btn:hover { background: #6d2e4d; }
     .save-btn:disabled { background: #ccc; cursor: not-allowed; }
 
     .status {
       padding: 1rem;
-      border-radius: 4px;
-      margin-top: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
       display: none;
     }
     .status.success { display: block; background: #d4edda; color: #155724; }
     .status.error { display: block; background: #f8d7da; color: #721c24; }
 
-    .logout { float: right; color: #666; text-decoration: none; }
-    .logout:hover { color: #333; }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        padding: 1rem;
+      }
+      .sidebar-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem; }
+      .nav-section { padding: 0; display: flex; gap: 0.5rem; }
+      .nav-section-title { display: none; }
+      .main-content { padding: 1rem; }
     }
-    .header-actions h1 { margin-bottom: 0; }
-    .external-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #09c269;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-    .external-link:hover { background: #07a358; }
-    .external-link svg { width: 16px; height: 16px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    {!isAuthenticated ? (
+  {!isAuthenticated ? (
+    <div class="login-page">
       <div class="login-form">
-        <h1>Admin Login</h1>
+        <h1>Living to Die</h1>
+        <p class="subtitle">Admin Dashboard</p>
         <form method="POST">
           <input type="password" name="password" placeholder="Enter password" required />
-          <button type="submit">Login</button>
+          <button type="submit">Sign In</button>
         </form>
       </div>
-    ) : (
-      <>
-        <a href="/admin/logout" class="logout">Logout</a>
-        <div class="header-actions">
-          <h1>Edit Homepage Content</h1>
-          <a href="/admin/newsletter" class="external-link" style="background: #8B3A62;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
+    </div>
+  ) : (
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span>Admin</span>
+          <h1>Living to Die</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <p class="nav-section-title">Content</p>
+            <a href="/admin" class={`nav-link ${currentPath === '/admin' || currentPath === '/admin/' ? 'active' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              Homepage
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <p class="nav-section-title">Communication</p>
+            <a href="/admin/newsletter" class={`nav-link ${currentPath.includes('newsletter') ? 'active' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              Send Newsletter
+            </a>
+          </div>
+
+          <div class="nav-section">
+            <p class="nav-section-title">External</p>
+            <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              MailerLite Dashboard
+            </a>
+            <a href="/" target="_blank" class="nav-link external">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              View Website
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="/admin/logout" class="logout-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
-            Send Newsletter
+            Sign Out
           </a>
-          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener noreferrer" class="external-link">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            MailerLite
-          </a>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="page-header">
+          <h2>Edit Homepage</h2>
+          <p>Update the content displayed on your website's homepage</p>
         </div>
 
         <div id="status" class="status"></div>
 
         <form id="content-form">
-          <!-- Hero Section -->
-          <div class="section section--hero">
-            <h2>Hero Section</h2>
+          <div class="section section--highlight">
+            <h3>Hero Section</h3>
             <div class="field">
               <label for="hero_badge">Badge Text</label>
               <input type="text" id="hero_badge" name="hero_badge" placeholder="Coming 2026" />
@@ -208,9 +418,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <!-- Pre-order Section -->
-          <div class="section section--preorder">
-            <h2>Reserve Your Copy</h2>
+          <div class="section">
+            <h3>Reserve Your Copy</h3>
             <div class="field">
               <label for="preorder_heading">Heading</label>
               <input type="text" id="preorder_heading" name="preorder_heading" />
@@ -221,9 +430,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <!-- Summary + Key Themes Section -->
           <div class="section">
-            <h2>Book Summary</h2>
+            <h3>Book Summary</h3>
             <div class="field">
               <label for="summary_heading">Heading</label>
               <input type="text" id="summary_heading" name="summary_heading" />
@@ -236,7 +444,7 @@ if (Astro.request.method === 'POST') {
               <label for="summary_paragraph2">Second Paragraph</label>
               <textarea id="summary_paragraph2" name="summary_paragraph2"></textarea>
             </div>
-            <h3 class="subsection-title">Key Themes</h3>
+            <p class="subsection-title">Key Themes</p>
             <div class="field">
               <label for="theme1">Theme 1</label>
               <input type="text" id="theme1" name="theme1" />
@@ -251,9 +459,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <!-- Book Structure Cards -->
-          <div class="section section--cards">
-            <h2>Book Structure Cards</h2>
+          <div class="section">
+            <h3>Book Structure Cards</h3>
             <div class="card-grid">
               <div class="card-edit">
                 <div class="field">
@@ -288,9 +495,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <!-- Author Section -->
           <div class="section">
-            <h2>About the Author</h2>
+            <h3>About the Author</h3>
             <div class="field">
               <label for="author_bio1">Bio Paragraph 1</label>
               <textarea id="author_bio1" name="author_bio1"></textarea>
@@ -305,9 +511,8 @@ if (Astro.request.method === 'POST') {
             </div>
           </div>
 
-          <!-- Newsletter Section -->
-          <div class="section section--newsletter">
-            <h2>Newsletter Section</h2>
+          <div class="section section--highlight">
+            <h3>Newsletter Section</h3>
             <div class="field">
               <label for="newsletter_heading">Heading</label>
               <input type="text" id="newsletter_heading" name="newsletter_heading" />
@@ -320,9 +525,9 @@ if (Astro.request.method === 'POST') {
 
           <button type="submit" class="save-btn" id="save-btn">Save Changes</button>
         </form>
-      </>
-    )}
-  </div>
+      </main>
+    </div>
+  )}
 
   {isAuthenticated && (
     <script>
@@ -330,7 +535,6 @@ if (Astro.request.method === 'POST') {
       const status = document.getElementById('status');
       const saveBtn = document.getElementById('save-btn');
 
-      // Load existing content
       async function loadContent() {
         try {
           const res = await fetch('/api/content', { credentials: 'same-origin' });
@@ -348,7 +552,6 @@ if (Astro.request.method === 'POST') {
 
       loadContent();
 
-      // Save content
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         saveBtn.disabled = true;
@@ -378,7 +581,6 @@ if (Astro.request.method === 'POST') {
 
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Changes';
-
         setTimeout(() => { status.className = 'status'; }, 5000);
       });
     </script>
