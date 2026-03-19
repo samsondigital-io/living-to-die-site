@@ -1,0 +1,455 @@
+---
+// Newsletter admin page - compose and send newsletters
+const authCookie = Astro.cookies.get('admin_auth');
+const isAuthenticated = authCookie?.value === 'true';
+
+// Redirect to admin login if not authenticated
+if (!isAuthenticated) {
+  return Astro.redirect('/admin');
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Send Newsletter - Living to Die</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { color: #333; margin-bottom: 0.5rem; }
+    .subtitle { color: #666; margin-bottom: 1.5rem; }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .nav-links a {
+      color: #8B3A62;
+      text-decoration: none;
+    }
+    .nav-links a:hover { text-decoration: underline; }
+
+    .section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .section h2 { margin: 0 0 1rem; color: #8B3A62; font-size: 1.25rem; }
+
+    .field { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    .label-hint {
+      font-weight: normal;
+      color: #666;
+      font-size: 0.875rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    textarea.large { min-height: 150px; }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #8B3A62;
+      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background: #8B3A62;
+      color: white;
+    }
+    .btn-primary:hover { background: #6d2e4d; }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-secondary {
+      background: #e9e9e9;
+      color: #333;
+    }
+    .btn-secondary:hover { background: #ddd; }
+
+    .status {
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .status.success { display: block; background: #d4edda; color: #155724; }
+    .status.error { display: block; background: #f8d7da; color: #721c24; }
+
+    /* Preview styles */
+    .preview-container {
+      display: none;
+      margin-top: 1.5rem;
+    }
+    .preview-container.visible { display: block; }
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .preview-header h2 { margin: 0; }
+    .preview-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+    .preview-frame {
+      background: #fdfdf9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 2rem;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .preview-email {
+      background: white;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+    .preview-email-header {
+      background: #fef7fb;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .preview-email-header .brand {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a4a4a;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+    .preview-email-header h3 {
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #d63384;
+      margin: 0 0 0.5rem;
+    }
+    .preview-email-header .issue-info {
+      font-size: 14px;
+      color: #4a4a4a;
+    }
+    .preview-email-body {
+      padding: 2rem;
+    }
+    .preview-email-body p {
+      font-size: 17px;
+      line-height: 1.7;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+    }
+    .preview-email-body h4 {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      color: #1a1a1a;
+      margin: 1.5rem 0 0.75rem;
+    }
+    .preview-email-footer {
+      background: #fef7fb;
+      padding: 1.5rem;
+      text-align: center;
+      border-radius: 0 0 8px 8px;
+      font-size: 13px;
+      color: #4a4a4a;
+    }
+    .preview-email-footer a { color: #d63384; }
+    .preview-signature {
+      margin-top: 1.5rem;
+      border-top: 1px solid #fdf2f7;
+      padding-top: 1.5rem;
+    }
+    .preview-signature .gratitude { color: #1a1a1a; margin-bottom: 0.5rem; }
+    .preview-signature .name { font-style: italic; color: #d63384; font-size: 18px; }
+
+    .optional-section {
+      border-top: 1px solid #eee;
+      padding-top: 1.25rem;
+      margin-top: 1.25rem;
+    }
+    .optional-label {
+      font-size: 0.875rem;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-links">
+      <a href="/admin">← Back to Admin</a>
+      <a href="https://dashboard.mailerlite.com/campaigns" target="_blank" rel="noopener">MailerLite Dashboard →</a>
+    </div>
+
+    <h1>Send Newsletter</h1>
+    <p class="subtitle">Compose and send a newsletter to all subscribers</p>
+
+    <div id="status" class="status"></div>
+
+    <form id="newsletter-form">
+      <div class="section">
+        <h2>Email Details</h2>
+        <div class="field">
+          <label for="subject">Subject Line</label>
+          <input type="text" id="subject" name="subject" placeholder="e.g., A Reflection on Mortality" required />
+        </div>
+        <div class="field">
+          <label for="preheader">
+            Preheader Text
+            <span class="label-hint">— preview text shown in inbox</span>
+          </label>
+          <input type="text" id="preheader" name="preheader" placeholder="e.g., This week's thoughts on living fully..." required />
+        </div>
+        <div class="field">
+          <label for="issueInfo">
+            Issue Info
+            <span class="label-hint">— shown in email header</span>
+          </label>
+          <input type="text" id="issueInfo" name="issueInfo" placeholder="e.g., Issue #1 | March 2026" />
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Content</h2>
+        <div class="field">
+          <label for="openingParagraph">Opening Paragraph</label>
+          <textarea id="openingParagraph" name="openingParagraph" placeholder="A personal greeting or introduction to this issue's theme..." required></textarea>
+        </div>
+        <div class="field">
+          <label for="section1Title">Main Section Title</label>
+          <input type="text" id="section1Title" name="section1Title" placeholder="e.g., This Week's Reflection" required />
+        </div>
+        <div class="field">
+          <label for="section1Content">Main Section Content</label>
+          <textarea id="section1Content" name="section1Content" class="large" placeholder="The main content of your newsletter..." required></textarea>
+        </div>
+
+        <div class="optional-section">
+          <p class="optional-label">Optional: Second Section</p>
+          <div class="field">
+            <label for="section2Title">Second Section Title</label>
+            <input type="text" id="section2Title" name="section2Title" placeholder="e.g., Book Update" />
+          </div>
+          <div class="field">
+            <label for="section2Content">Second Section Content</label>
+            <textarea id="section2Content" name="section2Content" placeholder="Additional content, news, or reflections..."></textarea>
+          </div>
+        </div>
+
+        <div class="optional-section">
+          <p class="optional-label">Optional: Call to Action Button</p>
+          <div class="field">
+            <label for="ctaText">Button Text</label>
+            <input type="text" id="ctaText" name="ctaText" placeholder="e.g., Read More" />
+          </div>
+          <div class="field">
+            <label for="ctaUrl">Button Link</label>
+            <input type="text" id="ctaUrl" name="ctaUrl" placeholder="e.g., https://livingtodie.com/blog/..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Closing</h2>
+        <div class="field">
+          <label for="closingMessage">Closing Message</label>
+          <textarea id="closingMessage" name="closingMessage" placeholder="A warm sign-off appropriate to this issue's content..." required></textarea>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="btn btn-secondary" id="preview-btn">Preview Email</button>
+        <button type="submit" class="btn btn-primary" id="send-btn">Send Newsletter</button>
+      </div>
+    </form>
+
+    <div class="preview-container" id="preview-container">
+      <div class="preview-header">
+        <h2>Email Preview</h2>
+        <button class="preview-close" id="preview-close">&times;</button>
+      </div>
+      <div class="preview-frame">
+        <div class="preview-email">
+          <div class="preview-email-header">
+            <p class="brand">Living to Die</p>
+            <h3>Newsletter</h3>
+            <p class="issue-info" id="preview-issue-info"></p>
+          </div>
+          <div class="preview-email-body">
+            <p>Dear Reader,</p>
+            <p id="preview-opening"></p>
+            <h4 id="preview-section1-title"></h4>
+            <p id="preview-section1-content"></p>
+            <div id="preview-section2" style="display: none;">
+              <h4 id="preview-section2-title"></h4>
+              <p id="preview-section2-content"></p>
+            </div>
+            <div class="preview-signature">
+              <p id="preview-closing"></p>
+              <p class="gratitude">With gratitude,</p>
+              <p class="name">Diane Melton</p>
+            </div>
+          </div>
+          <div class="preview-email-footer">
+            <p><a href="https://livingtodie.com">Visit Website</a></p>
+            <p>You're receiving this newsletter because you signed up at livingtodie.com</p>
+            <p><a href="#">Unsubscribe</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('newsletter-form');
+    const status = document.getElementById('status');
+    const sendBtn = document.getElementById('send-btn');
+    const previewBtn = document.getElementById('preview-btn');
+    const previewContainer = document.getElementById('preview-container');
+    const previewClose = document.getElementById('preview-close');
+
+    // Preview functionality
+    function showPreview() {
+      // Populate preview with current form values
+      document.getElementById('preview-issue-info').textContent =
+        document.getElementById('issueInfo').value || 'Newsletter';
+      document.getElementById('preview-opening').textContent =
+        document.getElementById('openingParagraph').value;
+      document.getElementById('preview-section1-title').textContent =
+        document.getElementById('section1Title').value;
+      document.getElementById('preview-section1-content').textContent =
+        document.getElementById('section1Content').value;
+
+      // Handle optional section 2
+      const section2Title = document.getElementById('section2Title').value;
+      const section2Content = document.getElementById('section2Content').value;
+      const section2Container = document.getElementById('preview-section2');
+
+      if (section2Title || section2Content) {
+        section2Container.style.display = 'block';
+        document.getElementById('preview-section2-title').textContent = section2Title;
+        document.getElementById('preview-section2-content').textContent = section2Content;
+      } else {
+        section2Container.style.display = 'none';
+      }
+
+      document.getElementById('preview-closing').textContent =
+        document.getElementById('closingMessage').value;
+
+      previewContainer.classList.add('visible');
+      previewContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    previewBtn.addEventListener('click', showPreview);
+    previewClose.addEventListener('click', () => {
+      previewContainer.classList.remove('visible');
+    });
+
+    // Send newsletter
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Confirmation dialog
+      if (!confirm('Send this newsletter to all subscribers? This action cannot be undone.')) {
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+      status.className = 'status';
+
+      // Build request body
+      const content = {
+        issueInfo: document.getElementById('issueInfo').value || undefined,
+        openingParagraph: document.getElementById('openingParagraph').value,
+        section1Title: document.getElementById('section1Title').value,
+        section1Content: document.getElementById('section1Content').value,
+        section2Title: document.getElementById('section2Title').value || undefined,
+        section2Content: document.getElementById('section2Content').value || undefined,
+        ctaUrl: document.getElementById('ctaUrl').value || undefined,
+        ctaText: document.getElementById('ctaText').value || undefined,
+        closingMessage: document.getElementById('closingMessage').value,
+      };
+
+      const body = {
+        subject: document.getElementById('subject').value,
+        preheader: document.getElementById('preheader').value,
+        useTemplate: true,
+        content: content,
+      };
+
+      try {
+        const res = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          credentials: 'same-origin'
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          status.className = 'status success';
+          status.innerHTML = `
+            <strong>Newsletter sent successfully!</strong><br>
+            Campaign ID: ${data.campaignId}<br>
+            Check <a href="https://dashboard.mailerlite.com/campaigns" target="_blank">MailerLite</a> to verify delivery.
+          `;
+          // Clear form
+          form.reset();
+          previewContainer.classList.remove('visible');
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to send: ${error.message}`;
+      }
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Newsletter';
+    });
+  </script>
+</body>
+</html>
