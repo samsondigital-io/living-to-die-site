@@ -50,7 +50,7 @@ Use these brand settings when creating emails in MailerLite's drag-and-drop edit
 >
 > By signing up, you'll be among the first to know when the book is available, and I'll share exclusive updates, reflections, and behind-the-scenes glimpses of this creative journey.
 
-**Button**: "Learn More About the Book" → https://livingtodie.com
+**Button**: "Learn More About the Book" → https://dianemelton.com
 
 **Closing**:
 > With gratitude,
@@ -112,5 +112,5 @@ Use these brand settings when creating emails in MailerLite's drag-and-drop edit
 ## Footer (All Emails)
 
 - Background: Light pink (`#fef7fb`)
-- Text: "You're receiving this email because you signed up at livingtodie.com"
+- Text: "You're receiving this email because you signed up at dianemelton.com"
 - Link: Unsubscribe (use MailerLite's automatic unsubscribe link)

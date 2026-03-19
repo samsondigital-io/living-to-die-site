@@ -1,4 +1,4 @@
-# Robots.txt for livingtodie.com
+# Robots.txt for dianemelton.com
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -6,4 +6,4 @@ Disallow: /blog
 Disallow: /poetry
 
 # Sitemap location
-Sitemap: https://livingtodie.com/sitemap-index.xml
+Sitemap: https://dianemelton.com/sitemap-index.xml
