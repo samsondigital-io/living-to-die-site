@@ -518,6 +518,17 @@ const currentPath = Astro.url.pathname;
         <div id="resource-empty" class="resource-empty">
           <p>No resources yet.</p>
           <p style="margin-top: 0.5rem; font-size: 0.9rem;">Click "Add Resource" to add your first resource.</p>
+          <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 0.75rem;">Or import existing resources from the content collection:</p>
+            <button class="btn btn-secondary" id="migrate-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Import from Content Collection
+            </button>
+          </div>
         </div>
       </div>
 
@@ -989,6 +1000,45 @@ const currentPath = Astro.url.pathname;
       setTimeout(() => {
         status.className = 'status';
       }, 5000);
+    }
+
+    // ====== Migration ======
+    const migrateBtn = document.getElementById('migrate-btn');
+    if (migrateBtn) {
+      migrateBtn.addEventListener('click', async () => {
+        if (!confirm('Import all resources from the content collection to Redis?')) return;
+
+        migrateBtn.disabled = true;
+        migrateBtn.textContent = 'Importing...';
+
+        try {
+          const res = await fetch('/api/migrate-resources', {
+            method: 'POST',
+            credentials: 'same-origin'
+          });
+
+          const result = await res.json();
+
+          if (result.success) {
+            showStatus(`Imported ${result.migrated} resources successfully!`, 'success');
+            await loadResources();
+          } else {
+            throw new Error(result.error || 'Migration failed');
+          }
+        } catch (error) {
+          showStatus(`Failed to import: ${error.message}`, 'error');
+        }
+
+        migrateBtn.disabled = false;
+        migrateBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Import from Content Collection
+        `;
+      });
     }
 
     // ====== Initialize ======
