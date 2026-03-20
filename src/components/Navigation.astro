@@ -8,7 +8,16 @@ const { minimal = false } = Astro.props;
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/#author' },
-  { label: 'Resources', href: '/resources' },
+  {
+    label: 'Resources',
+    href: '/resources',
+    dropdown: [
+      { label: 'Medical Advocacy', href: '/resources#medical-advocacy' },
+      { label: 'Legal Resources', href: '/resources#legal-resources' },
+      { label: 'Medical Research', href: '/resources#medical-research' },
+      { label: 'Support Communities', href: '/resources#support-communities' },
+    ]
+  },
   { label: 'Contact', href: '/contact' },
 ];
 ---
@@ -17,8 +26,17 @@ const navItems = [
   <div class="nav__container">
     <ul class="nav__menu" id="nav-menu">
       {navItems.map(item => (
-        <li>
+        <li class={item.dropdown ? 'nav__item--dropdown' : ''}>
           <a href={item.href} class="nav__link">{item.label}</a>
+          {item.dropdown && (
+            <ul class="nav__dropdown">
+              {item.dropdown.map(subItem => (
+                <li>
+                  <a href={subItem.href} class="nav__dropdown-link">{subItem.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
         </li>
       ))}
     </ul>
@@ -105,6 +123,57 @@ const navItems = [
 
   .nav__link:hover::after {
     width: 100%;
+  }
+
+  /* Dropdown styles */
+  .nav__item--dropdown {
+    position: relative;
+  }
+
+  .nav__dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    list-style: none;
+    padding: 0.75rem 0;
+    min-width: 200px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin-top: 0.5rem;
+    z-index: 1001;
+  }
+
+  .nav__dropdown::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+  }
+
+  .nav__item--dropdown:hover .nav__dropdown {
+    display: block;
+  }
+
+  .nav__dropdown-link {
+    display: block;
+    padding: 0.5rem 1.25rem;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 400;
+    transition: all var(--transition-fast);
+  }
+
+  .nav__dropdown-link:hover {
+    color: var(--color-accent);
+    background: var(--color-beige);
   }
 
   .nav__toggle {
@@ -212,6 +281,50 @@ const navItems = [
       pointer-events: all;
     }
 
+    /* Mobile dropdown - inline expand */
+    .nav__dropdown {
+      display: none;
+      position: static;
+      transform: none;
+      background: transparent;
+      box-shadow: none;
+      padding: 0.5rem 0 0 1rem;
+      margin-top: 0.5rem;
+      min-width: auto;
+      border-left: 2px solid var(--color-border);
+    }
+
+    .nav__dropdown::before {
+      display: none;
+    }
+
+    .nav__item--dropdown.expanded .nav__dropdown {
+      display: block;
+    }
+
+    .nav__dropdown-link {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .nav__item--dropdown > .nav__link::after {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg);
+      margin-left: 0.5rem;
+      transition: transform var(--transition-fast);
+      position: static;
+      background: none;
+    }
+
+    .nav__item--dropdown.expanded > .nav__link::after {
+      transform: rotate(-135deg);
+    }
+
     .nav__toggle {
       display: flex;
     }
@@ -315,11 +428,39 @@ const navItems = [
     navMenu?.classList.toggle('active');
   });
 
-  // Close mobile menu when clicking a link
+  // Mobile dropdown toggle
+  const isMobile = () => window.innerWidth <= 768;
+
+  document.querySelectorAll('.nav__item--dropdown > .nav__link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      if (isMobile()) {
+        e.preventDefault();
+        const parent = (e.target as HTMLElement).closest('.nav__item--dropdown');
+        parent?.classList.toggle('expanded');
+      }
+    });
+  });
+
+  // Close mobile menu when clicking a link (but not dropdown parent)
   document.querySelectorAll('.nav__link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const parent = (e.target as HTMLElement).closest('.nav__item--dropdown');
+      // Only close if it's not a dropdown parent on mobile, or if it's desktop
+      if (!parent || !isMobile()) {
+        navToggle?.classList.remove('active');
+        navMenu?.classList.remove('active');
+      }
+    });
+  });
+
+  // Close mobile menu when clicking dropdown links
+  document.querySelectorAll('.nav__dropdown-link').forEach(link => {
     link.addEventListener('click', () => {
       navToggle?.classList.remove('active');
       navMenu?.classList.remove('active');
+      document.querySelectorAll('.nav__item--dropdown').forEach(item => {
+        item.classList.remove('expanded');
+      });
     });
   });
 

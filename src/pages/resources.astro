@@ -31,7 +31,7 @@ const categoryTitles = {
 
   {Object.entries(categorizedResources).map(([category, categoryResources]) =>
     categoryResources.length > 0 && (
-      <section class={`section ${category === 'legal-resources' || category === 'support-communities' ? 'section--alt' : ''}`}>
+      <section id={category} class={`section ${category === 'legal-resources' || category === 'support-communities' ? 'section--alt' : ''}`}>
         <div class="container">
           <h2 class="section-title">{categoryTitles[category]}</h2>
           <div class="resource-grid">
