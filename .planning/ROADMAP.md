@@ -25,6 +25,7 @@ None
 - [x] **Phase 8: SEO** - Search engine optimization and discoverability
 - [ ] **Phase 9: Email Templates** - Custom MailerLite email templates matching site branding
 - [ ] **Phase 10: Newsletter Publishing** - Admin page to compose and send newsletters via MailerLite
+- [ ] **Phase 11: Mailchimp Migration** - Switch from MailerLite to Mailchimp
 
 ## Phase Details
 
@@ -220,6 +221,26 @@ Key work:
 - Preview and send functionality
 - Uses branded email template from Phase 9
 
+### Phase 11: Mailchimp Migration
+
+**Goal:** Switch from MailerLite to Mailchimp
+**Depends on:** Phase 10
+**Research:** Likely (Mailchimp API, migration strategy)
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 11 to break down)
+
+Key work:
+
+- Set up Mailchimp account and API credentials
+- Migrate subscriber list from MailerLite
+- Update newsletter API to use Mailchimp SDK
+- Update admin UI for Mailchimp compatibility
+- Update email templates for Mailchimp format
+- Test and verify email delivery
+
 ## Progress
 
 **Execution Order:**
@@ -237,3 +258,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. SEO                    | 1/1            | Complete | 2026-03-14 |
 | 9. Email Templates        | 0/0            | Not Started | — |
 | 10. Newsletter Publishing | 1/2            | In Progress | — |
+| 11. Mailchimp Migration   | 0/0            | Not Started | — |

@@ -71,6 +71,7 @@ None.
 - Phase 10 added: Blog Admin & Publishing (2026-03-19)
 - Phase 10 renamed: Newsletter Publishing (2026-03-19)
 - Phase 10 planned: 2 plans created (2026-03-19)
+- Phase 11 added: Mailchimp Migration (2026-03-19)
 
 ## Session Continuity
 
