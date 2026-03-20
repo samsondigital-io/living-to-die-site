@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A polished, trustworthy author presence
-**Current focus:** Phase 12 — Newsletter Drafts & Scheduling
+**Current focus:** Phase 13 complete — Milestone finishing
 
 ## Current Position
 
-Phase: 12 of 12 (Newsletter Drafts & Scheduling)
-Plan: 1 of 2 complete
-Status: **In progress**
-Next Step: Execute 12-02-PLAN.md (Draft UI + Scheduling)
-Last activity: 2026-03-20 — Completed 12-01-PLAN.md
+Phase: 13 of 13 (Resource Card Admin)
+Plan: 3 of 3 complete
+Status: **Phase complete**
+Next Step: Remaining work in phases 10, 11, 12
+Last activity: 2026-03-20 — Completed Phase 13
 
 Progress: █████████░ 96%
 
@@ -76,9 +76,11 @@ None.
 - Phase 12 added: Newsletter Drafts & Scheduling (2026-03-20)
 - Phase 12 planned: 2 plans created (2026-03-20)
 - Phase 12: 12-01 complete (2026-03-20)
+- Phase 13 added: Resource Card Admin (2026-03-20)
+- Phase 13 complete: 3 plans executed (2026-03-20)
 
 ## Session Continuity
 
 Last session: 2026-03-20
-Stopped at: Completed 12-01-PLAN.md
+Stopped at: Completed Phase 13 (all 3 plans)
 Resume file: None
