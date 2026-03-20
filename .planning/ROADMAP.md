@@ -27,6 +27,7 @@ None
 - [ ] **Phase 10: Newsletter Publishing** - Admin page to compose and send newsletters via MailerLite
 - [ ] **Phase 11: Mailchimp Migration** - Switch from MailerLite to Mailchimp
 - [ ] **Phase 12: Newsletter Drafts & Scheduling** - Save drafts and queue newsletters with automatic send dates
+- [ ] **Phase 13: Resource Card Admin** - Admin UI for resource CRUD, OG image override with upload, category assignment, consistent card sizing
 
 ## Phase Details
 
@@ -264,6 +265,27 @@ Key work:
 - Vercel Cron for automatic sends
 - Draft preview functionality (already exists)
 
+### Phase 13: Resource Card Admin
+
+**Goal:** Admin interface for managing resources with image control and consistent layout
+**Depends on:** Phase 12
+**Research:** None (extends existing admin patterns)
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 13-01: Backend setup - Resource storage lib, Vercel Blob, API endpoints
+- [ ] 13-02: Admin UI - Resource list, add/edit form with image upload
+- [ ] 13-03: Frontend polish - Grid sizing fix, dynamic resource display
+
+Key work:
+
+- Admin page for resource CRUD (add, edit, delete)
+- OG image override with manual image upload
+- Category assignment UI
+- Fix card sizing to maintain 3-across grid even with fewer items
+- Image upload to Vercel Blob storage
+
 ## Progress
 
 **Execution Order:**
@@ -283,3 +305,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Newsletter Publishing | 1/2            | In Progress | — |
 | 11. Mailchimp Migration   | 0/0            | Not Started | — |
 | 12. Newsletter Drafts & Scheduling | 1/2   | In Progress | — |
+| 13. Resource Card Admin  | 0/0            | Not Started | — |
