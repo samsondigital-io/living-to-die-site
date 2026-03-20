@@ -174,70 +174,18 @@ const currentPath = Astro.url.pathname;
 
     /* Category Groups */
     .category-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
     }
     .category-group:last-child { margin-bottom: 0; }
     .category-title {
-      font-size: 0.85rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f0f0f0;
+      color: #8B3A62;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #f0f0f0;
     }
 
-    /* Resource List */
-    .resource-list { }
-    .resource-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.875rem 1rem;
-      background: #fafafa;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      border: 1px solid #eee;
-      gap: 1rem;
-    }
-    .resource-item:last-child { margin-bottom: 0; }
-    .resource-item:hover { background: #f5f5f5; }
-    .resource-info { flex: 1; min-width: 0; }
-    .resource-title {
-      display: block;
-      font-weight: 500;
-      color: #333;
-      margin-bottom: 0.25rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .resource-meta {
-      font-size: 0.75rem;
-      color: #888;
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .resource-url {
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .resource-badge {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-    .badge-featured { background: #fff3cd; color: #856404; }
-    .badge-image { background: #cfe2ff; color: #084298; }
-    .resource-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
     .resource-empty {
       text-align: center;
       color: #888;
@@ -295,7 +243,15 @@ const currentPath = Astro.url.pathname;
       padding: 1rem 1.25rem;
       border-top: 1px solid #eee;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .modal-footer-left {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .modal-footer-right {
+      display: flex;
       gap: 0.75rem;
     }
 
@@ -417,8 +373,118 @@ const currentPath = Astro.url.pathname;
       .nav-section-title { display: none; }
       .main-content { padding: 1rem; }
       .page-header { flex-direction: column; gap: 1rem; }
-      .resource-item { flex-direction: column; align-items: flex-start; }
-      .resource-actions { width: 100%; justify-content: flex-end; }
+    }
+  </style>
+  <style is:global>
+    /* Resource Grid - Global styles for JS-generated content */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    /* Resource Card */
+    article.resource-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    article.resource-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      border-color: #8B3A62;
+    }
+    .resource-card__image {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      position: relative;
+      background: #f0f0f0;
+    }
+    .resource-card__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+    article.resource-card:hover .resource-card__image img {
+      transform: scale(1.05);
+    }
+    .resource-card__content {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .resource-card__content h3 {
+      font-size: 1.25rem;
+      color: #8B3A62;
+      margin: 0 0 0.75rem 0;
+      font-weight: 600;
+      line-height: 1.3;
+      font-family: Georgia, serif;
+    }
+    .resource-card__content p {
+      color: #666;
+      line-height: 1.6;
+      margin: 0;
+      flex: 1;
+      font-size: 0.9rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .resource-card__badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .resource-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-featured { background: #fff3cd; color: #856404; }
+    .badge-image { background: #cfe2ff; color: #084298; }
+    .resource-card__edit-hint {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(139, 58, 98, 0.95);
+      color: white;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+    article.resource-card:hover .resource-card__edit-hint {
+      opacity: 1;
+    }
+
+    @media (max-width: 1200px) {
+      .resource-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .resource-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -601,9 +667,13 @@ const currentPath = Astro.url.pathname;
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="delete-btn" style="display: none;">Delete</button>
-            <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
-            <button type="button" class="btn btn-primary" id="save-btn">Save Resource</button>
+            <div class="modal-footer-left">
+              <button type="button" class="btn btn-danger" id="delete-btn" style="display: none;">Delete Resource</button>
+            </div>
+            <div class="modal-footer-right">
+              <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+              <button type="button" class="btn btn-primary" id="save-btn">Save Resource</button>
+            </div>
           </div>
         </div>
       </div>
@@ -779,28 +849,23 @@ const currentPath = Astro.url.pathname;
           grouped[resource.category].push(resource);
         });
 
-        // Render grouped resources
+        // Render grouped resources as card grid
         const categoryOrder = ['medical-advocacy', 'legal-resources', 'medical-research', 'support-communities'];
 
         resourceList.innerHTML = categoryOrder
           .filter(cat => grouped[cat])
           .map(cat => `
             <div class="category-group">
-              <p class="category-title">${categoryLabels[cat]}</p>
-              ${grouped[cat].map(resource => renderResourceItem(resource)).join('')}
+              <h4 class="category-title">${categoryLabels[cat]}</h4>
+              <div class="resource-grid">
+                ${grouped[cat].map(resource => renderResourceCard(resource)).join('')}
+              </div>
             </div>
           `).join('');
 
-        // Add event listeners to edit/delete buttons
-        resourceList.querySelectorAll('[data-action="edit"]').forEach(btn => {
-          btn.addEventListener('click', () => editResource(btn.dataset.id));
-        });
-
-        resourceList.querySelectorAll('[data-action="delete"]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            currentResourceId = btn.dataset.id;
-            openDeleteFromList(btn.dataset.id);
-          });
+        // Add click listeners to cards for editing
+        resourceList.querySelectorAll('.resource-card').forEach(card => {
+          card.addEventListener('click', () => editResource(card.dataset.id));
         });
 
       } catch (error) {
@@ -808,25 +873,33 @@ const currentPath = Astro.url.pathname;
       }
     }
 
-    function renderResourceItem(resource) {
+    function renderResourceCard(resource) {
       const badges = [];
       if (resource.featured) badges.push('<span class="resource-badge badge-featured">Featured</span>');
       if (resource.imageUrl) badges.push('<span class="resource-badge badge-image">Custom Image</span>');
 
+      // Use custom image or OG proxy fallback
+      const imageSrc = resource.imageUrl && resource.imageUrl.trim() !== ''
+        ? resource.imageUrl
+        : `/api/og-image?url=${encodeURIComponent(resource.url)}`;
+
       return `
-        <div class="resource-item" data-id="${resource.id}">
-          <div class="resource-info">
-            <strong class="resource-title">${escapeHtml(resource.title)}</strong>
-            <div class="resource-meta">
-              <span class="resource-url">${escapeHtml(resource.url)}</span>
-              ${badges.join('')}
-            </div>
+        <article class="resource-card" data-id="${resource.id}">
+          <div class="resource-card__image">
+            <img
+              src="${imageSrc}"
+              alt="${escapeHtml(resource.title)}"
+              loading="lazy"
+              onerror="this.src='https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200&q=80'"
+            />
+            <span class="resource-card__edit-hint">Click to edit</span>
           </div>
-          <div class="resource-actions">
-            <button class="btn btn-small btn-secondary" data-action="edit" data-id="${resource.id}">Edit</button>
-            <button class="btn btn-small btn-danger" data-action="delete" data-id="${resource.id}">Delete</button>
+          <div class="resource-card__content">
+            <h3>${escapeHtml(resource.title)}</h3>
+            <p>${escapeHtml(resource.description)}</p>
+            ${badges.length > 0 ? `<div class="resource-card__badges">${badges.join('')}</div>` : ''}
           </div>
-        </div>
+        </article>
       `;
     }
 
@@ -967,29 +1040,6 @@ const currentPath = Astro.url.pathname;
       confirmDeleteBtn.disabled = false;
       confirmDeleteBtn.textContent = 'Yes, Delete';
     });
-
-    // Delete from list (quick delete)
-    async function openDeleteFromList(id) {
-      if (!confirm('Delete this resource?')) return;
-
-      try {
-        const res = await fetch(`/api/resources/${id}`, {
-          method: 'DELETE',
-          credentials: 'same-origin'
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          showStatus('Resource deleted', 'success');
-          await loadResources();
-        } else {
-          throw new Error(result.error || 'Failed to delete');
-        }
-      } catch (error) {
-        showStatus(`Failed to delete: ${error.message}`, 'error');
-      }
-    }
 
     // ====== Helpers ======
 
