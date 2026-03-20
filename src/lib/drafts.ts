@@ -131,7 +131,7 @@ export async function listDrafts(): Promise<NewsletterDraft[]> {
         match: `${DRAFT_PREFIX}*`,
         count: 100,
       });
-      cursor = nextCursor;
+      cursor = Number(nextCursor);
       keys.push(...batchKeys);
     } while (cursor !== 0);
 
