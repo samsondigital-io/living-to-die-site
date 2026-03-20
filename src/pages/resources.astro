@@ -2,15 +2,55 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ResourceCard from '../components/ResourceCard.astro';
 import { getCollection } from 'astro:content';
+import { listResources, type Resource, type ResourceCategory } from '../lib/resources';
 
-const resources = await getCollection('resources');
+// Unified resource type for display
+interface DisplayResource {
+  title: string;
+  description: string;
+  url: string;
+  category: ResourceCategory;
+  imageUrl?: string;
+}
+
+// Try to fetch from Redis first, fall back to content collection
+let resources: DisplayResource[] = [];
+
+try {
+  const redisResources = await listResources();
+  if (redisResources.length > 0) {
+    // Use Redis resources
+    resources = redisResources.map(r => ({
+      title: r.title,
+      description: r.description,
+      url: r.url,
+      category: r.category,
+      imageUrl: r.imageUrl,
+    }));
+  }
+} catch (error) {
+  // Redis not available or error, will fall back to content collection
+  console.error('Error fetching from Redis, falling back to content collection:', error);
+}
+
+// If no Redis resources, fall back to content collection
+if (resources.length === 0) {
+  const contentResources = await getCollection('resources');
+  resources = contentResources.map(r => ({
+    title: r.data.title,
+    description: r.data.description,
+    url: r.data.url,
+    category: r.data.category as ResourceCategory,
+    imageUrl: undefined,
+  }));
+}
 
 // Group resources by category
 const categorizedResources = {
-  'medical-advocacy': resources.filter(r => r.data.category === 'medical-advocacy'),
-  'legal-resources': resources.filter(r => r.data.category === 'legal-resources'),
-  'medical-research': resources.filter(r => r.data.category === 'medical-research'),
-  'support-communities': resources.filter(r => r.data.category === 'support-communities'),
+  'medical-advocacy': resources.filter(r => r.category === 'medical-advocacy'),
+  'legal-resources': resources.filter(r => r.category === 'legal-resources'),
+  'medical-research': resources.filter(r => r.category === 'medical-research'),
+  'support-communities': resources.filter(r => r.category === 'support-communities'),
 };
 
 const categoryTitles = {
@@ -37,9 +77,10 @@ const categoryTitles = {
           <div class="resource-grid">
             {categoryResources.map(resource => (
               <ResourceCard
-                title={resource.data.title}
-                description={resource.data.description}
-                url={resource.data.url}
+                title={resource.title}
+                description={resource.description}
+                url={resource.url}
+                imageUrl={resource.imageUrl}
               />
             ))}
           </div>
