@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** A polished, trustworthy author presence
-**Current focus:** Phase 8 — SEO (COMPLETE)
+**Current focus:** Phase 12 — Newsletter Drafts & Scheduling
 
 ## Current Position
 
-Phase: 10 of 10 (Newsletter Publishing)
+Phase: 12 of 12 (Newsletter Drafts & Scheduling)
 Plan: 1 of 2 complete
 Status: **In progress**
-Next Step: Execute 10-02-PLAN.md (Newsletter Admin UI)
-Last activity: 2026-03-19 — Completed 10-01-PLAN.md
+Next Step: Execute 12-02-PLAN.md (Draft UI + Scheduling)
+Last activity: 2026-03-20 — Completed 12-01-PLAN.md
 
-Progress: █████████░ 95%
+Progress: █████████░ 96%
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Recent decisions affecting current work:
 - Used set:html directive for JSON-LD to avoid HTML escaping (08-01)
 - MailerLite-only approach for MVP newsletters (10-01)
 - Dual-mode newsletter API: pre-built HTML or template-based (10-01)
+- crypto.randomUUID() for draft IDs, reused Upstash Redis pattern (12-01)
 
 ### Deferred Issues
 
@@ -74,9 +75,10 @@ None.
 - Phase 11 added: Mailchimp Migration (2026-03-19)
 - Phase 12 added: Newsletter Drafts & Scheduling (2026-03-20)
 - Phase 12 planned: 2 plans created (2026-03-20)
+- Phase 12: 12-01 complete (2026-03-20)
 
 ## Session Continuity
 
-Last session: 2026-03-19
-Stopped at: Completed 10-01-PLAN.md
+Last session: 2026-03-20
+Stopped at: Completed 12-01-PLAN.md
 Resume file: None

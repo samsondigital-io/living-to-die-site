@@ -251,7 +251,7 @@ Key work:
 
 Plans:
 
-- [ ] 12-01: Vercel KV setup + draft storage library + API endpoints
+- [x] 12-01: Vercel KV setup + draft storage library + API endpoints
 - [ ] 12-02: Draft management UI + scheduling UI + Vercel Cron
 
 Key work:
@@ -282,4 +282,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Email Templates        | 0/0            | Not Started | — |
 | 10. Newsletter Publishing | 1/2            | In Progress | — |
 | 11. Mailchimp Migration   | 0/0            | Not Started | — |
-| 12. Newsletter Drafts & Scheduling | 0/0   | Not Started | — |
+| 12. Newsletter Drafts & Scheduling | 1/2   | In Progress | — |
