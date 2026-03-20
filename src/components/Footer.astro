@@ -130,6 +130,16 @@ const currentYear = new Date().getFullYear();
 
   .footer__form button {
     padding: 0.5rem 1rem;
+    background: var(--color-primary-dark);
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .footer__form button:hover {
+    background: var(--color-soft-black);
+    transform: translateY(-2px);
   }
 
   .footer__success {
