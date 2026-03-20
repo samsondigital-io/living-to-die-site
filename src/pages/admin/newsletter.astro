@@ -194,6 +194,130 @@ const currentPath = Astro.url.pathname;
     .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
     .btn-secondary { background: #e9e9e9; color: #333; }
     .btn-secondary:hover { background: #ddd; }
+    .btn-small {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-small { background: #e9e9e9; color: #333; }
+    .btn-small:hover { background: #ddd; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-danger:hover { background: #c82333; }
+    .btn-schedule { background: #0d6efd; color: white; }
+    .btn-schedule:hover { background: #0b5ed7; }
+    .btn-schedule:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.visible { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 550px;
+      width: 90%;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #eee;
+    }
+    .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #333; }
+    .modal-body {
+      padding: 1rem 1.25rem;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    /* Draft list */
+    .draft-list { }
+    .draft-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      gap: 1rem;
+    }
+    .draft-item:last-child { border-bottom: none; }
+    .draft-item:hover { background: #fafafa; margin: 0 -1.25rem; padding: 0.75rem 1.25rem; }
+    .draft-info { flex: 1; min-width: 0; }
+    .draft-subject {
+      display: block;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .draft-meta {
+      font-size: 0.75rem;
+      color: #888;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .draft-status {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .status-draft { background: #e9e9e9; color: #666; }
+    .status-scheduled { background: #cfe2ff; color: #084298; }
+    .status-sent { background: #d1e7dd; color: #0f5132; }
+    .draft-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .draft-empty { text-align: center; color: #888; padding: 2rem 0; }
+
+    /* Editing indicator */
+    .editing-indicator {
+      display: none;
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+    .editing-indicator.visible { display: flex; justify-content: space-between; align-items: center; }
+    .editing-indicator button {
+      background: none;
+      border: none;
+      color: #856404;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .editing-indicator button:hover { text-decoration: underline; }
 
     .status {
       padding: 1rem;
@@ -290,6 +414,45 @@ const currentPath = Astro.url.pathname;
     .preview-signature .gratitude { color: #1a1a1a; margin-bottom: 0.25rem; }
     .preview-signature .name { font-style: italic; color: #d63384; font-size: 16px; }
 
+    /* Datetime input */
+    input[type="datetime-local"] {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="datetime-local"]:focus {
+      outline: none;
+      border-color: #8B3A62;
+      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
+    }
+
+    /* Queue section */
+    .queue-section {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+    .queue-list { }
+    .queue-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #eee;
+    }
+    .queue-item:last-child { margin-bottom: 0; }
+    .queue-info { flex: 1; }
+    .queue-subject { font-weight: 500; color: #333; display: block; margin-bottom: 0.15rem; }
+    .queue-date { font-size: 0.8rem; color: #0d6efd; }
+    .queue-actions { display: flex; gap: 0.5rem; }
+    .queue-empty { text-align: center; color: #888; padding: 1rem 0; font-size: 0.9rem; }
+
     /* Responsive */
     @media (max-width: 768px) {
       .admin-layout { flex-direction: column; }
@@ -374,6 +537,11 @@ const currentPath = Astro.url.pathname;
 
       <div id="status" class="status"></div>
 
+      <div class="editing-indicator" id="editing-indicator">
+        <span>Editing: <strong id="editing-subject"></strong></span>
+        <button type="button" id="clear-editing">Clear &amp; Start New</button>
+      </div>
+
       <form id="newsletter-form">
         <div class="section">
           <h3>Email Details</h3>
@@ -445,11 +613,31 @@ const currentPath = Astro.url.pathname;
           </div>
         </div>
 
+        <div class="section" id="schedule-section">
+          <h3>Schedule (Optional)</h3>
+          <div class="field">
+            <label for="scheduledFor">
+              Send At
+              <span class="label-hint">— leave empty to send immediately or save as draft</span>
+            </label>
+            <input type="datetime-local" id="scheduledFor" name="scheduledFor" />
+          </div>
+        </div>
+
         <div class="button-row">
           <button type="button" class="btn btn-secondary" id="preview-btn">Preview Email</button>
-          <button type="submit" class="btn btn-primary" id="send-btn">Send Newsletter</button>
+          <button type="button" class="btn btn-secondary" id="save-draft-btn">Save Draft</button>
+          <button type="button" class="btn btn-secondary" id="load-draft-btn">Load Draft</button>
+          <button type="button" class="btn btn-schedule" id="schedule-btn" disabled>Schedule</button>
+          <button type="submit" class="btn btn-primary" id="send-btn">Send Now</button>
         </div>
       </form>
+
+      <div class="section queue-section" id="queue-section">
+        <h3>Scheduled Queue</h3>
+        <div class="queue-list" id="queue-list"></div>
+        <p class="queue-empty" id="queue-empty">No newsletters scheduled</p>
+      </div>
 
       <div class="preview-container section" id="preview-container">
         <div class="preview-header">
@@ -486,17 +674,125 @@ const currentPath = Astro.url.pathname;
           </div>
         </div>
       </div>
+
+      <!-- Draft Modal -->
+      <div class="modal" id="draft-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Saved Drafts</h3>
+            <button class="modal-close" id="modal-close">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="draft-list" id="draft-list"></div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
   <script>
+    // DOM Elements
     const form = document.getElementById('newsletter-form');
     const status = document.getElementById('status');
     const sendBtn = document.getElementById('send-btn');
     const previewBtn = document.getElementById('preview-btn');
     const previewContainer = document.getElementById('preview-container');
     const previewClose = document.getElementById('preview-close');
+    const saveDraftBtn = document.getElementById('save-draft-btn');
+    const loadDraftBtn = document.getElementById('load-draft-btn');
+    const scheduleBtn = document.getElementById('schedule-btn');
+    const scheduledForInput = document.getElementById('scheduledFor');
+    const draftModal = document.getElementById('draft-modal');
+    const modalClose = document.getElementById('modal-close');
+    const draftList = document.getElementById('draft-list');
+    const queueList = document.getElementById('queue-list');
+    const queueEmpty = document.getElementById('queue-empty');
+    const editingIndicator = document.getElementById('editing-indicator');
+    const editingSubject = document.getElementById('editing-subject');
+    const clearEditingBtn = document.getElementById('clear-editing');
 
+    // State
+    let currentDraftId = null;
+    let formDirty = false;
+
+    // Track form changes
+    form.addEventListener('input', () => { formDirty = true; });
+
+    // Enable/disable schedule button based on datetime
+    scheduledForInput.addEventListener('change', () => {
+      scheduleBtn.disabled = !scheduledForInput.value;
+    });
+
+    // Helper: Format date for display
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit'
+      });
+    }
+
+    // Helper: Get form data as object
+    function getFormData() {
+      return {
+        subject: document.getElementById('subject').value,
+        preheader: document.getElementById('preheader').value,
+        issueInfo: document.getElementById('issueInfo').value || undefined,
+        openingParagraph: document.getElementById('openingParagraph').value,
+        section1Title: document.getElementById('section1Title').value,
+        section1Content: document.getElementById('section1Content').value,
+        section2Title: document.getElementById('section2Title').value || undefined,
+        section2Content: document.getElementById('section2Content').value || undefined,
+        ctaUrl: document.getElementById('ctaUrl').value || undefined,
+        ctaText: document.getElementById('ctaText').value || undefined,
+        closingMessage: document.getElementById('closingMessage').value,
+      };
+    }
+
+    // Helper: Fill form from draft
+    function fillFormFromDraft(draft) {
+      document.getElementById('subject').value = draft.subject || '';
+      document.getElementById('preheader').value = draft.preheader || '';
+      document.getElementById('issueInfo').value = draft.issueInfo || '';
+      document.getElementById('openingParagraph').value = draft.openingParagraph || '';
+      document.getElementById('section1Title').value = draft.section1Title || '';
+      document.getElementById('section1Content').value = draft.section1Content || '';
+      document.getElementById('section2Title').value = draft.section2Title || '';
+      document.getElementById('section2Content').value = draft.section2Content || '';
+      document.getElementById('ctaUrl').value = draft.ctaUrl || '';
+      document.getElementById('ctaText').value = draft.ctaText || '';
+      document.getElementById('closingMessage').value = draft.closingMessage || '';
+      document.getElementById('scheduledFor').value = draft.scheduledFor ?
+        new Date(draft.scheduledFor).toISOString().slice(0, 16) : '';
+      scheduleBtn.disabled = !document.getElementById('scheduledFor').value;
+      formDirty = false;
+    }
+
+    // Helper: Update editing indicator
+    function setEditingState(draftId, subject) {
+      currentDraftId = draftId;
+      if (draftId) {
+        editingIndicator.classList.add('visible');
+        editingSubject.textContent = subject;
+      } else {
+        editingIndicator.classList.remove('visible');
+      }
+    }
+
+    // Clear editing and reset form
+    clearEditingBtn.addEventListener('click', () => {
+      if (formDirty && !confirm('Clear current changes and start a new draft?')) {
+        return;
+      }
+      form.reset();
+      setEditingState(null, '');
+      formDirty = false;
+      previewContainer.classList.remove('visible');
+      status.className = 'status';
+      scheduleBtn.disabled = true;
+    });
+
+    // Preview functionality
     function showPreview() {
       document.getElementById('preview-issue-info').textContent =
         document.getElementById('issueInfo').value || 'Newsletter';
@@ -531,6 +827,343 @@ const currentPath = Astro.url.pathname;
       previewContainer.classList.remove('visible');
     });
 
+    // ====== Draft Management ======
+
+    // Save draft
+    saveDraftBtn.addEventListener('click', async () => {
+      const data = getFormData();
+
+      if (!data.subject) {
+        status.className = 'status error';
+        status.textContent = 'Please enter a subject line to save draft';
+        return;
+      }
+
+      saveDraftBtn.disabled = true;
+      saveDraftBtn.textContent = 'Saving...';
+
+      try {
+        const url = currentDraftId ? `/api/drafts/${currentDraftId}` : '/api/drafts';
+        const method = currentDraftId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+          credentials: 'same-origin'
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          status.className = 'status success';
+          status.textContent = currentDraftId ? 'Draft updated!' : 'Draft saved!';
+          formDirty = false;
+
+          if (!currentDraftId && result.data) {
+            setEditingState(result.data.id, data.subject);
+          }
+        } else {
+          throw new Error(result.error || 'Failed to save draft');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to save: ${error.message}`;
+      }
+
+      saveDraftBtn.disabled = false;
+      saveDraftBtn.textContent = 'Save Draft';
+    });
+
+    // Load drafts into modal
+    async function loadDrafts() {
+      draftList.innerHTML = '<p style="text-align:center;color:#888;">Loading...</p>';
+
+      try {
+        const res = await fetch('/api/drafts', { credentials: 'same-origin' });
+        const result = await res.json();
+
+        if (!result.success || !result.data || result.data.length === 0) {
+          draftList.innerHTML = '<p class="draft-empty">No saved drafts</p>';
+          return;
+        }
+
+        draftList.innerHTML = result.data.map(draft => `
+          <div class="draft-item" data-id="${draft.id}">
+            <div class="draft-info">
+              <strong class="draft-subject">${draft.subject || 'Untitled'}</strong>
+              <div class="draft-meta">
+                <span>${formatDate(draft.updatedAt)}</span>
+                <span class="draft-status status-${draft.status}">${draft.status}</span>
+              </div>
+            </div>
+            <div class="draft-actions">
+              <button class="btn-small" data-action="load">Load</button>
+              <button class="btn-small btn-danger" data-action="delete">Delete</button>
+            </div>
+          </div>
+        `).join('');
+
+        // Add event listeners to buttons
+        draftList.querySelectorAll('.draft-item').forEach(item => {
+          const draftId = item.dataset.id;
+
+          item.querySelector('[data-action="load"]').addEventListener('click', async () => {
+            if (formDirty && !confirm('Load this draft? Unsaved changes will be lost.')) {
+              return;
+            }
+            await loadDraft(draftId);
+            draftModal.classList.remove('visible');
+          });
+
+          item.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+            if (confirm('Delete this draft?')) {
+              await deleteDraft(draftId);
+              await loadDrafts();
+              await loadQueue();
+            }
+          });
+        });
+
+      } catch (error) {
+        draftList.innerHTML = `<p class="draft-empty">Error loading drafts: ${error.message}</p>`;
+      }
+    }
+
+    // Load single draft
+    async function loadDraft(id) {
+      try {
+        const res = await fetch(`/api/drafts/${id}`, { credentials: 'same-origin' });
+        const result = await res.json();
+
+        if (result.success && result.data) {
+          fillFormFromDraft(result.data);
+          setEditingState(id, result.data.subject);
+          status.className = 'status success';
+          status.textContent = 'Draft loaded';
+        } else {
+          throw new Error(result.error || 'Draft not found');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to load draft: ${error.message}`;
+      }
+    }
+
+    // Delete draft
+    async function deleteDraft(id) {
+      try {
+        const res = await fetch(`/api/drafts/${id}`, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          // If we deleted the currently editing draft, clear form
+          if (currentDraftId === id) {
+            form.reset();
+            setEditingState(null, '');
+            formDirty = false;
+            scheduleBtn.disabled = true;
+            status.className = 'status success';
+            status.textContent = 'Draft deleted';
+          }
+        } else {
+          throw new Error(result.error || 'Failed to delete');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to delete: ${error.message}`;
+      }
+    }
+
+    // Modal controls
+    loadDraftBtn.addEventListener('click', async () => {
+      draftModal.classList.add('visible');
+      await loadDrafts();
+    });
+
+    modalClose.addEventListener('click', () => {
+      draftModal.classList.remove('visible');
+    });
+
+    draftModal.addEventListener('click', (e) => {
+      if (e.target === draftModal) {
+        draftModal.classList.remove('visible');
+      }
+    });
+
+    // ====== Scheduling ======
+
+    // Schedule newsletter
+    scheduleBtn.addEventListener('click', async () => {
+      const data = getFormData();
+      const scheduledFor = scheduledForInput.value;
+
+      if (!scheduledFor) {
+        status.className = 'status error';
+        status.textContent = 'Please select a date and time';
+        return;
+      }
+
+      // Validate required fields
+      if (!data.subject || !data.preheader || !data.openingParagraph ||
+          !data.section1Title || !data.section1Content || !data.closingMessage) {
+        status.className = 'status error';
+        status.textContent = 'Please fill in all required fields before scheduling';
+        return;
+      }
+
+      // Validate future date (minimum 15 minutes)
+      const scheduledDate = new Date(scheduledFor);
+      const minDate = new Date(Date.now() + 15 * 60 * 1000);
+
+      if (scheduledDate < minDate) {
+        status.className = 'status error';
+        status.textContent = 'Schedule time must be at least 15 minutes in the future';
+        return;
+      }
+
+      if (!confirm(`Schedule this newsletter for ${formatDate(scheduledDate.toISOString())}?`)) {
+        return;
+      }
+
+      scheduleBtn.disabled = true;
+      scheduleBtn.textContent = 'Scheduling...';
+
+      try {
+        const url = currentDraftId ? `/api/drafts/${currentDraftId}` : '/api/drafts';
+        const method = currentDraftId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            scheduledFor: scheduledDate.toISOString(),
+            status: 'scheduled'
+          }),
+          credentials: 'same-origin'
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          status.className = 'status success';
+          status.innerHTML = `<strong>Newsletter scheduled!</strong> Will be sent at ${formatDate(scheduledDate.toISOString())}`;
+
+          form.reset();
+          setEditingState(null, '');
+          formDirty = false;
+          scheduleBtn.disabled = true;
+          previewContainer.classList.remove('visible');
+
+          await loadQueue();
+        } else {
+          throw new Error(result.error || 'Failed to schedule');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to schedule: ${error.message}`;
+      }
+
+      scheduleBtn.disabled = !scheduledForInput.value;
+      scheduleBtn.textContent = 'Schedule';
+    });
+
+    // Load scheduled queue
+    async function loadQueue() {
+      try {
+        const res = await fetch('/api/drafts', { credentials: 'same-origin' });
+        const result = await res.json();
+
+        if (!result.success || !result.data) {
+          queueList.innerHTML = '';
+          queueEmpty.style.display = 'block';
+          return;
+        }
+
+        // Filter for scheduled, sort by scheduledFor
+        const scheduled = result.data
+          .filter(d => d.status === 'scheduled' && d.scheduledFor)
+          .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
+
+        if (scheduled.length === 0) {
+          queueList.innerHTML = '';
+          queueEmpty.style.display = 'block';
+          return;
+        }
+
+        queueEmpty.style.display = 'none';
+        queueList.innerHTML = scheduled.map(draft => `
+          <div class="queue-item" data-id="${draft.id}">
+            <div class="queue-info">
+              <strong class="queue-subject">${draft.subject}</strong>
+              <span class="queue-date">Scheduled: ${formatDate(draft.scheduledFor)}</span>
+            </div>
+            <div class="queue-actions">
+              <button class="btn-small" data-action="edit">Edit</button>
+              <button class="btn-small btn-danger" data-action="cancel">Cancel</button>
+            </div>
+          </div>
+        `).join('');
+
+        // Add event listeners
+        queueList.querySelectorAll('.queue-item').forEach(item => {
+          const draftId = item.dataset.id;
+
+          item.querySelector('[data-action="edit"]').addEventListener('click', async () => {
+            if (formDirty && !confirm('Load this scheduled newsletter? Unsaved changes will be lost.')) {
+              return;
+            }
+            await loadDraft(draftId);
+          });
+
+          item.querySelector('[data-action="cancel"]').addEventListener('click', async () => {
+            if (confirm('Cancel this scheduled newsletter? It will be moved back to drafts.')) {
+              await cancelScheduled(draftId);
+              await loadQueue();
+            }
+          });
+        });
+
+      } catch (error) {
+        queueList.innerHTML = '';
+        queueEmpty.style.display = 'block';
+        queueEmpty.textContent = `Error loading queue: ${error.message}`;
+      }
+    }
+
+    // Cancel scheduled newsletter
+    async function cancelScheduled(id) {
+      try {
+        const res = await fetch(`/api/drafts/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'draft',
+            scheduledFor: null
+          }),
+          credentials: 'same-origin'
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          status.className = 'status success';
+          status.textContent = 'Scheduled send cancelled. Newsletter moved to drafts.';
+        } else {
+          throw new Error(result.error || 'Failed to cancel');
+        }
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Failed to cancel: ${error.message}`;
+      }
+    }
+
+    // ====== Send Now ======
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -542,23 +1175,23 @@ const currentPath = Astro.url.pathname;
       sendBtn.textContent = 'Sending...';
       status.className = 'status';
 
-      const content = {
-        issueInfo: document.getElementById('issueInfo').value || undefined,
-        openingParagraph: document.getElementById('openingParagraph').value,
-        section1Title: document.getElementById('section1Title').value,
-        section1Content: document.getElementById('section1Content').value,
-        section2Title: document.getElementById('section2Title').value || undefined,
-        section2Content: document.getElementById('section2Content').value || undefined,
-        ctaUrl: document.getElementById('ctaUrl').value || undefined,
-        ctaText: document.getElementById('ctaText').value || undefined,
-        closingMessage: document.getElementById('closingMessage').value,
-      };
+      const formData = getFormData();
 
       const body = {
-        subject: document.getElementById('subject').value,
-        preheader: document.getElementById('preheader').value,
+        subject: formData.subject,
+        preheader: formData.preheader,
         useTemplate: true,
-        content: content,
+        content: {
+          issueInfo: formData.issueInfo,
+          openingParagraph: formData.openingParagraph,
+          section1Title: formData.section1Title,
+          section1Content: formData.section1Content,
+          section2Title: formData.section2Title,
+          section2Content: formData.section2Content,
+          ctaUrl: formData.ctaUrl,
+          ctaText: formData.ctaText,
+          closingMessage: formData.closingMessage,
+        },
       };
 
       try {
@@ -572,6 +1205,16 @@ const currentPath = Astro.url.pathname;
         const data = await res.json();
 
         if (data.success) {
+          // If we were editing a draft, mark it as sent
+          if (currentDraftId) {
+            await fetch(`/api/drafts/${currentDraftId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'sent' }),
+              credentials: 'same-origin'
+            });
+          }
+
           status.className = 'status success';
           status.innerHTML = `
             <strong>Newsletter sent!</strong>
@@ -579,6 +1222,9 @@ const currentPath = Astro.url.pathname;
             <a href="https://dashboard.mailerlite.com/campaigns" target="_blank">View in MailerLite</a>
           `;
           form.reset();
+          setEditingState(null, '');
+          formDirty = false;
+          scheduleBtn.disabled = true;
           previewContainer.classList.remove('visible');
         } else {
           throw new Error(data.error || 'Unknown error');
@@ -589,8 +1235,11 @@ const currentPath = Astro.url.pathname;
       }
 
       sendBtn.disabled = false;
-      sendBtn.textContent = 'Send Newsletter';
+      sendBtn.textContent = 'Send Now';
     });
+
+    // ====== Initialize ======
+    loadQueue();
   </script>
 </body>
 </html>
