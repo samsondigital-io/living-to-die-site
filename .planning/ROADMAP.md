@@ -26,6 +26,7 @@ None
 - [ ] **Phase 9: Email Templates** - Custom MailerLite email templates matching site branding
 - [ ] **Phase 10: Newsletter Publishing** - Admin page to compose and send newsletters via MailerLite
 - [ ] **Phase 11: Mailchimp Migration** - Switch from MailerLite to Mailchimp
+- [ ] **Phase 12: Newsletter Drafts & Scheduling** - Save drafts and queue newsletters with automatic send dates
 
 ## Phase Details
 
@@ -241,6 +242,28 @@ Key work:
 - Update email templates for Mailchimp format
 - Test and verify email delivery
 
+### Phase 12: Newsletter Drafts & Scheduling
+
+**Goal:** Save drafts and queue newsletters with automatic send dates
+**Depends on:** Phase 10 (newsletter admin UI exists, platform-agnostic drafts)
+**Research:** Complete (Vercel KV for storage, Vercel Cron for scheduling)
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 12-01: Vercel KV setup + draft storage library + API endpoints
+- [ ] 12-02: Draft management UI + scheduling UI + Vercel Cron
+
+Key work:
+
+- Vercel KV for draft storage (platform-agnostic)
+- Draft CRUD operations (save, load, list, delete)
+- Admin UI for saving/editing drafts
+- Scheduled send date picker
+- Queue management interface (view/edit/cancel scheduled)
+- Vercel Cron for automatic sends
+- Draft preview functionality (already exists)
+
 ## Progress
 
 **Execution Order:**
@@ -259,3 +282,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Email Templates        | 0/0            | Not Started | — |
 | 10. Newsletter Publishing | 1/2            | In Progress | — |
 | 11. Mailchimp Migration   | 0/0            | Not Started | — |
+| 12. Newsletter Drafts & Scheduling | 0/0   | Not Started | — |
