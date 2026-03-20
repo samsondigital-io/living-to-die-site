@@ -29,10 +29,10 @@ const content = await getHomepageContent();
     <div class="hero__content">
       <span class="hero__badge">{content.hero_badge}</span>
       <h1 class="hero__title">{content.hero_title}</h1>
+      <p class="hero__byline">By Diane Melton</p>
       <p class="hero__subtitle">
         {content.hero_subtitle}
       </p>
-      <p class="hero__author">A book by Diane Melton</p>
       <div class="hero__buttons">
         <a href="#summary" class="btn btn--primary">Discover the Story</a>
         <a href="#author" class="btn btn--secondary">Meet the Author</a>
@@ -287,12 +287,14 @@ const content = await getHomepageContent();
     font-weight: 400;
   }
 
-  .hero__author {
-    font-family: var(--font-body);
-    font-size: var(--text-base);
+  .hero__byline {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
     color: var(--color-rose);
-    font-style: italic;
-    margin-bottom: var(--space-xl);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--space-lg);
   }
 
   .hero__buttons {
