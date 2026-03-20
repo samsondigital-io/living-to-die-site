@@ -99,6 +99,26 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           }
         });
       }
+
+      // Scroll-triggered animations using Intersection Observer
+      const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger');
+
+      if (revealElements.length > 0) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Once revealed, stop observing to prevent re-animation
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+      }
     </script>
   </body>
 </html>

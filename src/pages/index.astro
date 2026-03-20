@@ -42,7 +42,7 @@ const content = await getHomepageContent();
 
   <!-- Pre-order Section -->
   <section class="section section--contrast" id="preorder">
-    <div class="container preorder">
+    <div class="container preorder reveal">
       <div class="preorder__headline">
         <h2>{content.preorder_heading}</h2>
         <p>
@@ -75,7 +75,7 @@ const content = await getHomepageContent();
   <!-- Summary Section -->
   <section class="section" id="summary">
     <div class="container summary">
-      <div class="summary__body">
+      <div class="summary__body reveal-left">
         <h2>{content.summary_heading}</h2>
         <p>
           {content.summary_paragraph1}
@@ -84,7 +84,7 @@ const content = await getHomepageContent();
           {content.summary_paragraph2}
         </p>
       </div>
-      <aside class="summary__highlights">
+      <aside class="summary__highlights reveal-right">
         <h3>Key Themes</h3>
         <ul>
           <li>{content.theme1}</li>
@@ -97,7 +97,7 @@ const content = await getHomepageContent();
 
   <!-- Book Structure -->
   <section class="section section--muted" id="structure">
-    <div class="container structure">
+    <div class="container structure reveal-stagger">
       <div class="structure__card">
         <h3>{content.structure1_heading}</h3>
         <p>{content.structure1_text}</p>
@@ -116,11 +116,11 @@ const content = await getHomepageContent();
   <!-- Author Section -->
   <section class="section" id="author">
     <div class="container author">
-      <div class="author__portrait">
+      <div class="author__portrait reveal-left">
         <img src="/diane-melton.webp" alt="Diane Melton" />
         <p class="author__caption">Diane Melton</p>
       </div>
-      <div class="author__bio">
+      <div class="author__bio reveal-right">
         <h2>About the Author</h2>
         <p>
           {content.author_bio1}
@@ -138,14 +138,14 @@ const content = await getHomepageContent();
   <!-- Resources Preview -->
   <section class="section">
     <div class="container">
-      <div class="section__header">
+      <div class="section__header reveal">
         <h2 class="section__title">Resources & Support</h2>
         <p class="section__subtitle">
           Organizations and information for those affected by medical negligence and seeking advocacy support.
         </p>
       </div>
 
-      <div class="resources-preview">
+      <div class="resources-preview reveal-stagger">
         {previewResources.map(resource => (
           <a href={resource.data.url} target="_blank" rel="noopener" class="resource-preview-card">
             <div class="resource-preview__image">
@@ -173,7 +173,7 @@ const content = await getHomepageContent();
   <!-- Newsletter -->
   <section class="section section--alt">
     <div class="container">
-      <div class="newsletter">
+      <div class="newsletter reveal-scale">
         <div class="newsletter__content">
           <h2 class="newsletter__title">{content.newsletter_heading}</h2>
           <p class="newsletter__text">
