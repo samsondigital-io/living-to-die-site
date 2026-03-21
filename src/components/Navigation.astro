@@ -8,16 +8,7 @@ const { minimal = false } = Astro.props;
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/#author' },
-  {
-    label: 'Resources',
-    href: '/resources',
-    dropdown: [
-      { label: 'Medical Advocacy', href: '/resources#medical-advocacy' },
-      { label: 'Legal Resources', href: '/resources#legal-resources' },
-      { label: 'Medical Research', href: '/resources#medical-research' },
-      { label: 'Support Communities', href: '/resources#support-communities' },
-    ]
-  },
+  { label: 'Resources', href: '/resources' },
   { label: 'Contact', href: '/contact' },
 ];
 ---
