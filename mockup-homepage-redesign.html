@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Living To Die — Homepage Redesign Mockup</title>
+
+  <!-- Distinctive Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — "Literary Gravitas"
+
+       Direction: Editorial, publisher-quality. The breast cancer
+       awareness pink is the emotional anchor — paired with deep
+       warm darks and soft ivory for a sophisticated, purposeful feel.
+       ============================================================ */
+
+    :root {
+      /* Palette — warm darks, ivory, awareness pink */
+      --ink:        #1c1917;
+      --ink-soft:   #292524;
+      --ink-muted:  #44403c;
+      --stone:      #78716c;
+      --stone-light:#a8a29e;
+      --parchment:  #fdf8f9;
+      --ivory:      #f9f0f2;
+      --cream:      #f0e4e7;
+      --pink:       #d63384;
+      --pink-dark:  #b52a6f;
+      --pink-glow:  #f06aad;
+      --pink-soft:  #f8c4db;
+      --deep-rose:  #8b1a5a;
+      --pink-ribbon: rgba(214, 51, 132, 0.12); /* subtle ribbon tint for backgrounds */
+
+      /* Typography */
+      --font-display: 'Cormorant Garamond', 'Georgia', serif;
+      --font-body:    'Outfit', -apple-system, sans-serif;
+
+      /* Spacing */
+      --space-xs:  0.5rem;
+      --space-sm:  1rem;
+      --space-md:  1.5rem;
+      --space-lg:  2.5rem;
+      --space-xl:  4rem;
+      --space-2xl: 6rem;
+      --space-3xl: 8rem;
+
+      /* Motion */
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition:    0.4s var(--ease-out-expo);
+    }
+
+    /* ---- Reset ---- */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { border: none; background: none; cursor: pointer; font-family: inherit; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--parchment);
+      line-height: 1.6;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    /* Subtle paper grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      transition: all 0.5s var(--ease-out-expo);
+    }
+
+    .nav.scrolled {
+      background: rgba(250, 248, 245, 0.92);
+      backdrop-filter: blur(16px) saturate(1.8);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+
+    .nav__inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      transition: opacity var(--transition);
+    }
+
+    .nav__links {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav__link {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--stone);
+      transition: color var(--transition);
+      position: relative;
+    }
+
+    .nav__link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--pink);
+      transition: width var(--transition);
+    }
+
+    .nav__link:hover {
+      color: var(--ink);
+    }
+
+    .nav__link:hover::after {
+      width: 100%;
+    }
+
+    .nav__hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 0.5rem;
+    }
+
+    .nav__hamburger span {
+      width: 24px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    /* ============================================================
+       HERO — Image-forward with frosted text panel
+       The painting IS the hero. Let it breathe.
+       ============================================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: #e8ddd0;
+    }
+
+    .hero__image-wrapper {
+      position: absolute;
+      inset: -5%;
+      z-index: 1;
+    }
+
+    .hero__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center left;
+      filter: saturate(1.15) contrast(1.05) brightness(1.02);
+    }
+
+    /* Gentle overlay — just enough to ensure text readability on right */
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(90deg,
+          transparent 0%,
+          transparent 35%,
+          rgba(253, 248, 249, 0.4) 55%,
+          rgba(253, 248, 249, 0.85) 75%,
+          rgba(253, 248, 249, 0.95) 100%),
+        linear-gradient(0deg,
+          rgba(253, 248, 249, 0.5) 0%,
+          transparent 25%);
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .hero__left {
+      /* Empty — lets painting breathe */
+    }
+
+    .hero__right {
+      padding: var(--space-xl) var(--space-lg);
+    }
+
+    .hero__badge {
+      display: inline-block;
+      padding: 0.4rem 1.25rem;
+      background: var(--pink);
+      color: white;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.3s forwards;
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      font-weight: 300;
+      line-height: 0.95;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-md);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s var(--ease-out-expo) 0.5s forwards;
+    }
+
+    .hero__title em {
+      font-style: italic;
+      font-weight: 500;
+      color: var(--pink);
+    }
+
+    .hero__byline {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--pink-dark);
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.7s forwards;
+    }
+
+    .hero__divider {
+      width: 60px;
+      height: 2px;
+      background: var(--pink);
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.8s forwards;
+    }
+
+    .hero__subtitle {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--ink-muted);
+      max-width: 440px;
+      margin-bottom: var(--space-xl);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.9s forwards;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s var(--ease-out-expo) 1.1s forwards;
+    }
+
+    /* Scroll indicator */
+    .hero__scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-out-expo) 1.5s forwards;
+    }
+
+    .hero__scroll-text {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+
+    .hero__scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--pink), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+    }
+
+    .btn--primary {
+      background: var(--pink);
+      color: white;
+    }
+
+    .btn--primary:hover {
+      background: var(--pink-dark);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(214, 51, 132, 0.3);
+    }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--ink-muted);
+      border: 1px solid var(--stone-light);
+      padding: 0.85rem 2rem;
+    }
+
+    .btn--outline:hover {
+      border-color: var(--pink);
+      color: var(--pink-dark);
+      background: rgba(214, 51, 132, 0.06);
+    }
+
+    .btn--dark {
+      background: var(--ink);
+      color: var(--parchment);
+    }
+
+    .btn--dark:hover {
+      background: var(--ink-soft);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    /* ============================================================
+       PRE-ORDER BANNER — Dark strip with pink accent
+       ============================================================ */
+    .preorder {
+      background: var(--ink);
+      padding: var(--space-xl) 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preorder::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--pink), transparent);
+    }
+
+    .preorder__inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .preorder__label {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: var(--space-sm);
+    }
+
+    .preorder__heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 400;
+      color: var(--parchment);
+      margin-bottom: var(--space-sm);
+      line-height: 1.3;
+    }
+
+    .preorder__text {
+      font-size: 0.95rem;
+      color: var(--stone-light);
+      margin-bottom: var(--space-lg);
+      line-height: 1.7;
+    }
+
+    .preorder__form {
+      display: flex;
+      max-width: 480px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+
+    .preorder__form:focus-within {
+      border-color: var(--pink);
+    }
+
+    .preorder__form input[type="email"] {
+      flex: 1;
+      padding: 0.9rem 1.25rem;
+      background: rgba(255,255,255,0.05);
+      border: none;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+    }
+
+    .preorder__form input[type="email"]::placeholder {
+      color: var(--stone);
+    }
+
+    .preorder__form input[type="email"]:focus {
+      outline: none;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .preorder__form button {
+      padding: 0.9rem 1.5rem;
+      background: var(--pink);
+      color: white;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: background var(--transition);
+    }
+
+    .preorder__form button:hover {
+      background: var(--pink-dark);
+      color: white;
+    }
+
+    .preorder__success {
+      display: none;
+      color: var(--pink-soft);
+      font-style: italic;
+      margin-top: var(--space-sm);
+    }
+
+    /* ============================================================
+       SECTION — Reusable section wrapper
+       ============================================================ */
+    .section {
+      padding: var(--space-3xl) 0;
+    }
+
+    .section__container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section__eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: var(--space-sm);
+    }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: var(--space-md);
+    }
+
+    .section__title--light {
+      color: var(--parchment);
+    }
+
+    /* ============================================================
+       SUMMARY — Editorial two-column layout
+       ============================================================ */
+    .summary {
+      background: var(--parchment);
+    }
+
+    .summary__grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-3xl);
+      align-items: start;
+    }
+
+    .summary__body p {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: var(--ink-muted);
+      margin-bottom: var(--space-lg);
+    }
+
+    .summary__body p:first-of-type::first-letter {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      float: left;
+      line-height: 0.8;
+      margin-right: 0.75rem;
+      margin-top: 0.15rem;
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .summary__sidebar {
+      position: sticky;
+      top: 6rem;
+    }
+
+    .summary__themes {
+      border-left: 2px solid var(--pink);
+      padding-left: var(--space-lg);
+    }
+
+    .summary__themes h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: var(--space-lg);
+    }
+
+    .summary__themes li {
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--cream);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .summary__themes li:last-child {
+      border-bottom: none;
+    }
+
+    .summary__themes li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--pink);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       STRUCTURE — Three elegant cards
+       ============================================================ */
+    .structure {
+      background: var(--ivory);
+      position: relative;
+    }
+
+    .structure::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cream), transparent);
+    }
+
+    .structure__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--cream);
+      margin-top: var(--space-xl);
+    }
+
+    .structure__card {
+      background: var(--parchment);
+      padding: var(--space-xl);
+      position: relative;
+      transition: background var(--transition);
+    }
+
+    .structure__card:hover {
+      background: white;
+    }
+
+    .structure__card-number {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: var(--space-md);
+      transition: color var(--transition);
+    }
+
+    .structure__card:hover .structure__card-number {
+      color: var(--pink);
+    }
+
+    .structure__card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: var(--space-sm);
+      line-height: 1.3;
+    }
+
+    .structure__card p {
+      font-size: 0.95rem;
+      color: var(--stone);
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       AUTHOR — Cinematic portrait + bio
+       ============================================================ */
+    .author {
+      background: var(--ink);
+      color: var(--parchment);
+      overflow: hidden;
+    }
+
+    .author .section__container {
+      max-width: 1400px;
+    }
+
+    .author__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 0;
+      align-items: stretch;
+      min-height: 600px;
+    }
+
+    .author__portrait {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .author__portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(0.2) contrast(1.05);
+      transition: filter 0.8s ease;
+    }
+
+    .author__portrait:hover img {
+      filter: grayscale(0) contrast(1);
+    }
+
+    .author__portrait::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 70%, var(--ink) 100%);
+    }
+
+    .author__bio {
+      padding: var(--space-3xl) var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .author__bio .section__eyebrow {
+      color: var(--pink);
+    }
+
+    .author__bio .section__title {
+      color: var(--parchment);
+    }
+
+    .author__bio p {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--stone-light);
+      margin-bottom: var(--space-md);
+    }
+
+    .author__name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--pink);
+      margin-top: var(--space-sm);
+    }
+
+    /* ============================================================
+       RESOURCES — Clean grid with hover reveals
+       ============================================================ */
+    .resources {
+      background: var(--parchment);
+    }
+
+    .resources__header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .resources__header .section__title {
+      margin-bottom: var(--space-xs);
+    }
+
+    .resources__subtitle {
+      font-size: 1rem;
+      color: var(--stone);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .resources__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: var(--space-xl);
+    }
+
+    .resource-card {
+      background: white;
+      border: 1px solid var(--cream);
+      padding: var(--space-lg);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resource-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--pink);
+      transition: width 0.6s var(--ease-out-expo);
+    }
+
+    .resource-card:hover {
+      border-color: var(--pink);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    }
+
+    .resource-card:hover::before {
+      width: 100%;
+    }
+
+    .resource-card__icon {
+      width: 40px;
+      height: 40px;
+      background: var(--ivory);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+      transition: background var(--transition);
+    }
+
+    .resource-card:hover .resource-card__icon {
+      background: var(--pink);
+      color: white;
+      box-shadow: 0 4px 12px rgba(214, 51, 132, 0.25);
+    }
+
+    .resource-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: var(--space-xs);
+    }
+
+    .resource-card p {
+      font-size: 0.9rem;
+      color: var(--stone);
+      line-height: 1.6;
+    }
+
+    .resources__cta {
+      text-align: center;
+    }
+
+    /* ============================================================
+       NEWSLETTER — Warm, inviting close
+       ============================================================ */
+    .newsletter {
+      background: linear-gradient(135deg, var(--cream) 0%, var(--ivory) 50%, var(--parchment) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--pink), transparent);
+    }
+
+    .newsletter__inner {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .newsletter__title {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: var(--space-sm);
+      line-height: 1.3;
+    }
+
+    .newsletter__text {
+      font-size: 1rem;
+      color: var(--stone);
+      margin-bottom: var(--space-lg);
+      line-height: 1.7;
+    }
+
+    .newsletter__form {
+      display: flex;
+      max-width: 480px;
+      margin: 0 auto;
+      border: 1px solid var(--stone-light);
+      border-radius: 2px;
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+
+    .newsletter__form:focus-within {
+      border-color: var(--pink);
+    }
+
+    .newsletter__form input {
+      flex: 1;
+      padding: 0.9rem 1.25rem;
+      border: none;
+      background: white;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .newsletter__form input::placeholder {
+      color: var(--stone-light);
+    }
+
+    .newsletter__form input:focus {
+      outline: none;
+    }
+
+    .newsletter__form button {
+      padding: 0.9rem 1.5rem;
+      background: var(--ink);
+      color: var(--parchment);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: all var(--transition);
+    }
+
+    .newsletter__form button:hover {
+      background: var(--pink);
+      color: white;
+    }
+
+    .newsletter__success {
+      display: none;
+      color: var(--pink-dark);
+      font-style: italic;
+      margin-top: var(--space-sm);
+    }
+
+    .newsletter__privacy {
+      font-size: 0.75rem;
+      color: var(--stone-light);
+      margin-top: var(--space-sm);
+    }
+
+    /* ============================================================
+       FOOTER — Minimal, typographic
+       ============================================================ */
+    .footer {
+      background: var(--ink);
+      color: var(--stone-light);
+      padding: var(--space-xl) 0 var(--space-lg);
+    }
+
+    .footer__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .footer__content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 2fr;
+      gap: 3rem;
+      padding-bottom: var(--space-xl);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer__about h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--parchment);
+      margin-bottom: var(--space-sm);
+    }
+
+    .footer__about p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--stone);
+    }
+
+    .footer__col h4 {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: var(--space-md);
+    }
+
+    .footer__col a {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--stone);
+      padding: 0.35rem 0;
+      transition: color var(--transition);
+    }
+
+    .footer__col a:hover {
+      color: var(--parchment);
+    }
+
+    .footer__newsletter h4 {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: var(--space-sm);
+    }
+
+    .footer__newsletter p {
+      font-size: 0.85rem;
+      color: var(--stone);
+      margin-bottom: var(--space-sm);
+    }
+
+    .footer__form {
+      display: flex;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .footer__form input {
+      flex: 1;
+      padding: 0.6rem 0.75rem;
+      background: rgba(255,255,255,0.03);
+      border: none;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+    }
+
+    .footer__form input::placeholder {
+      color: var(--stone);
+    }
+
+    .footer__form input:focus {
+      outline: none;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .footer__form button {
+      padding: 0.6rem 1rem;
+      background: var(--pink);
+      color: white;
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background var(--transition);
+    }
+
+    .footer__form button:hover {
+      background: var(--pink-dark);
+      color: white;
+    }
+
+    .footer__bottom {
+      padding-top: var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--stone);
+    }
+
+    /* ============================================================
+       ANIMATIONS
+       ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-stagger > * {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+    }
+
+    .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0s; }
+    .reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.12s; }
+    .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.24s; }
+
+    .reveal-stagger.visible > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1024px) {
+      .hero__content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero__left { display: none; }
+
+      .hero__overlay {
+        background:
+          linear-gradient(0deg,
+            rgba(253, 248, 249, 0.97) 0%,
+            rgba(253, 248, 249, 0.75) 40%,
+            rgba(253, 248, 249, 0.2) 100%);
+      }
+
+      .hero__right {
+        padding-top: 35vh;
+        text-align: center;
+      }
+
+      .author__grid {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .author__portrait {
+        height: 400px;
+      }
+
+      .author__portrait::after {
+        background: linear-gradient(0deg, var(--ink) 0%, transparent 60%);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav__links { display: none; }
+      .nav__hamburger { display: flex; }
+
+      .summary__grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+      }
+
+      .summary__sidebar {
+        position: static;
+      }
+
+      .structure__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resources__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer__content {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+      }
+
+      .footer__bottom {
+        flex-direction: column;
+        gap: var(--space-sm);
+        text-align: center;
+      }
+
+      .hero__actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .preorder__form,
+      .newsletter__form {
+        flex-direction: column;
+        border: none;
+      }
+
+      .preorder__form input[type="email"],
+      .newsletter__form input {
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 0.5rem;
+      }
+
+      .newsletter__form input {
+        border-color: var(--stone-light);
+      }
+
+      .section {
+        padding: var(--space-2xl) 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .reveal-left, .reveal-right, .reveal-stagger > * {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .hero__badge, .hero__title, .hero__byline, .hero__divider,
+      .hero__subtitle, .hero__actions, .hero__scroll {
+        opacity: 1;
+        transform: none;
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======== NAVIGATION ======== -->
+  <nav class="nav" id="navbar">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">Diane Melton</a>
+      <div class="nav__links">
+        <a href="/#summary" class="nav__link">The Book</a>
+        <a href="/#author" class="nav__link">Author</a>
+        <a href="/resources" class="nav__link">Resources</a>
+        <a href="/blog" class="nav__link">Musings</a>
+        <a href="/contact" class="nav__link">Contact</a>
+      </div>
+      <button class="nav__hamburger" id="nav-toggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ======== HERO ======== -->
+  <section class="hero">
+    <div class="hero__image-wrapper">
+      <img src="public/living-to-die-hero-parallax.webp" alt="Atmospheric background" class="hero__image" />
+      <div class="hero__overlay"></div>
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__left"></div>
+      <div class="hero__right">
+        <span class="hero__badge">Coming 2026</span>
+        <h1 class="hero__title">Living<br><em>To Die</em></h1>
+        <p class="hero__byline">By Diane Melton</p>
+        <div class="hero__divider"></div>
+        <p class="hero__subtitle">
+          A true story of hope, medical negligence, and one mother's extraordinary fight for justice.
+        </p>
+        <div class="hero__actions">
+          <a href="#summary" class="btn btn--primary">Discover the Story</a>
+          <a href="#author" class="btn btn--outline">Meet the Author</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__scroll">
+      <span class="hero__scroll-text">Scroll</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ======== PRE-ORDER ======== -->
+  <section class="preorder" id="preorder">
+    <div class="preorder__inner reveal">
+      <p class="preorder__label">Be the First to Know</p>
+      <h2 class="preorder__heading">Get notified when the book is available</h2>
+      <p class="preorder__text">
+        Join the waiting list and receive updates on the publication, events, and exclusive excerpts.
+      </p>
+      <form class="preorder__form" id="preorder-form">
+        <input type="email" name="email" placeholder="Enter your email address" required autocomplete="email" />
+        <button type="submit">Notify Me</button>
+      </form>
+      <p class="preorder__success" id="preorder-success">Please check your email to confirm.</p>
+    </div>
+  </section>
+
+  <!-- ======== SUMMARY ======== -->
+  <section class="section summary" id="summary">
+    <div class="section__container">
+      <div class="summary__grid">
+        <div class="summary__body reveal-left">
+          <p class="section__eyebrow">About the Book</p>
+          <h2 class="section__title">A Mother's Fight Against Medical Negligence</h2>
+          <p>
+            When Diane Melton was diagnosed with breast cancer, she entrusted her life to the medical professionals sworn to protect it. What followed was a harrowing journey through misdiagnosis, institutional failures, and a healthcare system that too often prioritizes process over patients.
+          </p>
+          <p>
+            <em>Living To Die</em> is more than a memoir. It is a testament to the resilience of the human spirit and a clarion call for accountability in American healthcare. Through intimate prose and unflinching honesty, Diane shares the story that demanded to be told.
+          </p>
+        </div>
+        <div class="summary__sidebar reveal-right">
+          <div class="summary__themes">
+            <h3>Key Themes</h3>
+            <ul>
+              <li>Medical negligence &amp; patient advocacy</li>
+              <li>The fight for justice in healthcare</li>
+              <li>Family, resilience &amp; hope</li>
+              <li>Navigating the legal system</li>
+              <li>Finding strength through adversity</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== STRUCTURE ======== -->
+  <section class="section structure" id="structure">
+    <div class="section__container">
+      <p class="section__eyebrow reveal">Inside the Book</p>
+      <h2 class="section__title reveal">What You'll Find</h2>
+      <div class="structure__grid reveal-stagger">
+        <div class="structure__card">
+          <span class="structure__card-number">01</span>
+          <h3>The Story</h3>
+          <p>A deeply personal narrative that unfolds with the pacing of a thriller — from diagnosis through the legal battle and beyond.</p>
+        </div>
+        <div class="structure__card">
+          <span class="structure__card-number">02</span>
+          <h3>The Audience</h3>
+          <p>For anyone touched by cancer, medical malpractice, or the broken promises of a system meant to heal.</p>
+        </div>
+        <div class="structure__card">
+          <span class="structure__card-number">03</span>
+          <h3>The Purpose</h3>
+          <p>Essential reading for medical schools, law programs, advocacy organizations, and book clubs seeking stories of real courage.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== AUTHOR ======== -->
+  <section class="section author" id="author">
+    <div class="section__container">
+      <div class="author__grid">
+        <div class="author__portrait reveal-left">
+          <img src="public/diane-melton.webp" alt="Diane Melton, Author" />
+        </div>
+        <div class="author__bio reveal-right">
+          <p class="section__eyebrow">About the Author</p>
+          <h2 class="section__title section__title--light">Diane Melton</h2>
+          <p>
+            Diane Melton is a mother, advocate, and survivor whose personal experience with medical negligence ignited a passion for patient rights and systemic accountability.
+          </p>
+          <p>
+            Her story has resonated with healthcare professionals, legal scholars, and families navigating the same institutional barriers she once faced. Through speaking engagements and her writing, Diane continues to fight for the changes she believes every patient deserves.
+          </p>
+          <p>
+            <em>Living To Die</em> is her first book — and the culmination of a decade-long journey from patient to advocate.
+          </p>
+          <p class="author__name">— Diane Melton</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== RESOURCES ======== -->
+  <section class="section resources" id="resources">
+    <div class="section__container">
+      <div class="resources__header reveal">
+        <p class="section__eyebrow">Resources &amp; Support</p>
+        <h2 class="section__title">Organizations That Matter</h2>
+        <p class="resources__subtitle">
+          Curated resources for those affected by medical negligence and seeking advocacy support.
+        </p>
+      </div>
+
+      <div class="resources__grid reveal-stagger">
+        <a href="#" class="resource-card">
+          <div class="resource-card__icon">&#9829;</div>
+          <h3>National Breast Cancer Foundation</h3>
+          <p>Providing help and hope to those affected by breast cancer through early detection and support services.</p>
+        </a>
+        <a href="#" class="resource-card">
+          <div class="resource-card__icon">&#9878;</div>
+          <h3>Susan G. Komen</h3>
+          <p>The world's largest breast cancer organization, funding groundbreaking research and community programs.</p>
+        </a>
+        <a href="#" class="resource-card">
+          <div class="resource-card__icon">&#9734;</div>
+          <h3>Patient Advocate Foundation</h3>
+          <p>Helping patients navigate insurance, access care, and manage the financial burdens of treatment.</p>
+        </a>
+      </div>
+
+      <div class="resources__cta reveal">
+        <a href="/resources" class="btn btn--dark">View All Resources</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== NEWSLETTER ======== -->
+  <section class="section newsletter">
+    <div class="section__container">
+      <div class="newsletter__inner reveal">
+        <p class="section__eyebrow">Stay Connected</p>
+        <h2 class="newsletter__title">Join the Conversation</h2>
+        <p class="newsletter__text">
+          Receive reflections, book updates, and stories of advocacy delivered to your inbox.
+        </p>
+        <form class="newsletter__form" id="newsletter-form">
+          <input type="email" name="email" placeholder="Your email address" required autocomplete="email" />
+          <button type="submit">Subscribe</button>
+        </form>
+        <p class="newsletter__privacy">We respect your privacy. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__content">
+        <div class="footer__about">
+          <h3>Living To Die</h3>
+          <p>A compelling story of hope, justice, and one woman's fight for patients' rights. Coming 2026.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigate</h4>
+          <a href="/#summary">About the Book</a>
+          <a href="/#author">About the Author</a>
+          <a href="/resources">Resources</a>
+          <a href="/contact">Contact</a>
+        </div>
+        <div class="footer__col">
+          <h4>Connect</h4>
+          <a href="/contact">Speaking Requests</a>
+          <a href="/contact">Media Inquiries</a>
+          <a href="/blog">Newsletter Archive</a>
+        </div>
+        <div class="footer__newsletter">
+          <h4>Stay Updated</h4>
+          <p>Book updates and event announcements.</p>
+          <form class="footer__form" id="footer-form">
+            <input type="email" placeholder="Email" required autocomplete="email" />
+            <button type="submit">Go</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 Diane Melton. All rights reserved.</p>
+        <p>dianemelton.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======== SCRIPTS ======== -->
+  <script>
+    // Navigation scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 60) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    }, { passive: true });
+
+    // Mobile menu toggle
+    const toggle = document.getElementById('nav-toggle');
+    const links = document.querySelector('.nav__links');
+    toggle?.addEventListener('click', () => {
+      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Parallax on hero
+    const heroImg = document.querySelector('.hero__image');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      if (scrolled < window.innerHeight) {
+        heroImg.style.transform = `scale(1.05) translateY(${scrolled * 0.15}px)`;
+      }
+    }, { passive: true });
+
+    // Scroll-triggered reveal animations
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-stagger');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
