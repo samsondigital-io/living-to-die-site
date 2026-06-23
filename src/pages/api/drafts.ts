@@ -93,6 +93,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       ctaUrl: body.ctaUrl,
       ctaText: body.ctaText,
       closingMessage: body.closingMessage,
+      tags: body.tags,
+      publishToBlog: body.publishToBlog,
+      heroImage: body.heroImage,
       scheduledFor: body.scheduledFor,
     };
 

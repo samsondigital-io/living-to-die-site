@@ -14,6 +14,10 @@ export interface NewsletterDraft {
   ctaUrl?: string;
   ctaText?: string;
   closingMessage: string;
+  // Blog autopublish fields
+  tags?: string[];
+  publishToBlog?: boolean;
+  heroImage?: string;
   // Scheduling fields
   scheduledFor?: string; // ISO date string, null = draft only
   status: 'draft' | 'scheduled' | 'sent';

@@ -144,6 +144,14 @@ const currentPath = Astro.url.pathname;
       color: #888;
       font-size: 0.8rem;
     }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .checkbox-label input { width: auto; margin: 0; }
     input[type="text"], textarea {
       width: 100%;
       padding: 0.65rem 0.875rem;
@@ -621,6 +629,23 @@ const currentPath = Astro.url.pathname;
           </div>
         </div>
 
+        <div class="section" id="blog-section">
+          <h3>Blog</h3>
+          <div class="field">
+            <label for="tags">
+              Tags
+              <span class="label-hint">— comma separated; helps readers browse the blog</span>
+            </label>
+            <input type="text" id="tags" name="tags" placeholder="e.g., Book Updates, Events" />
+          </div>
+          <div class="field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="publishToBlog" checked />
+              Publish this to the blog when sent
+            </label>
+          </div>
+        </div>
+
         <div class="section" id="schedule-section">
           <h3>Schedule (Optional)</h3>
           <div class="field">
@@ -754,6 +779,9 @@ const currentPath = Astro.url.pathname;
         ctaUrl: document.getElementById('ctaUrl').value || undefined,
         ctaText: document.getElementById('ctaText').value || undefined,
         closingMessage: document.getElementById('closingMessage').value,
+        tags: document.getElementById('tags').value
+          .split(',').map(t => t.trim()).filter(Boolean),
+        publishToBlog: document.getElementById('publishToBlog').checked,
       };
     }
 
@@ -770,6 +798,8 @@ const currentPath = Astro.url.pathname;
       document.getElementById('ctaUrl').value = draft.ctaUrl || '';
       document.getElementById('ctaText').value = draft.ctaText || '';
       document.getElementById('closingMessage').value = draft.closingMessage || '';
+      document.getElementById('tags').value = Array.isArray(draft.tags) ? draft.tags.join(', ') : '';
+      document.getElementById('publishToBlog').checked = draft.publishToBlog !== false;
       document.getElementById('scheduledFor').value = draft.scheduledFor ?
         new Date(draft.scheduledFor).toISOString().slice(0, 16) : '';
       scheduleBtn.disabled = !document.getElementById('scheduledFor').value;
@@ -1199,6 +1229,8 @@ const currentPath = Astro.url.pathname;
           ctaUrl: formData.ctaUrl,
           ctaText: formData.ctaText,
           closingMessage: formData.closingMessage,
+          tags: formData.tags,
+          publishToBlog: formData.publishToBlog,
         },
       };
 

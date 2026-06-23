@@ -88,7 +88,8 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
     const allowedFields = [
       'subject', 'preheader', 'issueInfo', 'openingParagraph',
       'section1Title', 'section1Content', 'section2Title', 'section2Content',
-      'ctaUrl', 'ctaText', 'closingMessage', 'scheduledFor', 'status'
+      'ctaUrl', 'ctaText', 'closingMessage', 'scheduledFor', 'status',
+      'tags', 'publishToBlog', 'heroImage'
     ];
 
     for (const field of allowedFields) {
