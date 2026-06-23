@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 import { createAndSendNewsletter, sendNewsletterFromTemplate } from '../../lib/mailerlite';
 
 /**
@@ -46,8 +47,7 @@ import { createAndSendNewsletter, sendNewsletterFromTemplate } from '../../lib/m
  */
 export const POST: APIRoute = async ({ request, cookies }) => {
   // Check authentication - same pattern as content.ts
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }

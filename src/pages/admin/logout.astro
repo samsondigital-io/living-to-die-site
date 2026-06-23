@@ -1,4 +1,5 @@
 ---
-Astro.cookies.delete('admin_auth', { path: '/' });
+import { COOKIE_NAME } from '../../lib/auth';
+Astro.cookies.delete(COOKIE_NAME, { path: '/' });
 return Astro.redirect('/admin');
 ---

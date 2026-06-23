@@ -1,9 +1,8 @@
 ---
 // Resources admin page - manage resource cards
-const authCookie = Astro.cookies.get('admin_auth');
-const isAuthenticated = authCookie?.value === 'true';
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 
-if (!isAuthenticated) {
+if (!verifySessionToken(Astro.cookies.get(COOKIE_NAME)?.value)) {
   return Astro.redirect('/admin');
 }
 

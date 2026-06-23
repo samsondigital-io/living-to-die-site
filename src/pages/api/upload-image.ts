@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 import { put } from '@vercel/blob';
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB - Vercel Blob free tier limit
@@ -23,8 +24,7 @@ const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB - Vercel Blob free tier limit
  */
 export const POST: APIRoute = async ({ request, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }

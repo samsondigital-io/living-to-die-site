@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { COOKIE_NAME, verifySessionToken } from '../../../lib/auth';
 import { getResource, updateResource, deleteResource } from '../../../lib/resources';
 import type { UpdateResourceInput, ResourceCategory } from '../../../lib/resources';
 
@@ -15,8 +16,7 @@ const VALID_CATEGORIES: ResourceCategory[] = ['medical-advocacy', 'legal-resourc
  */
 export const GET: APIRoute = async ({ params, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -67,8 +67,7 @@ export const GET: APIRoute = async ({ params, cookies }) => {
  */
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -152,8 +151,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
  */
 export const DELETE: APIRoute = async ({ params, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }

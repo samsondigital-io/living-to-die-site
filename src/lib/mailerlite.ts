@@ -166,9 +166,17 @@ export async function createAndSendNewsletter(
 
   try {
     // Step 1: Create the campaign
-    // Note: from email must be verified in MailerLite
-    const fromEmail = import.meta.env.MAILERLITE_FROM_EMAIL || 'mattmelton@gmail.com';
+    // Note: from email must be verified in MailerLite. No fallback: if the
+    // sender isn't configured, refuse to send rather than send from a wrong address.
+    const fromEmail = import.meta.env.MAILERLITE_FROM_EMAIL;
     const fromName = import.meta.env.MAILERLITE_FROM_NAME || 'Diane Melton';
+
+    if (!fromEmail) {
+      return {
+        success: false,
+        error: 'MailerLite sender email (MAILERLITE_FROM_EMAIL) not configured'
+      };
+    }
 
     const campaignResponse = await mailerlite.campaigns.create({
       name: `Newsletter: ${params.subject}`,

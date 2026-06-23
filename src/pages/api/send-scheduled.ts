@@ -9,11 +9,13 @@ import { sendNewsletterFromTemplate } from '../../lib/mailerlite';
  * Configure in vercel.json with schedule: every 15 minutes
  */
 export const GET: APIRoute = async ({ request }) => {
-  // Optional: Verify this is from Vercel Cron (recommended for production)
+  // Verify this request is from Vercel Cron. Fail closed: if CRON_SECRET is
+  // not configured, the endpoint is disabled rather than left open to the world.
+  // Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` automatically.
   const authHeader = request.headers.get('authorization');
   const cronSecret = import.meta.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }

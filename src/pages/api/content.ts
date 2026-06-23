@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 import { getHomepageContent, saveHomepageContent, defaultContent } from '../../lib/content';
 
 export const GET: APIRoute = async () => {
@@ -19,8 +20,7 @@ export const GET: APIRoute = async () => {
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }

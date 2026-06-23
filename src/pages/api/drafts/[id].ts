@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { COOKIE_NAME, verifySessionToken } from '../../../lib/auth';
 import { getDraft, updateDraft, deleteDraft } from '../../../lib/drafts';
 import type { UpdateDraftInput } from '../../../lib/drafts';
 
@@ -13,8 +14,7 @@ import type { UpdateDraftInput } from '../../../lib/drafts';
  */
 export const GET: APIRoute = async ({ params, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -65,8 +65,7 @@ export const GET: APIRoute = async ({ params, cookies }) => {
  */
 export const PUT: APIRoute = async ({ params, request, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -131,8 +130,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
  */
 export const DELETE: APIRoute = async ({ params, cookies }) => {
   // Check authentication
-  const authCookie = cookies.get('admin_auth');
-  if (authCookie?.value !== 'true') {
+  if (!verifySessionToken(cookies.get(COOKIE_NAME)?.value)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
