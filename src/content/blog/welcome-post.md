@@ -5,7 +5,6 @@ pubDate: 2024-01-15
 tags: ["Book Updates", "Behind the Scenes", "Welcome"]
 author: "Diane Melton"
 featured: true
-heroImage: "/images/blog/welcome-hero.jpg"
 ---
 
 Welcome to the official blog for _Living to Die_. I'm Diane Melton, and I'm thrilled to have you join me on this journey as we prepare to share Brenda Sawicki's remarkable story with the world.

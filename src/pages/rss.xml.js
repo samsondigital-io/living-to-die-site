@@ -1,21 +1,19 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import { getAllPosts } from '../lib/blog.ts';
 
 export async function GET(context) {
-  const posts = await getCollection('blog');
-  const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
+  const posts = await getAllPosts();
   return rss({
-    title: 'Living to Die | Newsletter',
+    title: 'Living to Die | Blog',
     description: 'Updates, reflections, and insights from the author of Living to Die',
     site: context.site,
-    items: sortedPosts.map((post) => ({
-      title: post.data.title,
-      description: post.data.description,
-      pubDate: post.data.pubDate,
+    items: posts.map((post) => ({
+      title: post.title,
+      description: post.description,
+      pubDate: post.pubDate,
       link: `/blog/${post.slug}/`,
-      author: post.data.author,
-      categories: [post.data.category, ...post.data.tags],
+      author: post.author,
+      categories: post.tags,
     })),
     customData: `<language>en-us</language>`,
   });
