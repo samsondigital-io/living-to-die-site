@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -19,5 +21,8 @@
     "@vercel/blob": "^2.3.1",
     "astro": "^5.16.14",
     "astro-seo": "^0.8.4"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
   }
 }
