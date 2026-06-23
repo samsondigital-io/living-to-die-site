@@ -134,6 +134,101 @@ export async function publishPostFromNewsletter(input: {
   return post;
 }
 
+/**
+ * Create a free-form blog post directly from the admin (NOT a newsletter — no
+ * email is sent, no `newsletter` tag is forced). Generates a unique slug.
+ */
+export async function createBlogPost(input: {
+  title: string;
+  description: string;
+  bodyHtml: string;
+  tags?: string[];
+  heroImage?: string;
+  author?: string;
+}): Promise<RedisBlogPost> {
+  const redis = getRedis();
+  const base = slugify(input.title) || 'post';
+  // Ensure uniqueness without Math.random (kept deterministic-ish): append a
+  // numeric suffix only if the base slug is already taken.
+  let slug = base;
+  let n = 2;
+  while (await redis.get<RedisBlogPost>(`${BLOG_PREFIX}${slug}`)) {
+    slug = `${base}-${n++}`;
+  }
+  const now = new Date().toISOString();
+  const post: RedisBlogPost = {
+    slug,
+    title: input.title,
+    description: input.description,
+    pubDate: now,
+    heroImage: input.heroImage,
+    tags: dedupeTags(input.tags ?? []),
+    author: input.author?.trim() || 'Diane Melton',
+    bodyHtml: input.bodyHtml,
+  };
+  await redis.set(`${BLOG_PREFIX}${slug}`, post);
+  return post;
+}
+
+/** Get a single raw Redis post (storage shape) by slug, or null. */
+export async function getBlogPost(slug: string): Promise<RedisBlogPost | null> {
+  const redis = getRedis();
+  return (await redis.get<RedisBlogPost>(`${BLOG_PREFIX}${slug}`)) ?? null;
+}
+
+/** Update an existing Redis post in place (slug and pubDate preserved). */
+export async function updateBlogPost(
+  slug: string,
+  updates: { title?: string; description?: string; bodyHtml?: string; tags?: string[]; heroImage?: string; author?: string }
+): Promise<RedisBlogPost | null> {
+  const redis = getRedis();
+  const existing = await redis.get<RedisBlogPost>(`${BLOG_PREFIX}${slug}`);
+  if (!existing) return null;
+  const updated: RedisBlogPost = {
+    ...existing,
+    ...(updates.title !== undefined ? { title: updates.title } : {}),
+    ...(updates.description !== undefined ? { description: updates.description } : {}),
+    ...(updates.bodyHtml !== undefined ? { bodyHtml: updates.bodyHtml } : {}),
+    ...(updates.heroImage !== undefined ? { heroImage: updates.heroImage } : {}),
+    ...(updates.author !== undefined ? { author: updates.author || 'Diane Melton' } : {}),
+    ...(updates.tags !== undefined ? { tags: dedupeTags(updates.tags) } : {}),
+    slug: existing.slug,
+    pubDate: existing.pubDate,
+  };
+  await redis.set(`${BLOG_PREFIX}${slug}`, updated);
+  return updated;
+}
+
+/** Delete a Redis post by slug. Returns true if a post was removed. */
+export async function deleteBlogPost(slug: string): Promise<boolean> {
+  const redis = getRedis();
+  const result = await redis.del(`${BLOG_PREFIX}${slug}`);
+  return result === 1;
+}
+
+/** Public: all Redis-backed posts (storage shape), newest first. For admin listing. */
+export async function listBlogPosts(): Promise<RedisBlogPost[]> {
+  let redis: Redis;
+  try {
+    redis = getRedis();
+  } catch {
+    return [];
+  }
+  const keys: string[] = [];
+  let cursor = 0;
+  do {
+    const [next, batch] = await redis.scan(cursor, { match: `${BLOG_PREFIX}*`, count: 100 });
+    cursor = Number(next);
+    keys.push(...batch);
+  } while (cursor !== 0);
+  const out: RedisBlogPost[] = [];
+  for (const key of keys) {
+    const r = await redis.get<RedisBlogPost>(key);
+    if (r) out.push(r);
+  }
+  return out.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+}
+
 /** Read all Redis-backed posts, normalized into BlogPost. Empty if unconfigured. */
 async function listRedisPosts(): Promise<BlogPost[]> {
   let redis: Redis;
