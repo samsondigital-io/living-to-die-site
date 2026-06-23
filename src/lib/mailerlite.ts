@@ -6,6 +6,8 @@ interface NewsletterResult {
   success: boolean;
   campaignId?: string;
   error?: string;
+  /** The final HTML that was sent — used to autopublish the issue to the blog. */
+  htmlContent?: string;
 }
 
 interface NewsletterParams {
@@ -206,7 +208,8 @@ export async function createAndSendNewsletter(
 
     return {
       success: true,
-      campaignId: String(campaignId)
+      campaignId: String(campaignId),
+      htmlContent: params.htmlContent
     };
 
   } catch (error: any) {

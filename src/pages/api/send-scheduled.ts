@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { listDrafts, updateDraft } from '../../lib/drafts';
 import { sendNewsletterFromTemplate } from '../../lib/mailerlite';
+import { publishPostFromNewsletter } from '../../lib/blog';
 
 /**
  * Vercel Cron endpoint for sending scheduled newsletters
@@ -61,6 +62,23 @@ export const GET: APIRoute = async ({ request }) => {
         if (result.success) {
           // Mark as sent
           await updateDraft(draft.id, { status: 'sent' });
+
+          // Autopublish to the blog (best-effort; never fails the send).
+          if (draft.publishToBlog !== false) {
+            try {
+              await publishPostFromNewsletter({
+                subject: draft.subject,
+                preheader: draft.preheader,
+                bodyHtml: result.htmlContent ?? '',
+                tags: draft.tags ?? [],
+                heroImage: draft.heroImage,
+                sentAt: new Date().toISOString(),
+              });
+            } catch (e) {
+              console.error(`[send-scheduled] Autopublish failed for ${draft.id} (send succeeded):`, e);
+            }
+          }
+
           results.push({ id: draft.id, success: true, campaignId: result.campaignId });
           console.log(`[send-scheduled] Sent successfully: ${draft.id}`);
         } else {

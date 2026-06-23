@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 import { createAndSendNewsletter, sendNewsletterFromTemplate } from '../../lib/mailerlite';
+import { publishPostFromNewsletter } from '../../lib/blog';
 
 /**
  * POST /api/newsletter
@@ -117,6 +118,23 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     if (result.success) {
+      // Autopublish the sent issue to the blog (best-effort: a failure here must
+      // NOT fail the send, which already succeeded). Default ON unless explicitly
+      // disabled via the composer checkbox.
+      if (body.content?.publishToBlog !== false) {
+        try {
+          await publishPostFromNewsletter({
+            subject: body.subject,
+            preheader: body.preheader,
+            bodyHtml: result.htmlContent ?? body.htmlContent ?? '',
+            tags: body.content?.tags ?? [],
+            sentAt: new Date().toISOString(),
+          });
+        } catch (e) {
+          console.error('Autopublish to blog failed (send still succeeded):', e);
+        }
+      }
+
       return new Response(JSON.stringify({
         success: true,
         campaignId: result.campaignId
