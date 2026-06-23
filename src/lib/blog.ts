@@ -17,6 +17,18 @@ export interface TagCount {
   count: number;
 }
 
+/** How an autopublished newsletter is stored in Redis (pubDate as ISO string). */
+export interface RedisBlogPost {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: string; // ISO
+  heroImage?: string;
+  tags: string[];
+  author: string;
+  bodyHtml: string;
+}
+
 /** Normalize a tag for matching/dedup: trim, collapse whitespace, lowercase. */
 export function normalizeTag(tag: string): string {
   return tag.trim().replace(/\s+/g, ' ').toLowerCase();
@@ -92,4 +104,43 @@ export async function getPostsByTag(tagParam: string): Promise<BlogPost[]> {
   const key = normalizeTag(decodeURIComponent(tagParam));
   const posts = await getAllPosts();
   return posts.filter((p) => p.tags.some((t) => normalizeTag(t) === key));
+}
+
+/** Make a URL-safe slug from arbitrary text. */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+/**
+ * Build the stored Redis post for an autopublished newsletter. The `newsletter`
+ * tag is always applied, alongside any tags the author added. Pure function
+ * (no I/O) so it can be unit-tested; persistence lives in publishPostFromNewsletter.
+ */
+export function buildRedisPostFromNewsletter(input: {
+  subject: string;
+  preheader: string;
+  bodyHtml: string;
+  tags?: string[];
+  heroImage?: string;
+  sentAt: string;
+}): RedisBlogPost {
+  const tags = dedupeTags(['newsletter', ...(input.tags ?? [])]);
+  const base = slugify(input.subject) || 'newsletter';
+  // Suffix with the send date for a stable, unique slug (no randomness, which
+  // would break determinism in serverless retries).
+  const datePart = input.sentAt.slice(0, 10);
+  return {
+    slug: `${base}-${datePart}`,
+    title: input.subject,
+    description: input.preheader,
+    pubDate: input.sentAt,
+    heroImage: input.heroImage,
+    tags,
+    author: 'Diane Melton',
+    bodyHtml: input.bodyHtml,
+  };
 }
