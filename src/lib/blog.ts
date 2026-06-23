@@ -29,6 +29,18 @@ export interface RedisBlogPost {
   bodyHtml: string;
 }
 
+import { Redis } from '@upstash/redis';
+
+const BLOG_PREFIX = 'blogpost:';
+
+/** Upstash Redis client, sharing the same env vars as the drafts store. */
+function getRedis(): Redis {
+  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
+  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) throw new Error('Redis/KV not configured for blog posts.');
+  return new Redis({ url, token });
+}
+
 /** Normalize a tag for matching/dedup: trim, collapse whitespace, lowercase. */
 export function normalizeTag(tag: string): string {
   return tag.trim().replace(/\s+/g, ' ').toLowerCase();
@@ -93,7 +105,8 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     source: 'repo' as const,
     bodyHtml: '',
   }));
-  return sortPostsByDateDesc(repoPosts);
+  const redisPosts = await listRedisPosts();
+  return sortPostsByDateDesc([...repoPosts, ...redisPosts]);
 }
 
 export async function getAllTags(): Promise<TagCount[]> {
@@ -104,6 +117,57 @@ export async function getPostsByTag(tagParam: string): Promise<BlogPost[]> {
   const key = normalizeTag(decodeURIComponent(tagParam));
   const posts = await getAllPosts();
   return posts.filter((p) => p.tags.some((t) => normalizeTag(t) === key));
+}
+
+/** Persist an autopublished newsletter as a Redis blog post. */
+export async function publishPostFromNewsletter(input: {
+  subject: string;
+  preheader: string;
+  bodyHtml: string;
+  tags?: string[];
+  heroImage?: string;
+  sentAt: string;
+}): Promise<RedisBlogPost> {
+  const post = buildRedisPostFromNewsletter(input);
+  const redis = getRedis();
+  await redis.set(`${BLOG_PREFIX}${post.slug}`, post);
+  return post;
+}
+
+/** Read all Redis-backed posts, normalized into BlogPost. Empty if unconfigured. */
+async function listRedisPosts(): Promise<BlogPost[]> {
+  let redis: Redis;
+  try {
+    redis = getRedis();
+  } catch {
+    return [];
+  }
+  const keys: string[] = [];
+  let cursor = 0;
+  do {
+    const [next, batch] = await redis.scan(cursor, { match: `${BLOG_PREFIX}*`, count: 100 });
+    cursor = Number(next);
+    keys.push(...batch);
+  } while (cursor !== 0);
+  if (keys.length === 0) return [];
+  const out: BlogPost[] = [];
+  for (const key of keys) {
+    const r = await redis.get<RedisBlogPost>(key);
+    if (!r) continue;
+    out.push({
+      slug: r.slug,
+      title: r.title,
+      description: r.description,
+      pubDate: new Date(r.pubDate),
+      heroImage: r.heroImage,
+      tags: dedupeTags(r.tags ?? []),
+      author: r.author,
+      featured: false,
+      source: 'redis',
+      bodyHtml: r.bodyHtml,
+    });
+  }
+  return out;
 }
 
 /** Make a URL-safe slug from arbitrary text. */
