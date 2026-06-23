@@ -269,3 +269,105 @@ export async function sendNewsletterFromTemplate(
     };
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Dashboard stats (read-only). All helpers fail soft: on any error or missing
+ * config they return null/empty so the admin dashboard never crashes.
+ * ------------------------------------------------------------------------- */
+
+export interface CampaignStat {
+  id: string;
+  name: string;
+  subject: string;
+  sentAt: string | null;
+  recipients: number | null;
+  openRate: string | null; // e.g. "42.50%"
+  clickRate: string | null;
+}
+
+export interface DashboardStats {
+  subscriberCount: number | null;
+  lastCampaign: CampaignStat | null;
+  recentCampaigns: CampaignStat[];
+  configured: boolean;
+}
+
+function pct(v: any): string | null {
+  // open_rate/click_rate come as { float, string } on most endpoints; be defensive.
+  if (v == null) return null;
+  if (typeof v === 'object') {
+    if (typeof v.string === 'string') return v.string;
+    if (typeof v.float === 'number') return `${(v.float * (v.float <= 1 ? 100 : 1)).toFixed(1)}%`;
+  }
+  if (typeof v === 'number') return `${(v <= 1 ? v * 100 : v).toFixed(1)}%`;
+  return null;
+}
+
+function toCampaignStat(c: any): CampaignStat {
+  const s = c?.stats ?? {};
+  return {
+    id: String(c?.id ?? ''),
+    name: c?.name ?? c?.emails?.[0]?.subject ?? 'Untitled',
+    subject: c?.emails?.[0]?.subject ?? c?.name ?? 'Untitled',
+    sentAt: c?.finished_at ?? c?.sent_at ?? c?.scheduled_for ?? null,
+    recipients: typeof s.sent === 'number' ? s.sent : (typeof c?.sent === 'number' ? c.sent : null),
+    openRate: pct(s.open_rate),
+    clickRate: pct(s.click_rate),
+  };
+}
+
+/** Total subscriber count, or null on error/unconfigured. */
+export async function getSubscriberCount(): Promise<number | null> {
+  const ml = getMailerLiteClient();
+  if (!ml) return null;
+  try {
+    const res: any = await ml.subscribers.getCount();
+    const total = res?.data?.total ?? res?.total ?? res?.data?.data?.total;
+    return typeof total === 'number' ? total : null;
+  } catch (error) {
+    console.error('getSubscriberCount failed:', error);
+    return null;
+  }
+}
+
+/** Recent sent campaigns with their stats (most recent first). */
+export async function getRecentCampaigns(limit = 5): Promise<CampaignStat[]> {
+  const ml = getMailerLiteClient();
+  if (!ml) return [];
+  try {
+    // The campaigns endpoint with a `sent` status filter reliably returns
+    // campaigns WITH their full stats object (the stats.getSentCampaigns
+    // wrapper 422s without a specific filter).
+    const res: any = await ml.campaigns.get({ filter: { status: 'sent' } });
+    const list: any[] = res?.data?.data ?? res?.data ?? [];
+    return list
+      .map(toCampaignStat)
+      .sort((a, b) => {
+        const ta = a.sentAt ? new Date(a.sentAt).getTime() : 0;
+        const tb = b.sentAt ? new Date(b.sentAt).getTime() : 0;
+        return tb - ta;
+      })
+      .slice(0, limit);
+  } catch (error) {
+    console.error('getRecentCampaigns failed:', error);
+    return [];
+  }
+}
+
+/** Everything the admin dashboard needs, gathered in parallel and fail-soft. */
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const apiKey = import.meta.env.MAILERLITE_API_KEY;
+  if (!apiKey) {
+    return { subscriberCount: null, lastCampaign: null, recentCampaigns: [], configured: false };
+  }
+  const [subscriberCount, recentCampaigns] = await Promise.all([
+    getSubscriberCount(),
+    getRecentCampaigns(5),
+  ]);
+  return {
+    subscriberCount,
+    lastCampaign: recentCampaigns[0] ?? null,
+    recentCampaigns,
+    configured: true,
+  };
+}

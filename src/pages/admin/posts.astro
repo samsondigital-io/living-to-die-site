@@ -118,6 +118,10 @@ const currentPath = Astro.url.pathname;
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section">
+          <p class="nav-section-title">Overview</p>
+          <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        </div>
+        <div class="nav-section">
           <p class="nav-section-title">Content</p>
           <a href="/admin" class="nav-link">Homepage</a>
           <a href="/admin/resources" class={`nav-link ${currentPath.includes('resources') ? 'active' : ''}`}>Resources</a>

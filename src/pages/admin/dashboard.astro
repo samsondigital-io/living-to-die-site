@@ -1,0 +1,204 @@
+---
+// Admin dashboard — at-a-glance stats. Read-only; fetched server-side so the
+// MailerLite API key never reaches the browser.
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
+import { getDashboardStats } from '../../lib/mailerlite';
+
+if (!verifySessionToken(Astro.cookies.get(COOKIE_NAME)?.value)) {
+  return Astro.redirect('/admin');
+}
+const currentPath = Astro.url.pathname;
+const stats = await getDashboardStats();
+
+function fmtDate(d: string | null) {
+  if (!d) return '—';
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+const hour = new Date().getHours();
+const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+const last = stats.lastCampaign;
+const others = stats.recentCampaigns.slice(1);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard - Living to Die</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; }
+
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 1.5rem 0; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-header h1 { font-size: 1.125rem; font-weight: 600; color: #d63384; }
+    .sidebar-header span { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+    .nav-section { padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+    .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; margin: 0.25rem 0; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
+    .nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-link.active { background: rgba(214, 51, 132, 0.2); color: #d63384; }
+    .nav-link svg { width: 18px; height: 18px; opacity: 0.8; }
+    .nav-link.external { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-link { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; }
+    .logout-link:hover { color: white; }
+
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h2 { font-size: 1.6rem; color: #333; margin-bottom: 0.25rem; }
+    .page-header p { color: #666; font-size: 0.95rem; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .stat-card { background: white; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #eee; }
+    .stat-card--hero { background: linear-gradient(135deg, #8B3A62 0%, #5e2543 100%); color: #fff; border: none; }
+    .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: #888; font-weight: 600; margin-bottom: 0.5rem; }
+    .stat-card--hero .stat-label { color: rgba(255,255,255,0.7); }
+    .stat-value { font-size: 2.6rem; font-weight: 700; line-height: 1; color: #333; }
+    .stat-card--hero .stat-value { color: #fff; }
+    .stat-sub { margin-top: 0.5rem; font-size: 0.85rem; color: #999; }
+    .stat-card--hero .stat-sub { color: rgba(255,255,255,0.75); }
+
+    .panel { background: white; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #eee; margin-bottom: 1.5rem; }
+    .panel h3 { font-size: 1rem; color: #8B3A62; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0f0f0; }
+
+    .metric-row { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .metric { }
+    .metric__num { font-size: 1.8rem; font-weight: 700; color: #333; }
+    .metric__label { font-size: 0.8rem; color: #888; }
+    .last-subject { font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 0.25rem; }
+    .last-date { font-size: 0.85rem; color: #999; margin-bottom: 1.25rem; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.7rem 0.5rem; font-size: 0.9rem; border-bottom: 1px solid #f2f2f2; }
+    th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #999; font-weight: 600; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .subject-cell { color: #333; font-weight: 500; }
+    .empty { color: #888; padding: 1.5rem 0; text-align: center; }
+
+    .notice { background: #fff3cd; color: #856404; padding: 1rem 1.25rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    .quick { display: inline-flex; align-items: center; gap: 0.5rem; background: #8B3A62; color: #fff; text-decoration: none; padding: 0.7rem 1.25rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: background 0.2s; }
+    .quick:hover { background: #6d2e4d; }
+
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .sidebar-nav { display: flex; gap: 0.5rem; overflow-x: auto; }
+      .nav-section { padding: 0; display: flex; gap: 0.5rem; }
+      .nav-section-title { display: none; }
+      .main-content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>Admin</span>
+        <h1>Living to Die</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <p class="nav-section-title">Overview</p>
+          <a href="/admin/dashboard" class={`nav-link ${currentPath.includes('dashboard') ? 'active' : ''}`}>Dashboard</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Content</p>
+          <a href="/admin" class="nav-link">Homepage</a>
+          <a href="/admin/resources" class="nav-link">Resources</a>
+          <a href="/admin/posts" class="nav-link">Blog Posts</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Communication</p>
+          <a href="/admin/newsletter" class="nav-link">Send Newsletter</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">External</p>
+          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">MailerLite</a>
+          <a href="/" target="_blank" class="nav-link external">View Website</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/admin/logout" class="logout-link">Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h2>{greeting}, Diane</h2>
+        <p>Here's how things are going.</p>
+      </div>
+
+      {!stats.configured && (
+        <div class="notice">Newsletter stats aren't available right now (MailerLite isn't configured). Your content tools still work normally.</div>
+      )}
+
+      <div class="stat-grid">
+        <div class="stat-card stat-card--hero">
+          <div class="stat-label">Subscribers</div>
+          <div class="stat-value">{stats.subscriberCount != null ? stats.subscriberCount.toLocaleString() : '—'}</div>
+          <div class="stat-sub">people on your mailing list</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Last open rate</div>
+          <div class="stat-value">{last?.openRate ?? '—'}</div>
+          <div class="stat-sub">{last ? 'most recent newsletter' : 'no newsletters sent yet'}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Last click rate</div>
+          <div class="stat-value">{last?.clickRate ?? '—'}</div>
+          <div class="stat-sub">{last ? 'most recent newsletter' : 'no newsletters sent yet'}</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Your last newsletter</h3>
+        {last ? (
+          <>
+            <div class="last-subject">{last.subject}</div>
+            <div class="last-date">Sent {fmtDate(last.sentAt)}{last.recipients != null ? ` · to ${last.recipients.toLocaleString()} people` : ''}</div>
+            <div class="metric-row">
+              <div class="metric"><div class="metric__num">{last.openRate ?? '—'}</div><div class="metric__label">opened</div></div>
+              <div class="metric"><div class="metric__num">{last.clickRate ?? '—'}</div><div class="metric__label">clicked</div></div>
+              <div class="metric"><div class="metric__num">{last.recipients != null ? last.recipients.toLocaleString() : '—'}</div><div class="metric__label">recipients</div></div>
+            </div>
+          </>
+        ) : (
+          <div class="empty">
+            <p>You haven't sent a newsletter yet.</p>
+            <p style="margin-top:1rem;"><a href="/admin/newsletter" class="quick">Write your first newsletter →</a></p>
+          </div>
+        )}
+      </div>
+
+      {others.length > 0 && (
+        <div class="panel">
+          <h3>Recent newsletters</h3>
+          <table>
+            <thead>
+              <tr><th>Newsletter</th><th>Sent</th><th class="num">Opened</th><th class="num">Clicked</th></tr>
+            </thead>
+            <tbody>
+              {others.map((c) => (
+                <tr>
+                  <td class="subject-cell">{c.subject}</td>
+                  <td>{fmtDate(c.sentAt)}</td>
+                  <td class="num">{c.openRate ?? '—'}</td>
+                  <td class="num">{c.clickRate ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </main>
+  </div>
+</body>
+</html>
