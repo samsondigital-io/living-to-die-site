@@ -2,8 +2,7 @@
 title: "Welcome to the Living to Die Blog"
 description: "Join me on this journey as we prepare to share Brenda Sawicki's powerful story with the world."
 pubDate: 2024-01-15
-category: "news"
-tags: ["welcome", "book launch", "announcement"]
+tags: ["Book Updates", "Behind the Scenes", "Welcome"]
 author: "Diane Melton"
 featured: true
 heroImage: "/images/blog/welcome-hero.jpg"
@@ -40,7 +39,7 @@ Over the next few months, you can expect:
 
 ## Join the Conversation
 
-I believe the best books create communities, and I hope this space becomes a place for meaningful dialogue about healthcare, advocacy, and hope. Please feel free to share your thoughts in the comments, and don't hesitate to reach out with your own stories.
+I believe the best books create communities, and I hope this space becomes a place for meaningful dialogue about healthcare, advocacy, and hope. I'd love to hear from you — please [reach out](/contact) with your own stories and reflections.
 
 _Living to Die_ isn't just Brenda's story—it's a call to action for all of us who believe in the power of speaking truth to power.
 
