@@ -1,20 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getAllPosts, getAllTags } from '../../lib/blog';
 
-const posts = await getCollection('blog');
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-// Group posts by category
-const categories = ['news', 'reflections', 'updates', 'events'] as const;
-const featuredPosts = sortedPosts.filter(post => post.data.featured);
+const posts = await getAllPosts();
+const tags = await getAllTags();
+const featuredPosts = posts.filter((p) => p.featured);
 ---
 
-<BaseLayout title="Musings" description="News, reflections, and insights from Diane Melton on the journey of bringing Living To Die to life.">
-  <meta slot="head" name="robots" content="noindex, nofollow" />
+<BaseLayout title="Blog" description="News, reflections, and updates from Diane Melton on the journey of bringing Living to Die to life.">
   <section class="blog-hero">
     <div class="container">
-      <h1>Musings & Updates</h1>
+      <h1>Blog</h1>
       <p>News, reflections, and insights from the journey of bringing Living to Die to life.</p>
     </div>
   </section>
@@ -26,19 +22,19 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
         <div class="featured-grid">
           {featuredPosts.map(post => (
             <article class="featured-card">
-              {post.data.heroImage && (
-                <img src={post.data.heroImage} alt={post.data.title} class="featured-card__image" />
+              {post.heroImage && (
+                <img src={post.heroImage} alt={post.title} class="featured-card__image" />
               )}
               <div class="featured-card__content">
-                <span class="category-badge">{post.data.category}</span>
+                {post.tags.length > 0 && <span class="tag-chip">{post.tags[0]}</span>}
                 <h3 class="featured-card__title">
-                  <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+                  <a href={`/blog/${post.slug}`}>{post.title}</a>
                 </h3>
-                <p class="featured-card__excerpt">{post.data.description}</p>
+                <p class="featured-card__excerpt">{post.description}</p>
                 <div class="featured-card__meta">
-                  <span class="author">{post.data.author}</span>
+                  <span class="author">{post.author}</span>
                   <time>
-                    {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+                    {new Date(post.pubDate).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
@@ -58,15 +54,13 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
       <div class="blog-layout">
         <aside class="blog-sidebar">
           <div class="sidebar-section">
-            <h3>Categories</h3>
-            <ul class="category-list">
-              <li>
-                <a href="/blog" class="category-link active">All Posts</a>
-              </li>
-              {categories.map(category => (
+            <h3>Topics</h3>
+            <ul class="tag-cloud">
+              <li><a href="/blog" class="tag-cloud__link active">All Posts</a></li>
+              {tags.map(tag => (
                 <li>
-                  <a href={`/blog/category/${category}`} class="category-link">
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  <a href={`/blog/tag/${encodeURIComponent(tag.key)}`} class="tag-cloud__link">
+                    {tag.label} <span class="tag-cloud__count">({tag.count})</span>
                   </a>
                 </li>
               ))}
@@ -76,8 +70,8 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
           <div class="sidebar-section">
             <h3>Newsletter</h3>
             <p>Stay updated with the latest news and insights.</p>
-            <form class="sidebar-form">
-              <input type="email" placeholder="Your email" required />
+            <form class="sidebar-form" action="https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe" method="post" target="_blank">
+              <input type="email" name="fields[email]" placeholder="Your email" required autocomplete="email" />
               <button type="submit" class="btn btn--primary">Subscribe</button>
             </form>
           </div>
@@ -85,36 +79,38 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
 
         <div class="blog-main">
           <h2 class="section-title">All Posts</h2>
-          <div class="posts-grid">
-            {sortedPosts.map(post => (
-              <article class="post-card">
-                {post.data.heroImage && (
-                  <img src={post.data.heroImage} alt={post.data.title} class="post-card__image" />
-                )}
-                <div class="post-card__content">
-                  <span class="category-badge category-badge--{post.data.category}">
-                    {post.data.category}
-                  </span>
-                  <h3 class="post-card__title">
-                    <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-                  </h3>
-                  <p class="post-card__excerpt">{post.data.description}</p>
-                  <div class="post-card__footer">
-                    <time class="post-card__date">
-                      {new Date(post.data.pubDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </time>
-                    <a href={`/blog/${post.slug}`} class="post-card__link">
-                      Read more →
-                    </a>
+          {posts.length === 0 ? (
+            <p>No posts yet — check back soon.</p>
+          ) : (
+            <div class="posts-grid">
+              {posts.map(post => (
+                <article class="post-card">
+                  {post.heroImage && (
+                    <img src={post.heroImage} alt={post.title} class="post-card__image" />
+                  )}
+                  <div class="post-card__content">
+                    {post.tags.length > 0 && <span class="tag-chip">{post.tags[0]}</span>}
+                    <h3 class="post-card__title">
+                      <a href={`/blog/${post.slug}`}>{post.title}</a>
+                    </h3>
+                    <p class="post-card__excerpt">{post.description}</p>
+                    <div class="post-card__footer">
+                      <time class="post-card__date">
+                        {new Date(post.pubDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </time>
+                      <a href={`/blog/${post.slug}`} class="post-card__link">
+                        Read more →
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -240,16 +236,17 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
     color: var(--color-primary);
   }
 
-  .category-list {
+  /* Tag cloud */
+  .tag-cloud {
     list-style: none;
     padding: 0;
   }
 
-  .category-list li {
+  .tag-cloud li {
     margin-bottom: 0.5rem;
   }
 
-  .category-link {
+  .tag-cloud__link {
     color: var(--color-text);
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -258,10 +255,15 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
     transition: all var(--transition-fast);
   }
 
-  .category-link:hover,
-  .category-link.active {
+  .tag-cloud__link:hover,
+  .tag-cloud__link.active {
     background: var(--color-accent);
     color: white;
+  }
+
+  .tag-cloud__count {
+    opacity: 0.6;
+    font-size: 0.85em;
   }
 
   .sidebar-form {
@@ -309,7 +311,8 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
     flex-direction: column;
   }
 
-  .category-badge {
+  /* Tag chip */
+  .tag-chip {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     background: var(--color-accent);
@@ -321,11 +324,6 @@ const featuredPosts = sortedPosts.filter(post => post.data.featured);
     width: fit-content;
     margin-bottom: 0.75rem;
   }
-
-  .category-badge--news { background: #3b82f6; }
-  .category-badge--reflections { background: #8b5cf6; }
-  .category-badge--updates { background: #10b981; }
-  .category-badge--events { background: #f59e0b; }
 
   .post-card__title {
     font-size: 1.5rem;

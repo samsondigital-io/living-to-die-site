@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPostsByTag, getAllTags } from '../../../lib/blog';
+
+const { tag } = Astro.params;
+const posts = await getPostsByTag(tag!);
+const allTags = await getAllTags();
+const display = allTags.find((t) => t.key === tag)?.label ?? tag;
+---
+<BaseLayout title={`#${display}`} description={`Posts tagged ${display}`}>
+  <section class="blog-hero">
+    <div class="container">
+      <h1>#{display}</h1>
+      <p>{posts.length} post{posts.length === 1 ? '' : 's'}</p>
+    </div>
+  </section>
+  <section class="section section--alt">
+    <div class="container">
+      {posts.length === 0 ? (
+        <p>No posts yet. <a href="/blog">Back to all posts</a>.</p>
+      ) : (
+        <div class="posts-grid">
+          {posts.map((post) => (
+            <article class="post-card">
+              <div class="post-card__content">
+                {post.tags.length > 0 && <span class="tag-chip">{post.tags[0]}</span>}
+                <h3 class="post-card__title"><a href={`/blog/${post.slug}`}>{post.title}</a></h3>
+                <p class="post-card__excerpt">{post.description}</p>
+                <a href={`/blog/${post.slug}`} class="post-card__link">Read more →</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+      <p style="margin-top:2rem;"><a href="/blog" class="btn btn--secondary">← All posts</a></p>
+    </div>
+  </section>
+  <style>
+    .blog-hero { padding: 8rem 0 4rem; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); color: white; text-align: center; }
+    .blog-hero h1 { color: white; }
+    .posts-grid { display: grid; gap: 2rem; }
+    .post-card { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; }
+    .post-card__title { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .post-card__title a { color: var(--color-primary); text-decoration: none; }
+    .post-card__title a:hover { color: var(--color-accent); }
+    .post-card__excerpt { color: var(--color-text-light); line-height: 1.6; margin-bottom: 1rem; }
+    .post-card__link { color: var(--color-accent); font-weight: 600; text-decoration: none; }
+    .tag-chip { display:inline-block; padding:0.25rem 0.75rem; background:var(--color-accent); color:white; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; text-transform:uppercase; margin-bottom:0.75rem; }
+  </style>
+</BaseLayout>

@@ -1,47 +1,49 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllPosts, normalizeTag } from '../../lib/blog';
 
 const { slug } = Astro.params;
 
-// Fetch all posts and find the one matching the slug
-const allPosts = await getCollection('blog');
-const post = allPosts.find(p => p.slug === slug);
+// Find the unified post (repo or, in Plan B, redis). Repo posts also have a
+// collection entry we render via <Content/>.
+const allPosts = await getAllPosts();
+const post = allPosts.find((p) => p.slug === slug);
+if (!post) return Astro.redirect('/blog');
 
-// 404 if post not found
-if (!post) {
-  return Astro.redirect('/blog');
-}
+const allEntries = await getCollection('blog');
+const entry = allEntries.find((p) => p.slug === slug);
+let Content: any = null;
+if (entry) ({ Content } = await render(entry));
 
-const { Content } = await render(post);
-
-// Get related posts
+const tags = post.tags;
 const relatedPosts = allPosts
-  .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
+  .filter(
+    (p) =>
+      p.slug !== post.slug &&
+      p.tags.some((t) => tags.some((et) => normalizeTag(et) === normalizeTag(t)))
+  )
   .slice(0, 3);
 ---
 
 <BaseLayout
-  title={post.data.title}
-  description={post.data.description}
-  image={post.data.heroImage}
+  title={post.title}
+  description={post.description}
+  image={post.heroImage}
 >
-  <meta slot="head" name="robots" content="noindex, nofollow" />
   <article class="blog-post">
-    {post.data.heroImage && (
+    {post.heroImage && (
       <div class="post-hero">
-        <img src={post.data.heroImage} alt={post.data.title} />
+        <img src={post.heroImage} alt={post.title} />
       </div>
     )}
 
     <div class="container">
       <header class="post-header">
         <div class="post-meta">
-          <span class="category-badge category-badge--{post.data.category}">
-            {post.data.category}
-          </span>
+          {tags.length > 0 && <span class="tag-chip">{tags[0]}</span>}
           <time>
-            {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+            {new Date(post.pubDate).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric'
@@ -49,34 +51,25 @@ const relatedPosts = allPosts
           </time>
         </div>
 
-        <h1 class="post-title">{post.data.title}</h1>
+        <h1 class="post-title">{post.title}</h1>
 
-        <p class="post-description">{post.data.description}</p>
+        <p class="post-description">{post.description}</p>
 
         <div class="post-author">
-          <span>By {post.data.author}</span>
-          {post.data.updatedDate && (
-            <span class="updated">
-              Updated: {new Date(post.data.updatedDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}
-            </span>
-          )}
+          <span>By {post.author}</span>
         </div>
       </header>
 
       <div class="post-content">
-        <Content />
+        {Content ? <Content /> : <Fragment set:html={post.bodyHtml} />}
       </div>
 
       <footer class="post-footer">
-        {post.data.tags && post.data.tags.length > 0 && (
+        {tags.length > 0 && (
           <div class="post-tags">
             <span>Tags:</span>
-            {post.data.tags.map(tag => (
-              <a href={`/blog/tag/${tag}`} class="tag">
+            {tags.map(tag => (
+              <a href={`/blog/tag/${encodeURIComponent(normalizeTag(tag))}`} class="tag">
                 #{tag}
               </a>
             ))}
@@ -87,7 +80,7 @@ const relatedPosts = allPosts
           <h3>Share this post</h3>
           <div class="share-buttons">
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(Astro.url.href)}`}
               target="_blank"
               rel="noopener noreferrer"
               class="share-button share-button--twitter"
@@ -103,7 +96,7 @@ const relatedPosts = allPosts
               Facebook
             </a>
             <a
-              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(Astro.url.href)}&title=${encodeURIComponent(post.data.title)}`}
+              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(Astro.url.href)}&title=${encodeURIComponent(post.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               class="share-button share-button--linkedin"
@@ -120,20 +113,20 @@ const relatedPosts = allPosts
           <div class="related-grid">
             {relatedPosts.map(relPost => (
               <article class="related-card">
-                {relPost.data.heroImage && (
+                {relPost.heroImage && (
                   <img
-                    src={relPost.data.heroImage}
-                    alt={relPost.data.title}
+                    src={relPost.heroImage}
+                    alt={relPost.title}
                     class="related-card__image"
                   />
                 )}
                 <div class="related-card__content">
                   <h3 class="related-card__title">
-                    <a href={`/blog/${relPost.slug}`}>{relPost.data.title}</a>
+                    <a href={`/blog/${relPost.slug}`}>{relPost.title}</a>
                   </h3>
-                  <p class="related-card__excerpt">{relPost.data.description}</p>
+                  <p class="related-card__excerpt">{relPost.description}</p>
                   <time class="related-card__date">
-                    {new Date(relPost.data.pubDate).toLocaleDateString('en-US', {
+                    {new Date(relPost.pubDate).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
@@ -186,7 +179,7 @@ const relatedPosts = allPosts
     margin-bottom: 1rem;
   }
 
-  .category-badge {
+  .tag-chip {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     background: var(--color-accent);
@@ -196,11 +189,6 @@ const relatedPosts = allPosts
     font-weight: 600;
     text-transform: uppercase;
   }
-
-  .category-badge--news { background: #3b82f6; }
-  .category-badge--reflections { background: #8b5cf6; }
-  .category-badge--updates { background: #10b981; }
-  .category-badge--events { background: #f59e0b; }
 
   .post-title {
     font-size: clamp(2rem, 4vw, 3rem);
@@ -217,12 +205,6 @@ const relatedPosts = allPosts
   .post-author {
     color: var(--color-text-lighter);
     font-size: 0.95rem;
-  }
-
-  .post-author .updated {
-    margin-left: 1rem;
-    padding-left: 1rem;
-    border-left: 1px solid var(--color-border);
   }
 
   /* Post Content */
@@ -265,26 +247,6 @@ const relatedPosts = allPosts
     background: var(--color-surface);
     border-left: 4px solid var(--color-accent);
     font-style: italic;
-  }
-
-  .post-content :global(pre) {
-    background: var(--color-surface-dark);
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    margin: 2rem 0;
-  }
-
-  .post-content :global(code) {
-    background: var(--color-surface);
-    padding: 0.125rem 0.375rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.9em;
-  }
-
-  .post-content :global(pre code) {
-    background: none;
-    padding: 0;
   }
 
   .post-content :global(img) {
