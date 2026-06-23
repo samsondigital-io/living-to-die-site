@@ -349,6 +349,14 @@ const currentPath = Astro.url.pathname;
       font-size: 0.85rem;
       color: #666;
     }
+    .ai-image-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .ai-image-row input {
+      flex: 1;
+    }
     .upload-progress.visible { display: block; }
 
     /* Delete Confirmation */
@@ -646,6 +654,10 @@ const currentPath = Astro.url.pathname;
                   <input type="file" id="resource-image" name="image" accept="image/*" />
                   <p class="image-upload-hint">Max 4MB. Drag and drop supported.</p>
                 </div>
+                <div class="ai-image-row">
+                  <input type="text" id="ai-image-prompt" placeholder="…or describe an image to create" />
+                  <button type="button" class="btn btn-small btn-secondary" id="ai-image-btn">✨ Create</button>
+                </div>
                 <div class="upload-progress" id="upload-progress">Uploading...</div>
                 <div class="image-preview" id="image-preview">
                   <img id="preview-img" src="" alt="Preview" />
@@ -821,6 +833,42 @@ const currentPath = Astro.url.pathname;
       previewImg.src = '';
       imagePreview.classList.remove('visible');
       imageInput.value = '';
+    });
+
+    // AI: create image from a description
+    const aiImageBtn = document.getElementById('ai-image-btn');
+    const aiImagePrompt = document.getElementById('ai-image-prompt');
+    aiImageBtn?.addEventListener('click', async () => {
+      const prompt = (aiImagePrompt.value || '').trim();
+      if (prompt.length < 3) {
+        showStatus('Type a short description first', 'error');
+        return;
+      }
+      aiImageBtn.disabled = true;
+      uploadProgress.textContent = 'Creating your image… this takes a few seconds.';
+      uploadProgress.classList.add('visible');
+      try {
+        const res = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+          credentials: 'same-origin'
+        });
+        const result = await res.json();
+        if (result.success && result.url) {
+          imageUrlInput.value = result.url;
+          previewImg.src = result.url;
+          imagePreview.classList.add('visible');
+          showStatus('Image created', 'success');
+        } else {
+          throw new Error(result.error || 'Could not create image. Please upload one instead.');
+        }
+      } catch (error) {
+        showStatus(`Failed to create image: ${error.message}`, 'error');
+      }
+      uploadProgress.classList.remove('visible');
+      uploadProgress.textContent = 'Uploading...';
+      aiImageBtn.disabled = false;
     });
 
     // ====== CRUD Operations ======

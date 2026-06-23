@@ -152,6 +152,16 @@ const currentPath = Astro.url.pathname;
       cursor: pointer;
     }
     .checkbox-label input { width: auto; margin: 0; }
+
+    /* Reusable image picker widget */
+    .ip__row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .ip__prompt { flex: 1; min-width: 180px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; }
+    .ip__or { color: #888; font-size: 0.85rem; }
+    .ip__preview { margin-bottom: 0.5rem; }
+    .ip__img { max-width: 240px; border-radius: 8px; display: block; margin-bottom: 0.25rem; }
+    .ip__remove { background: none; border: none; color: #8B3A62; cursor: pointer; font-size: 0.85rem; padding: 0; }
+    .ip__status { font-size: 0.85rem; margin-top: 0.4rem; }
+    .ip__upload { display: inline-block; }
     input[type="text"], textarea {
       width: 100%;
       padding: 0.65rem 0.875rem;
@@ -632,6 +642,14 @@ const currentPath = Astro.url.pathname;
         <div class="section" id="blog-section">
           <h3>Blog</h3>
           <div class="field">
+            <label>
+              Header image
+              <span class="label-hint">— optional; shown on the blog post</span>
+            </label>
+            <div id="hero-image-picker"></div>
+            <input type="hidden" id="heroImage" name="heroImage" />
+          </div>
+          <div class="field">
             <label for="tags">
               Tags
               <span class="label-hint">— comma separated; helps readers browse the blog</span>
@@ -723,6 +741,7 @@ const currentPath = Astro.url.pathname;
     </main>
   </div>
 
+  <script src="/admin/image-picker.js" is:inline></script>
   <script>
     // DOM Elements
     const form = document.getElementById('newsletter-form');
@@ -782,6 +801,7 @@ const currentPath = Astro.url.pathname;
         tags: document.getElementById('tags').value
           .split(',').map(t => t.trim()).filter(Boolean),
         publishToBlog: document.getElementById('publishToBlog').checked,
+        heroImage: document.getElementById('heroImage').value || undefined,
       };
     }
 
@@ -800,6 +820,8 @@ const currentPath = Astro.url.pathname;
       document.getElementById('closingMessage').value = draft.closingMessage || '';
       document.getElementById('tags').value = Array.isArray(draft.tags) ? draft.tags.join(', ') : '';
       document.getElementById('publishToBlog').checked = draft.publishToBlog !== false;
+      document.getElementById('heroImage').value = draft.heroImage || '';
+      mountHeroPicker(draft.heroImage || '');
       document.getElementById('scheduledFor').value = draft.scheduledFor ?
         new Date(draft.scheduledFor).toISOString().slice(0, 16) : '';
       scheduleBtn.disabled = !document.getElementById('scheduledFor').value;
@@ -823,6 +845,8 @@ const currentPath = Astro.url.pathname;
         return;
       }
       form.reset();
+      document.getElementById('heroImage').value = '';
+      mountHeroPicker('');
       setEditingState(null, '');
       formDirty = false;
       previewContainer.classList.remove('visible');
@@ -1231,6 +1255,7 @@ const currentPath = Astro.url.pathname;
           closingMessage: formData.closingMessage,
           tags: formData.tags,
           publishToBlog: formData.publishToBlog,
+          heroImage: formData.heroImage,
         },
       };
 
@@ -1278,8 +1303,22 @@ const currentPath = Astro.url.pathname;
       sendBtn.textContent = 'Send Now';
     });
 
+    // ====== Image picker ======
+    function mountHeroPicker(initialUrl) {
+      const el = document.getElementById('hero-image-picker');
+      if (!el) return;
+      // image-picker.js is a plain (non-module) script and runs before this
+      // deferred module, so window.ImagePicker is available. Guard just in case.
+      if (!window.ImagePicker) { setTimeout(() => mountHeroPicker(initialUrl), 50); return; }
+      window.ImagePicker.mount(el, {
+        initialUrl: initialUrl || '',
+        onChange: (url) => { document.getElementById('heroImage').value = url || ''; },
+      });
+    }
+
     // ====== Initialize ======
     loadQueue();
+    mountHeroPicker(document.getElementById('heroImage').value);
   </script>
 </body>
 </html>

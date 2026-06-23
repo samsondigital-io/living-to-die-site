@@ -128,6 +128,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             preheader: body.preheader,
             bodyHtml: result.htmlContent ?? body.htmlContent ?? '',
             tags: body.content?.tags ?? [],
+            heroImage: body.content?.heroImage,
             sentAt: new Date().toISOString(),
           });
         } catch (e) {
