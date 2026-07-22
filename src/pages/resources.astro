@@ -64,8 +64,9 @@ const categoryTitles = {
 <BaseLayout title="Resources & Support" description="Support resources for medical negligence, patient advocacy, and breast cancer awareness. Curated by Diane Melton, author of Living To Die." minimalNav={true}>
   <section class="resources-hero">
     <div class="container">
+      <p class="eyebrow">You are not alone</p>
       <h1>Resources & Support</h1>
-    
+      <p>Organizations and information for those affected by medical negligence and seeking advocacy support.</p>
     </div>
   </section>
 
@@ -99,7 +100,8 @@ const categoryTitles = {
             Subscribe to receive updates about advocacy efforts, new resources, and important developments in patient rights.
           </p>
           <form class="newsletter__form">
-            <input type="email" class="newsletter__input" placeholder="Enter your email" required />
+            <label for="resources-newsletter-email" class="sr-only">Email address</label>
+            <input id="resources-newsletter-email" type="email" class="newsletter__input" placeholder="Enter your email" required autocomplete="email" />
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
         </div>
@@ -111,19 +113,20 @@ const categoryTitles = {
 <style>
   .resources-hero {
     padding: 8rem 0 4rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
     text-align: center;
   }
 
   .resources-hero h1 {
-    color: white;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--color-pink-dark);
     margin-bottom: 1rem;
   }
 
   .resources-hero p {
     font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-light);
     max-width: 700px;
     margin: 0 auto;
   }
@@ -137,11 +140,13 @@ const categoryTitles = {
   }
 
   .section-title {
-    font-size: 2.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
     margin-bottom: 3rem;
-    color: var(--color-primary);
+    color: var(--color-pink-dark);
     text-align: center;
-    font-family: var(--font-heading);
   }
 
   .resource-grid {
@@ -158,20 +163,35 @@ const categoryTitles = {
 
   /* Newsletter */
   .newsletter {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    border-radius: var(--radius-xl);
+    background: var(--gradient-warm);
+    border-radius: 28px;
     padding: 3rem;
-    color: white;
     text-align: center;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .newsletter::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 51, 132, 0.12), transparent 70%);
   }
 
   .newsletter__title {
-    color: white;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--color-pink-dark);
     margin-bottom: 1rem;
   }
 
   .newsletter__text {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-light);
     margin-bottom: 2rem;
     font-size: 1.125rem;
   }
@@ -185,15 +205,11 @@ const categoryTitles = {
 
   .newsletter__input {
     flex: 1;
-    padding: 0.75rem 1.25rem;
-    border: none;
-    border-radius: var(--radius-md);
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(214, 51, 132, 0.25);
+    border-radius: var(--radius-full);
+    background: #fff;
     font-size: 1rem;
-  }
-
-  .newsletter__input:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
   }
 
   /* Responsive */
