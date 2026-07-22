@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Full Site Mockup B — Daylight Reveal · Living To Die</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --soft-white: #fdfdf9;
+    --cream: #fef7fb;
+    --blush: #fdf2f7;
+    --blush-deep: #f8e3ef;
+    --pink: #d63384;
+    --pink-dark: #b52a6f;
+    --pink-light: #e85da0;
+    --text: #1a1a1a;
+    --text-mid: #4a4a4a;
+    --text-light: #757575;
+    --hairline: rgba(26, 26, 26, 0.09);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--soft-white);
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 3px;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1.1rem;
+  }
+  h2.display {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--pink-dark);
+    margin-bottom: 1.5rem;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    padding: 1rem 2.1rem;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn--primary { background: var(--pink); color: #fff; }
+  .btn--primary:hover { background: var(--pink-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .btn--secondary { border-color: var(--pink); color: var(--pink); background: transparent; }
+  .btn--secondary:hover { background: var(--pink); color: #fff; transform: translateY(-2px); }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 1.5rem;
+  }
+  .nav a {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-mid);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nav a:hover { color: var(--pink); }
+
+  /* ============ HERO (Daylight Reveal — bigger book) ============ */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 6.5rem 6vw 5rem;
+    background:
+      radial-gradient(ellipse 55% 65% at 26% 55%, rgba(214, 51, 132, 0.09), transparent 68%),
+      radial-gradient(ellipse 70% 80% at 85% 15%, #fef7fb, transparent 60%),
+      linear-gradient(180deg, var(--soft-white) 0%, var(--blush) 100%);
+    overflow: hidden;
+  }
+  .hero__book {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    perspective: 2100px;
+  }
+  .hero__book::after {
+    content: '';
+    position: absolute;
+    bottom: -5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 74%;
+    height: 9%;
+    background: radial-gradient(ellipse at center, rgba(70, 20, 45, 0.25), transparent 70%);
+    filter: blur(7px);
+  }
+  .book3d {
+    --bk-w: min(31vw, 480px);
+    --bk-t: calc(var(--bk-w) * 0.115);
+    position: relative;
+    width: var(--bk-w);
+    aspect-ratio: 2 / 3;
+    transform-style: preserve-3d;
+    transform: rotateY(24deg) rotateX(2deg);
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .hero__book:hover .book3d { transform: rotateY(16deg) rotateX(1.5deg) translateY(-8px); }
+  .book3d__front {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(var(--bk-t) / 2));
+    border-radius: 3px 10px 10px 3px;
+    overflow: hidden;
+    box-shadow: inset 5px 0 12px rgba(0, 0, 0, 0.35);
+  }
+  .book3d__front img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .book3d__front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.16) 0%, transparent 6%, transparent 95%, rgba(255,255,255,0.1) 100%);
+  }
+  .book3d__spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--bk-t);
+    transform: translateX(calc(var(--bk-t) / -2)) rotateY(-90deg);
+    background: linear-gradient(180deg, #211c24 0%, #16121a 55%, #0f0c12 100%);
+    border-radius: 2px 0 0 2px;
+  }
+  .book3d__back {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(var(--bk-t) / -2));
+    background: #17131a;
+    border-radius: 10px 3px 3px 10px;
+    box-shadow: 0 45px 60px rgba(70, 20, 45, 0.35);
+  }
+
+  .hero__copy { max-width: 620px; }
+  .hero__badge {
+    display: inline-block;
+    padding: 0.5rem 1.4rem;
+    background: var(--pink);
+    color: #fff;
+    border-radius: 999px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .hero__title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(3rem, 6.2vw, 5.25rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pink-dark);
+    margin-bottom: 1.25rem;
+  }
+  .hero__byline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1.75rem;
+  }
+  .hero__subtitle {
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--text-mid);
+    max-width: 36ch;
+    margin-bottom: 2.5rem;
+  }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .hero__note {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 2.25rem;
+  }
+
+  .rise { animation: rise 0.9s cubic-bezier(0.19, 1, 0.22, 1) both; }
+  .rise--2 { animation-delay: 0.12s; }
+  .rise--3 { animation-delay: 0.24s; }
+  .rise--4 { animation-delay: 0.36s; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise { animation: none; }
+    .book3d { transition: none; }
+  }
+
+  /* ============ PRE-ORDER (was pale blue band) ============ */
+  .preorder {
+    background: linear-gradient(135deg, var(--blush) 0%, var(--blush-deep) 100%);
+    padding: 5.5rem 1.5rem;
+    text-align: center;
+  }
+  .preorder h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+    font-weight: 800;
+    color: var(--pink-dark);
+    margin-bottom: 1rem;
+  }
+  .preorder p { color: var(--text-mid); max-width: 62ch; margin: 0 auto 2.5rem; }
+  .signup-form {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .signup-form input[type="email"] {
+    flex: 1;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    border: 2px solid rgba(214, 51, 132, 0.25);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text);
+  }
+  @media (max-width: 600px) { .signup-form { flex-direction: column; } }
+
+  /* ============ SUMMARY (with taped polaroid of original artwork) ============ */
+  .summary { padding: 6.5rem 0; }
+  .summary__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .summary__body p { color: var(--text-mid); margin-bottom: 1.5rem; }
+
+  .polaroid {
+    position: relative;
+    background: #fff;
+    padding: 1.1rem 1.1rem 3.25rem;
+    box-shadow: var(--shadow-xl);
+    transform: rotate(-2.5deg);
+    border-radius: 2px;
+  }
+  .polaroid img { display: block; width: 100%; height: auto; border-radius: 1px; }
+  .polaroid figcaption {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0.9rem;
+    text-align: center;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-mid);
+  }
+  .polaroid::before, .polaroid::after {
+    content: '';
+    position: absolute;
+    width: 96px;
+    height: 30px;
+    background: rgba(232, 93, 160, 0.28);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .polaroid::before { top: -13px; left: -26px; transform: rotate(-38deg); }
+  .polaroid::after  { top: -13px; right: -26px; transform: rotate(38deg); }
+
+  .themes {
+    margin-top: 2.5rem;
+    background: var(--blush);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.5rem;
+  }
+  .themes h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 1rem;
+  }
+  .themes ul { list-style: none; }
+  .themes li {
+    font-size: 1rem;
+    color: var(--text-mid);
+    padding: 0.7rem 0 0.7rem 1.9rem;
+    position: relative;
+  }
+  .themes li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--pink);
+    font-weight: bold;
+  }
+
+  /* ============ STRUCTURE CARDS ============ */
+  .structure { padding: 6.5rem 0; background: var(--cream); }
+  .structure__header { text-align: center; max-width: 640px; margin: 0 auto 4rem; }
+  .structure__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .feature-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.75rem 2.25rem 2.5rem;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+  .feature-card__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-light) 100%);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 16px -6px rgba(214, 51, 132, 0.5);
+  }
+  .feature-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 0.9rem;
+  }
+  .feature-card p { font-size: 1.02rem; color: var(--text-mid); }
+
+  /* ============ AUTHOR ============ */
+  .author { padding: 6.5rem 0; }
+  .author__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 4.5rem;
+    align-items: center;
+  }
+  .author__portrait { position: relative; }
+  .author__portrait::before {
+    content: '';
+    position: absolute;
+    inset: -1.75rem;
+    border-radius: 50% 45% 55% 50% / 55% 50% 50% 45%;
+    background: radial-gradient(circle at 30% 30%, var(--blush-deep), var(--blush) 70%);
+    z-index: 0;
+  }
+  .author__portrait img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    box-shadow: var(--shadow-xl);
+  }
+  .author__caption {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-style: italic;
+    color: var(--text-mid);
+  }
+  .author__bio p { color: var(--text-mid); margin-bottom: 1.5rem; }
+
+  /* ============ RESOURCES ============ */
+  .resources { padding: 6.5rem 0; background: var(--cream); }
+  .resources__header { text-align: center; max-width: 640px; margin: 0 auto 4rem; }
+  .resources__header p { color: var(--text-mid); }
+  .resources__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  .resource-card {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem 2.25rem;
+    box-shadow: var(--shadow-md);
+    border-top: 4px solid var(--pink);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .resource-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+  .resource-card__tag {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pink);
+    background: var(--blush);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    margin-bottom: 1.1rem;
+  }
+  .resource-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.7rem;
+  }
+  .resource-card p { font-size: 0.98rem; color: var(--text-mid); margin-bottom: 1.25rem; }
+  .resource-card span.more {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--pink);
+  }
+  .resources__cta { text-align: center; }
+
+  /* ============ NEWSLETTER ============ */
+  .newsletter { padding: 6.5rem 0; }
+  .newsletter__card {
+    background: linear-gradient(135deg, var(--blush) 0%, var(--blush-deep) 100%);
+    border-radius: 28px;
+    padding: 4.5rem 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .newsletter__card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 51, 132, 0.12), transparent 70%);
+  }
+  .newsletter__card h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+    font-weight: 800;
+    color: var(--pink-dark);
+    margin-bottom: 1rem;
+  }
+  .newsletter__card p { color: var(--text-mid); max-width: 56ch; margin: 0 auto 2.5rem; }
+
+  .footer {
+    background: var(--pink-dark);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 5.5rem 1.5rem 4rem;
+      gap: 3.5rem;
+    }
+    .hero__copy { margin: 0 auto; }
+    .hero__subtitle { margin-left: auto; margin-right: auto; }
+    .hero__actions { justify-content: center; }
+    .book3d { --bk-w: min(62vw, 340px); }
+    .summary__grid, .author__grid { grid-template-columns: 1fr; gap: 3.5rem; }
+    .polaroid { max-width: 480px; margin: 0 auto; }
+    .author__portrait { max-width: 380px; margin: 0 auto; }
+    .newsletter__card { padding: 3rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="#">Home</a>
+    <a href="#author">About</a>
+    <a href="#">Blog</a>
+    <a href="#resources">Resources</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__book rise rise--2">
+      <div class="book3d">
+        <div class="book3d__back" aria-hidden="true"></div>
+        <div class="book3d__spine" aria-hidden="true"></div>
+        <div class="book3d__front">
+          <img src="cover-flat.png" alt="Living To Die book cover — black damask with a photograph of Brenda Sawicki, a pink ribbon, and the scales of justice" width="800" height="1200" fetchpriority="high" />
+        </div>
+      </div>
+    </div>
+    <div class="hero__copy">
+      <p class="hero__badge rise">Coming 2026</p>
+      <h1 class="hero__title rise rise--2">Living<br />To Die</h1>
+      <p class="hero__byline rise rise--3">By Diane Melton</p>
+      <p class="hero__subtitle rise rise--3">A powerful story of hope and a mother&rsquo;s resilient fight for life and justice for all women.</p>
+      <div class="hero__actions rise rise--4">
+        <a href="#preorder" class="btn btn--primary">Notify Me at Release</a>
+        <a href="#author" class="btn btn--secondary">Meet the Author</a>
+      </div>
+      <p class="hero__note rise rise--4">A true story of hope, negligence &amp; justice</p>
+    </div>
+  </section>
+
+  <!-- PRE-ORDER -->
+  <section class="preorder" id="preorder">
+    <h2>Pre-Order Your Copy</h2>
+    <p>LIVING TO DIE draws readers into a family&rsquo;s fourteen-year-long odyssey through a mother&rsquo;s recurrent breast cancer, medical negligence, and the relentless pursuit of justice.</p>
+    <form class="signup-form">
+      <label for="email-1" class="sr-only">Email address</label>
+      <input id="email-1" type="email" name="email" placeholder="Enter your email" autocomplete="email" required />
+      <button type="submit" class="btn btn--primary">Notify Me</button>
+    </form>
+  </section>
+
+  <!-- SUMMARY with polaroid -->
+  <section class="summary" id="summary">
+    <div class="container">
+      <div class="summary__grid">
+        <div class="summary__body">
+          <p class="eyebrow">The Story</p>
+          <h2 class="display">An Unconventional Journey</h2>
+          <p>In a small town in Connecticut one summer day, a thirty-nine-year-old mother goes for a routine screening mammogram and an abnormality is suspected. Six days later at the follow-up mammogram, the woman&rsquo;s breast cancer is missed. Ten months later, by the time her cancer is finally diagnosed, it had spread to her lymph nodes. Drawing on a wellspring of hope and raw grit, she wages a fight for her life and for accountability, challenging a medical system that failed her.</p>
+          <p>Through meticulous reporting and intimate storytelling, LIVING TO DIE chronicles her unconventional journey of a missed diagnosis, the legal crusade against medical negligence, and the fierce love that kept a family whole. This narrative investigates the incandescent strength of a woman determined to leave a legacy of justice.</p>
+        </div>
+        <div>
+          <figure class="polaroid">
+            <img src="hero-bg.webp" alt="Painting of Brenda seated on her bed, gazing through a wide window at rolling green hills" width="2000" height="1333" />
+            <figcaption>The view from her window — where the story begins</figcaption>
+          </figure>
+          <aside class="themes">
+            <h3>Key Themes</h3>
+            <ul>
+              <li>A true story at the intersection of medicine and law in a riveting landmark case</li>
+              <li>The right of patients, given options, to choose their own pathways to wellness</li>
+              <li>The hope and strength of family as anchors through uncertainty</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRUCTURE -->
+  <section class="structure">
+    <div class="container">
+      <div class="structure__header">
+        <p class="eyebrow">About the Book</p>
+        <h2 class="display">Inside these pages</h2>
+      </div>
+      <div class="structure__grid">
+        <article class="feature-card">
+          <span class="feature-card__chip" aria-hidden="true">1</span>
+          <h3>Inside the Book</h3>
+          <p>A resilient mother&rsquo;s struggle to survive breast cancer on her own terms. An impeccably researched narrative spanning years of a courtroom drama.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-card__chip" aria-hidden="true">2</span>
+          <h3>For Readers Who&hellip;</h3>
+          <p>Would like to go behind the scenes in the true story of a complex medical and legal thriller. If you or a loved one has been diagnosed with breast cancer, has been misdiagnosed, or are interested in alternative medicine.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-card__chip" aria-hidden="true">3</span>
+          <h3>Ideal For</h3>
+          <p>Book clubs, advocacy organizations, graduate law and medical curriculums and graduate ethics programs.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTHOR -->
+  <section class="author" id="author">
+    <div class="container">
+      <div class="author__grid">
+        <figure class="author__portrait">
+          <img src="diane-melton.webp" alt="Diane Melton, author of Living To Die" width="900" height="983" />
+          <figcaption class="author__caption">Diane Melton</figcaption>
+        </figure>
+        <div class="author__bio">
+          <p class="eyebrow">The Author</p>
+          <h2 class="display">About Diane Melton</h2>
+          <p>My lifelong love of writing began in third grade when the teacher spotlighted my composition in front of the class. As a reflective teenager, I sat at my corner desk and wrote poetry. I majored in English literature at Mt. Holyoke College, where I received my B.A. While raising my family, I earned a Master of Arts in Liberal Studies from Wesleyan University in creative writing. I went on to teach writing and poetry at Central Connecticut State University.</p>
+          <p>My essays and narrative nonfiction have appeared in The New York Times, The Hartford Courant, Northeast Magazine, Seasons Magazine, and Latitudes. I was honored by the Connecticut Society of Professional Journalists for outstanding feature writing. LIVING TO DIE is my debut nonfiction book.</p>
+          <p>When I first met Brenda, I knew I had to tell her gripping story. I invite you to join me on Brenda Sawicki&rsquo;s incredible journey.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section class="resources" id="resources">
+    <div class="container">
+      <div class="resources__header">
+        <p class="eyebrow">Resources &amp; Support</p>
+        <h2 class="display">You are not alone</h2>
+        <p>Organizations and information for those affected by medical negligence and seeking advocacy support.</p>
+      </div>
+      <div class="resources__grid">
+        <a href="#" class="resource-card">
+          <span class="resource-card__tag">Support</span>
+          <h3>National Breast Cancer Foundation</h3>
+          <p>Early detection programs, patient navigation, and support for women facing breast cancer.</p>
+          <span class="more">Visit &rarr;</span>
+        </a>
+        <a href="#" class="resource-card">
+          <span class="resource-card__tag">Research</span>
+          <h3>Susan G. Komen</h3>
+          <p>Funding breakthrough research and providing real-time help for people facing breast cancer.</p>
+          <span class="more">Visit &rarr;</span>
+        </a>
+        <a href="#" class="resource-card">
+          <span class="resource-card__tag">Advocacy</span>
+          <h3>Patient Advocate Foundation</h3>
+          <p>Case management services and financial aid for patients navigating the healthcare system.</p>
+          <span class="more">Visit &rarr;</span>
+        </a>
+      </div>
+      <div class="resources__cta">
+        <a href="#" class="btn btn--secondary">View All Resources</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="container">
+      <div class="newsletter__card">
+        <h2>Let&rsquo;s Stay Connected!</h2>
+        <p>My newsletter investigates topics relating to breast cancer, medical malpractice, and the writing process of LIVING TO DIE. Please sign up for my newsletter, book updates, events, and share your comments. Thanks so much!</p>
+        <form class="signup-form">
+          <label for="email-2" class="sr-only">Email address</label>
+          <input id="email-2" type="email" name="email" placeholder="Enter your email" autocomplete="email" required />
+          <button type="submit" class="btn btn--primary">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">&copy; 2026 Diane Melton &middot; All rights reserved</footer>
+
+</body>
+</html>

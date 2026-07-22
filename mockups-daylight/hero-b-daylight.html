@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mockup B — Daylight Reveal · Living To Die</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --soft-white: #fdfdf9;
+    --cream: #fef7fb;
+    --blush: #fdf2f7;
+    --pink: #d63384;
+    --pink-dark: #b52a6f;
+    --pink-light: #e85da0;
+    --text: #1a1a1a;
+    --text-mid: #4a4a4a;
+    --text-light: #757575;
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--soft-white);
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 3px;
+  }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 1.5rem;
+  }
+  .nav a {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-mid);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .nav a:hover { color: var(--pink); }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: center;
+    gap: 3rem;
+    padding: 7rem 7vw 5rem;
+    background:
+      radial-gradient(ellipse 55% 65% at 26% 55%, rgba(214, 51, 132, 0.09), transparent 68%),
+      radial-gradient(ellipse 70% 80% at 85% 15%, #fef7fb, transparent 60%),
+      linear-gradient(180deg, var(--soft-white) 0%, var(--blush) 100%);
+    overflow: hidden;
+  }
+
+  /* Book on a spotlight — CSS 3D hardcover from the flat cover art */
+  .hero__book {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    perspective: 1900px;
+  }
+  .hero__book::after {
+    /* floor shadow ellipse */
+    content: '';
+    position: absolute;
+    bottom: -5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 72%;
+    height: 9%;
+    background: radial-gradient(ellipse at center, rgba(70, 20, 45, 0.25), transparent 70%);
+    filter: blur(7px);
+  }
+  .book3d {
+    --bk-w: min(23vw, 360px);
+    --bk-t: calc(var(--bk-w) * 0.115);
+    position: relative;
+    width: var(--bk-w);
+    aspect-ratio: 2 / 3;
+    transform-style: preserve-3d;
+    transform: rotateY(24deg) rotateX(2deg);
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .hero__book:hover .book3d { transform: rotateY(16deg) rotateX(1.5deg) translateY(-8px); }
+  .book3d__front {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(var(--bk-t) / 2));
+    border-radius: 3px 10px 10px 3px;
+    overflow: hidden;
+    box-shadow: inset 5px 0 12px rgba(0, 0, 0, 0.35);
+  }
+  .book3d__front img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .book3d__front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.16) 0%, transparent 6%, transparent 95%, rgba(255,255,255,0.1) 100%);
+  }
+  .book3d__spine {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--bk-t);
+    transform: translateX(calc(var(--bk-t) / -2)) rotateY(-90deg);
+    background: linear-gradient(180deg, #211c24 0%, #16121a 55%, #0f0c12 100%);
+    border-radius: 2px 0 0 2px;
+  }
+  .book3d__back {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(var(--bk-t) / -2));
+    background: #17131a;
+    border-radius: 10px 3px 3px 10px;
+    box-shadow: 0 45px 60px rgba(70, 20, 45, 0.35);
+  }
+
+  .hero__copy { max-width: 640px; }
+
+  .hero__badge {
+    display: inline-block;
+    padding: 0.5rem 1.4rem;
+    background: var(--pink);
+    color: #fff;
+    border-radius: 999px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  .hero__title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pink-dark);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero__byline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1.75rem;
+  }
+
+  .hero__subtitle {
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--text-mid);
+    max-width: 34ch;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+  .btn {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    padding: 1rem 2.1rem;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn--primary { background: var(--pink); color: #fff; }
+  .btn--primary:hover { background: var(--pink-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .btn--secondary { border-color: var(--pink); color: var(--pink); background: transparent; }
+  .btn--secondary:hover { background: var(--pink); color: #fff; transform: translateY(-2px); }
+
+  .hero__note {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 2.25rem;
+  }
+
+  /* entrance */
+  .rise { animation: rise 0.9s cubic-bezier(0.19, 1, 0.22, 1) both; }
+  .rise--2 { animation-delay: 0.12s; }
+  .rise--3 { animation-delay: 0.24s; }
+  .rise--4 { animation-delay: 0.36s; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise { animation: none; }
+    .book3d { transition: none; }
+  }
+
+  /* ============ STORY — window art as taped polaroid ============ */
+  .story {
+    padding: 6.5rem 7vw;
+    background: var(--soft-white);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .polaroid {
+    position: relative;
+    background: #fff;
+    padding: 1.1rem 1.1rem 3.25rem;
+    box-shadow: var(--shadow-xl);
+    transform: rotate(-2.5deg);
+    border-radius: 2px;
+  }
+  .polaroid img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1px;
+  }
+  .polaroid figcaption {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0.9rem;
+    text-align: center;
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-mid);
+  }
+  /* tape corners — echoes the cover's taped photograph */
+  .polaroid::before, .polaroid::after {
+    content: '';
+    position: absolute;
+    width: 96px;
+    height: 30px;
+    background: rgba(232, 93, 160, 0.28);
+    backdrop-filter: blur(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .polaroid::before { top: -13px; left: -26px; transform: rotate(-38deg); }
+  .polaroid::after  { top: -13px; right: -26px; transform: rotate(38deg); }
+
+  .story__eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1.25rem;
+  }
+  .story__copy h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--pink-dark);
+    margin-bottom: 1.5rem;
+  }
+  .story__copy p { color: var(--text-mid); margin-bottom: 1.5rem; }
+  .story__copy .link {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--pink);
+    text-decoration: none;
+    border-bottom: 2px solid rgba(214, 51, 132, 0.3);
+    padding-bottom: 2px;
+    transition: border-color 0.2s ease;
+  }
+  .story__copy .link:hover { border-color: var(--pink); }
+
+  /* ============ PRE-ORDER ============ */
+  .preorder {
+    background: linear-gradient(135deg, var(--blush) 0%, #f8e3ef 100%);
+    padding: 6rem 1.5rem;
+    text-align: center;
+  }
+  .preorder h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+    font-weight: 800;
+    color: var(--pink-dark);
+    margin-bottom: 1rem;
+  }
+  .preorder p { color: var(--text-mid); max-width: 48ch; margin: 0 auto 2.5rem; }
+  .preorder__form {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .preorder__form input[type="email"] {
+    flex: 1;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid rgba(214, 51, 132, 0.25);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text);
+  }
+  @media (max-width: 600px) {
+    .preorder__form { flex-direction: column; }
+  }
+
+  .footer {
+    background: var(--pink-dark);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 5.5rem 1.5rem 4rem;
+      gap: 3.5rem;
+    }
+    .hero__copy { margin: 0 auto; }
+    .hero__subtitle { margin-left: auto; margin-right: auto; }
+    .hero__actions { justify-content: center; }
+    .book3d { --bk-w: min(52vw, 300px); }
+    .story {
+      grid-template-columns: 1fr;
+      gap: 4rem;
+      padding: 5rem 1.5rem;
+    }
+    .polaroid { max-width: 480px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Blog</a>
+    <a href="#">Resources</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero__book rise rise--2">
+      <div class="book3d">
+        <div class="book3d__back" aria-hidden="true"></div>
+        <div class="book3d__spine" aria-hidden="true"></div>
+        <div class="book3d__front">
+          <img src="cover-flat.png" alt="Living To Die book cover — black damask with a photograph of Diane Melton, a pink ribbon, and the scales of justice" width="800" height="1200" fetchpriority="high" />
+        </div>
+      </div>
+    </div>
+    <div class="hero__copy">
+      <p class="hero__badge rise">The Official Cover &middot; Coming 2026</p>
+      <h1 class="hero__title rise rise--2">Living<br />To Die</h1>
+      <p class="hero__byline rise rise--3">By Diane Melton</p>
+      <p class="hero__subtitle rise rise--3">A young mother fights for her life — and justice for all women.</p>
+      <div class="hero__actions rise rise--4">
+        <a href="#preorder" class="btn btn--primary">Notify Me at Release</a>
+        <a href="#story" class="btn btn--secondary">Meet the Author</a>
+      </div>
+      <p class="hero__note rise rise--4">A true story of hope, negligence &amp; justice</p>
+    </div>
+  </section>
+
+  <section class="story" id="story">
+    <figure class="polaroid">
+      <img src="hero-bg.webp" alt="Painting of a woman seated on her bed, gazing through a wide window at rolling green hills" width="2000" height="1333" loading="lazy" />
+      <figcaption>The view from her window — where the story begins</figcaption>
+    </figure>
+    <div class="story__copy">
+      <p class="story__eyebrow">The Story</p>
+      <h2>Before the fight, there was a window</h2>
+      <p>Diagnosed too late and dismissed too often, one young mother refused to let the system look away. What began at a bedroom window overlooking the hills became a fight that reached far beyond one family.</p>
+      <p>Told with unflinching honesty and unexpected warmth, <em>Living To Die</em> is a memoir of medical negligence, motherhood, and the stubborn persistence of hope.</p>
+      <a href="#" class="link">Read the full summary &rarr;</a>
+    </div>
+  </section>
+
+  <section class="preorder" id="preorder">
+    <h2>Be first to know</h2>
+    <p>Join the mailing list for the release date, pre-order news, and stories from the journey.</p>
+    <form class="preorder__form">
+      <label for="email-b" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Email address</label>
+      <input id="email-b" type="email" name="email" placeholder="Enter your email" autocomplete="email" required />
+      <button type="submit" class="btn btn--primary">Subscribe</button>
+    </form>
+  </section>
+
+  <footer class="footer">&copy; 2026 Diane Melton &middot; All rights reserved</footer>
+
+</body>
+</html>
