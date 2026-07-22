@@ -24,14 +24,6 @@
   --color-blush-deep: #f8e3ef;
   --color-cream: #fef7fb;
 
-  /* Legacy aliases (do not use in new code; removed in the daylight sweep) */
-  --color-sage: var(--color-pink);
-  --color-sage-dark: var(--color-pink-dark);
-  --color-sage-light: var(--color-pink-light);
-  --color-rose: var(--color-pink);
-  --color-rose-dark: var(--color-pink-dark);
-  --color-beige: var(--color-blush);
-
   /* Semantic Colors */
   --color-primary: var(--color-pink);
   --color-primary-dark: var(--color-pink-dark);
