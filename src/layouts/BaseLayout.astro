@@ -113,7 +113,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
             }
           });
         }, {
-          threshold: 0.1,
+          // threshold 0 so tall sections (taller than the viewport) reveal
+          // as soon as any part enters, instead of needing 10% on screen.
+          threshold: 0,
           rootMargin: '0px 0px -50px 0px'
         });
 

@@ -145,6 +145,13 @@ body {
   font-weight: 400;
 }
 
+/* Guard against horizontal overflow from full-bleed / oversized layers */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 /* ===========================
    Typography
    =========================== */
