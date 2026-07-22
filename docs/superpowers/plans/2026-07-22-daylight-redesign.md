@@ -266,7 +266,7 @@ const {
   <div class="book3d__back" aria-hidden="true"></div>
   <div class="book3d__spine" aria-hidden="true"></div>
   <div class="book3d__front">
-    <img src="/book-cover-official.webp" alt={alt} width="800" height="1200" fetchpriority="high" />
+    <img src="/book-cover-official.webp" alt={alt} width="1200" height="1801" fetchpriority="high" />
   </div>
 </div>
 
@@ -356,7 +356,7 @@ git commit -m "feat(daylight): reusable CSS 3D hardcover component using officia
 
 Add `import Book3D from '../components/Book3D.astro';` to frontmatter.
 
-- [ ] **Step 2: Replace the hero styles** in the scoped `<style>` with the mockup's (`.hero`, `.hero__book`, `.hero__badge`, `.hero__title`, `.hero__byline`, `.hero__subtitle`, `.hero__actions`→`.hero__buttons`, `.hero__note` from `mockups-daylight/full-b-daylight.html` lines ~120-260), with these Astro-specific adjustments:
+- [ ] **Step 2: Replace the hero styles** in the scoped `<style>` with the mockup's (`.hero`, `.hero__book`, `.hero__badge`, `.hero__title`, `.hero__byline`, `.hero__subtitle`, `.hero__actions`→`.hero__buttons`, `.hero__note` from `mockups-daylight/full-b-daylight.html` — `.hero` starts at line 107, book/hero styles run through ~line 285), with these Astro-specific adjustments:
   - `min-height: 100svh` (not vh).
   - Hover tilt needs global escape: `.hero__book:hover :global(.book3d) { transform: rotateY(16deg) rotateX(1.5deg) translateY(-8px); }`
   - Delete: `.hero__background`, `.hero__bg-image`, `.hero__overlay` styles and their media-query overrides.
@@ -392,14 +392,14 @@ git commit -m "feat(daylight): homepage hero with 3D official cover, drop field 
 
 Remove the stale `.preorder__headline h2 { color: white }` rule. Input becomes pill-shaped: `border-radius: var(--radius-full); border: 2px solid rgba(214, 51, 132, 0.25); background: #fff;` and delete its `outline: none` focus block (global handles it).
 
-- [ ] **Step 2: Summary section with polaroid.** Keep `summary__body` copy; replace the `summary__highlights` aside with polaroid + themes stack (markup from mockup lines ~640-668):
+- [ ] **Step 2: Summary section with polaroid.** Keep `summary__body` copy; replace the `summary__highlights` aside with polaroid + themes stack (mockup markup ~lines 585-605; `.polaroid` CSS starts at line 288):
 
 ```astro
 <div class="summary__side reveal-right">
   <figure class="polaroid">
     <img src="/living-to-die-hero-parallax.webp"
          alt="Painting of Brenda seated on her bed, gazing through a wide window at rolling green hills"
-         width="2000" height="1333" loading="lazy" />
+         width="3600" height="2400" loading="lazy" />
     <figcaption>The view from her window — where the story begins</figcaption>
   </figure>
   <aside class="themes">
@@ -415,7 +415,7 @@ Remove the stale `.preorder__headline h2 { color: white }` rule. Input becomes p
 
 Styles: copy `.polaroid` (incl. tape `::before/::after`) and `.themes` blocks from the mockup verbatim. Grid becomes `grid-template-columns: 1.05fr 0.95fr; align-items: center;`.
 
-- [ ] **Step 3: Structure cards → numbered chips.** Replace `.structure__card` styles with `.feature-card` pattern (mockup lines ~470-505): radius 20px, chip `<span class="feature-card__chip" aria-hidden="true">1</span>` before each `<h3>`, hover `translateY(-6px)` + `--shadow-xl`, transition only `transform, box-shadow`. Add a centered section header above the grid: eyebrow "About the Book" + `<h2 class="display">Inside these pages</h2>`.
+- [ ] **Step 3: Structure cards → numbered chips.** Replace `.structure__card` styles with `.feature-card` pattern (mockup CSS at lines 353-380, markup with chips at ~611-625): radius 20px, chip `<span class="feature-card__chip" aria-hidden="true">1</span>` before each `<h3>`, hover `translateY(-6px)` + `--shadow-xl`, transition only `transform, box-shadow`. Add a centered section header above the grid: eyebrow "About the Book" + `<h2 class="display">Inside these pages</h2>`.
 
 - [ ] **Step 4: Author blob.** Replace `.author__portrait img` box-shadow styling with the blob treatment:
 
@@ -439,7 +439,7 @@ Styles: copy `.polaroid` (incl. tape `::before/::after`) and `.themes` blocks fr
 
 Add `width="900" height="983"` and `loading="lazy"` to the author `<img>`.
 
-- [ ] **Step 5: Resources preview + newsletter.** Resource preview cards: `border-radius: 20px`, `border-top: 4px solid var(--color-pink)`, transition `transform, box-shadow` (replace `transition: all`), `rel="noopener noreferrer"`. Newsletter: wrap in `.newsletter__card` pattern (mockup lines ~600-630) — 28px radius, `--gradient-warm`, decorative corner glow via `::before`.
+- [ ] **Step 5: Resources preview + newsletter.** Resource preview cards: `border-radius: 20px`, `border-top: 4px solid var(--color-pink)`, transition `transform, box-shadow` (replace `transition: all`), `rel="noopener noreferrer"`. Newsletter: wrap in `.newsletter__card` pattern (mockup CSS starts at line 474) — 28px radius, `--gradient-warm`, decorative corner glow via `::before`.
 
 - [ ] **Step 6: Form robustness (all three homepage forms).** Add hidden labels + status regions and disable-on-submit. Markup pattern per form:
 
@@ -587,7 +587,7 @@ git commit -m "fix(footer): daylight styling, correct newsletter link, accessibl
 ```
 
 - [ ] **Step 2: ResourceCard changes:** `onerror="this.onerror=null;this.src='/images/resource-fallback.svg'"`, add `width="400" height="200"` to the img, `rel="noopener noreferrer"` on the Visit link, card `border-radius: 20px`, `border-top: 4px solid var(--color-pink)`, transition `transform, box-shadow` only.
-- [ ] **Step 3: resources.astro:** hero band → blush gradient (`--gradient-warm`) with `.eyebrow` + `.display` header; category `h2`s use `.display` scale; keep grid structure.
+- [ ] **Step 3: resources.astro:** the `.resources-hero` band (line 65) → blush gradient (`--gradient-warm`) with `.eyebrow` + `.display` header; category `h2.section-title`s (line 76) use `.display` scale; keep grid structure. This page also has its own newsletter section (lines 93-97) — apply the same `.newsletter__card` recipe as homepage Task 5 Step 5.
 - [ ] **Step 4: Verify + commit**
 
 `npm run dev` `/resources`: cards match homepage preview cards; kill network → fallback SVG shows.
@@ -605,7 +605,7 @@ git commit -m "feat(daylight): resource cards restyled, local image fallback"
 - Modify: `src/pages/contact.astro`
 
 - [ ] **Step 1:** Hero band → blush gradient with `.eyebrow`/`.display`. Contact cards → 20px radius + hover lift (same `.feature-card` recipe as Task 5 Step 3 — copy the CSS into this page's scoped style). Form inputs keep rectangular-rounded (`--radius-md`) — long forms read better than pills — but submit button is pill `.btn--primary`.
-- [ ] **Step 2:** Verify labels exist for every field (they already do — keep), add `:focus-visible` inherits from global, no `outline: none` remains in scoped styles: `grep -n "outline: none" src/pages/contact.astro` → no hits.
+- [ ] **Step 2:** Labels exist for every field (verified: 4 `<label>`s — keep). Delete the one existing `outline: none` rule in the scoped styles (verified present today); global `:focus-visible` takes over. Acceptance: `grep -n "outline: none" src/pages/contact.astro` → no hits. Note: the form posts to `action="#"` (non-functional today) — out of scope here, but flag to Matt as follow-up.
 - [ ] **Step 3: Verify + commit**
 
 ```bash
@@ -643,7 +643,7 @@ git commit -m "feat(daylight): blog and poetry pages aligned to daylight tokens"
 **Files:**
 - Modify: any stragglers found; `src/styles/global-v2.css` (remove aliases)
 
-- [ ] **Step 1: Run the invariant greps** (each must return no hits in `src/`, excluding `admin/`):
+- [ ] **Step 1: Run the invariant greps** (each must return no hits in `src/`, excluding `admin/`). Verified baseline on 2026-07-22 before work: `transition: all` 18 hits, `outline: none` 3, vh-heroes 2, `_blank` without noreferrer 2, unsplash 5 — so a zero result after the page tasks proves real cleanup, not a broken grep:
 
 ```bash
 grep -rn "transition: all" src --include="*.astro" --include="*.css" | grep -v admin
@@ -682,7 +682,7 @@ git add -A
 git commit -m "test(daylight): full-site visual + a11y QA pass"
 ```
 
-- [ ] **Step 6:** Present branch summary to Matt for review before any merge/deploy (deploy is Netlify/Vercel-connected — merging to main may auto-deploy; do NOT merge without explicit approval).
+- [ ] **Step 6:** Present branch summary to Matt for review before any merge/deploy. Verified: the build uses the `@astrojs/vercel` adapter (Vercel deployment), so merging to `main` on the connected GitHub repo may auto-deploy — do NOT merge without explicit approval. Also note: this clone's only git remote is a local `container-use` mirror; pushing to GitHub requires Matt to confirm the remote setup.
 
 ---
 
