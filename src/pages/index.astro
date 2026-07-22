@@ -1,13 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Book3D from '../components/Book3D.astro';
 import { getCollection } from 'astro:content';
 import { getHomepageContent } from '../lib/content';
-
-// Get latest blog posts
-const allBlogPosts = await getCollection('blog');
-const latestPosts = allBlogPosts
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
 
 // Get featured resources for preview
 const allResources = await getCollection('resources');
@@ -22,9 +17,8 @@ const content = await getHomepageContent();
 <BaseLayout title="Home" description="Living To Die by Diane Melton tells a story of hope, medical negligence, and the fight for justice. A non-fiction account coming 2026." minimalNav={true}>
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero__background">
-      <img src="/living-to-die-hero-parallax.webp" alt="Soft focus background image" class="hero__bg-image" />
-      <div class="hero__overlay"></div>
+    <div class="hero__book">
+      <Book3D />
     </div>
     <div class="hero__content">
       <span class="hero__badge">{content.hero_badge}</span>
@@ -34,9 +28,10 @@ const content = await getHomepageContent();
         {content.hero_subtitle}
       </p>
       <div class="hero__buttons">
-        <a href="#summary" class="btn btn--primary">Discover the Story</a>
+        <a href="#preorder" class="btn btn--primary">Notify Me at Release</a>
         <a href="#author" class="btn btn--secondary">Meet the Author</a>
       </div>
+      <p class="hero__note">A true story of hope, negligence &amp; justice</p>
     </div>
   </section>
 
@@ -208,101 +203,110 @@ const content = await getHomepageContent();
   /* Import new style system */
   @import '../styles/global-v2.css';
 
-  /* Hero Section - Parallax Background */
+  /* Hero Section - Daylight (book left, copy right) */
   .hero {
     position: relative;
-    min-height: 85vh;
-    display: flex;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: flex-end;
+    gap: 2.5rem;
+    padding: 6.5rem 6vw 5rem;
+    background:
+      radial-gradient(ellipse 55% 65% at 26% 55%, rgba(214, 51, 132, 0.09), transparent 68%),
+      radial-gradient(ellipse 70% 80% at 85% 15%, var(--color-cream), transparent 60%),
+      linear-gradient(180deg, var(--color-soft-white) 0%, var(--color-blush) 100%);
     overflow: hidden;
   }
 
-  .hero__background {
-    position: absolute;
-    /* Overhang top/bottom only — the parallax translates vertically, so
-       horizontal oversizing just leaks page width past 100vw. */
-    inset: -20% 0;
-    z-index: 0;
+  .hero__book {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    perspective: 2100px;
   }
 
-  .hero__bg-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center left;
-    filter: saturate(1.8) contrast(1.15) brightness(1.05);
+  .hero__book::after {
+    /* floor shadow ellipse */
+    content: '';
+    position: absolute;
+    bottom: -5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 74%;
+    height: 9%;
+    background: radial-gradient(ellipse at center, rgba(70, 20, 45, 0.25), transparent 70%);
+    filter: blur(7px);
   }
 
-  .hero__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      270deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.85) 30%,
-      rgba(255, 255, 255, 0.4) 60%,
-      rgba(255, 255, 255, 0) 100%
-    );
+  .hero__book:hover :global(.book3d) {
+    transform: rotateY(16deg) rotateX(1.5deg) translateY(-8px);
   }
 
   .hero__content {
-    position: relative;
-    z-index: 1;
-    max-width: 550px;
-    padding: 4rem;
-    margin-left: auto;
-    margin-right: 5%;
+    max-width: 620px;
   }
 
   .hero__badge {
     display: inline-block;
-    padding: 0.5rem 1.25rem;
-    background: var(--color-rose);
+    padding: 0.5rem 1.4rem;
+    background: var(--color-pink);
     color: white;
     border-radius: var(--radius-full);
     font-family: var(--font-display);
     font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
+    letter-spacing: 0.22em;
     margin-bottom: var(--space-lg);
   }
 
   .hero__title {
     font-family: var(--font-display);
-    font-size: var(--text-5xl);
+    font-size: clamp(3rem, 6.2vw, 5.25rem);
     font-weight: 800;
-    letter-spacing: 0.05em;
-    line-height: 1.0;
+    letter-spacing: 0.04em;
+    line-height: 1.02;
     text-transform: uppercase;
-    color: var(--color-sage-dark);
+    color: var(--color-pink-dark);
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__byline {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-pink);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
     margin-bottom: var(--space-md);
   }
 
   .hero__subtitle {
     font-family: var(--font-body);
-    font-size: var(--text-lg);
+    font-size: 1.3rem;
+    font-style: italic;
     color: var(--color-warm-gray);
-    margin-bottom: var(--space-md);
+    max-width: 36ch;
+    margin-bottom: var(--space-lg);
     line-height: var(--leading-relaxed);
     font-weight: 400;
-  }
-
-  .hero__byline {
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    color: var(--color-rose);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: var(--space-lg);
   }
 
   .hero__buttons {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+  }
+
+  .hero__note {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-lighter);
+    margin-top: var(--space-lg);
+    margin-bottom: 0;
   }
 
   /* Sections - Clean Publisher Style */
@@ -743,23 +747,25 @@ const content = await getHomepageContent();
   /* Responsive */
   @media (max-width: 768px) {
     .hero {
-      min-height: 70vh;
-    }
-
-    .hero__overlay {
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.95) 0%,
-        rgba(255, 255, 255, 0.85) 50%,
-        rgba(255, 255, 255, 0.6) 100%
-      );
+      grid-template-columns: 1fr;
+      min-height: 100svh;
+      text-align: center;
+      padding: 5.5rem 1.5rem 4rem;
+      gap: 3.5rem;
     }
 
     .hero__content {
-      margin-left: 0;
-      padding: 2rem;
-      text-align: center;
+      margin: 0 auto;
       max-width: 100%;
+    }
+
+    .hero__subtitle {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero__book :global(.book3d) {
+      --bk-w: min(62vw, 340px);
     }
 
     .hero__title {
@@ -796,22 +802,6 @@ const content = await getHomepageContent();
 </style>
 
 <script>
-  // Parallax effect for hero background
-  const heroBg = document.querySelector('.hero__background') as HTMLElement;
-  const hero = document.querySelector('.hero') as HTMLElement;
-
-  if (heroBg && hero) {
-    window.addEventListener('scroll', () => {
-      const scrolled = window.pageYOffset;
-      const heroHeight = hero.offsetHeight;
-
-      if (scrolled < heroHeight) {
-        const parallaxOffset = scrolled * 0.4;
-        heroBg.style.transform = `translateY(${parallaxOffset}px)`;
-      }
-    }, { passive: true });
-  }
-
   // Newsletter form submission
   document.getElementById('homepage-newsletter-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
