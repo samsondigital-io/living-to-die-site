@@ -18,22 +18,13 @@ const navItems = [
   <div class="nav__container">
     <ul class="nav__menu" id="nav-menu">
       {navItems.map(item => (
-        <li class={item.dropdown ? 'nav__item--dropdown' : ''}>
+        <li>
           <a href={item.href} class="nav__link">{item.label}</a>
-          {item.dropdown && (
-            <ul class="nav__dropdown">
-              {item.dropdown.map(subItem => (
-                <li>
-                  <a href={subItem.href} class="nav__dropdown-link">{subItem.label}</a>
-                </li>
-              ))}
-            </ul>
-          )}
         </li>
       ))}
     </ul>
 
-    <button class="nav__toggle" id="nav-toggle" aria-label="Menu">
+    <button class="nav__toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">
       <span></span>
       <span></span>
       <span></span>
@@ -51,7 +42,8 @@ const navItems = [
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--color-border);
-    transition: all var(--transition-base);
+    transition: background-color var(--transition-base), box-shadow var(--transition-base),
+                border-color var(--transition-base), transform var(--transition-base);
   }
 
   .nav--transparent {
@@ -117,57 +109,6 @@ const navItems = [
     width: 100%;
   }
 
-  /* Dropdown styles */
-  .nav__item--dropdown {
-    position: relative;
-  }
-
-  .nav__dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    list-style: none;
-    padding: 0.75rem 0;
-    min-width: 200px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    margin-top: 0.5rem;
-    z-index: 1001;
-  }
-
-  .nav__dropdown::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid white;
-  }
-
-  .nav__item--dropdown:hover .nav__dropdown {
-    display: block;
-  }
-
-  .nav__dropdown-link {
-    display: block;
-    padding: 0.5rem 1.25rem;
-    color: var(--color-text);
-    font-family: var(--font-display);
-    font-size: 0.95rem;
-    font-weight: 400;
-    transition: all var(--transition-fast);
-  }
-
-  .nav__dropdown-link:hover {
-    color: var(--color-accent);
-    background: var(--color-beige);
-  }
-
   .nav__toggle {
     display: none;
     flex-direction: column;
@@ -183,7 +124,7 @@ const navItems = [
     height: 2.5px;
     background: var(--color-primary);
     border-radius: 2px;
-    transition: all var(--transition-fast);
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
   }
 
   /* Minimal mode - hamburger only at top, links when scrolled */
@@ -205,7 +146,7 @@ const navItems = [
     display: flex;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
-    border-radius: 8px;
+    border-radius: var(--radius-full);
     padding: 0.75rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
@@ -264,57 +205,13 @@ const navItems = [
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
-      transition: all var(--transition-base);
+      transition: transform var(--transition-base), opacity var(--transition-base);
     }
 
     .nav__menu.active {
       transform: translateY(0);
       opacity: 1;
       pointer-events: all;
-    }
-
-    /* Mobile dropdown - inline expand */
-    .nav__dropdown {
-      display: none;
-      position: static;
-      transform: none;
-      background: transparent;
-      box-shadow: none;
-      padding: 0.5rem 0 0 1rem;
-      margin-top: 0.5rem;
-      min-width: auto;
-      border-left: 2px solid var(--color-border);
-    }
-
-    .nav__dropdown::before {
-      display: none;
-    }
-
-    .nav__item--dropdown.expanded .nav__dropdown {
-      display: block;
-    }
-
-    .nav__dropdown-link {
-      padding: 0.4rem 0.75rem;
-      font-size: 0.9rem;
-    }
-
-    .nav__item--dropdown > .nav__link::after {
-      content: '';
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-right: 2px solid currentColor;
-      border-bottom: 2px solid currentColor;
-      transform: rotate(45deg);
-      margin-left: 0.5rem;
-      transition: transform var(--transition-fast);
-      position: static;
-      background: none;
-    }
-
-    .nav__item--dropdown.expanded > .nav__link::after {
-      transform: rotate(-135deg);
     }
 
     .nav__toggle {
@@ -354,7 +251,7 @@ const navItems = [
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
-      transition: all var(--transition-base);
+      transition: transform var(--transition-base), opacity var(--transition-base);
     }
 
     .nav--minimal .nav__menu.active,
@@ -409,59 +306,42 @@ const navItems = [
     }
 
     lastScroll = currentScroll;
-  });
+  }, { passive: true });
 
   // Mobile menu toggle
   const navToggle = document.getElementById('nav-toggle');
   const navMenu = document.getElementById('nav-menu');
 
+  function closeMenu() {
+    navMenu?.classList.remove('active');
+    navToggle?.classList.remove('active');
+    navToggle?.setAttribute('aria-expanded', 'false');
+  }
+
   navToggle?.addEventListener('click', () => {
-    navToggle.classList.toggle('active');
-    navMenu?.classList.toggle('active');
+    const open = navMenu?.classList.toggle('active') ?? false;
+    navToggle.classList.toggle('active', open);
+    navToggle.setAttribute('aria-expanded', String(open));
   });
 
-  // Mobile dropdown toggle
-  const isMobile = () => window.innerWidth <= 768;
-
-  document.querySelectorAll('.nav__item--dropdown > .nav__link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      if (isMobile()) {
-        e.preventDefault();
-        const parent = (e.target as HTMLElement).closest('.nav__item--dropdown');
-        parent?.classList.toggle('expanded');
-      }
-    });
+  // Close on Escape, returning focus to the toggle
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMenu?.classList.contains('active')) {
+      closeMenu();
+      navToggle?.focus();
+    }
   });
 
-  // Close mobile menu when clicking a link (but not dropdown parent)
+  // Close mobile menu when clicking a link
   document.querySelectorAll('.nav__link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const parent = (e.target as HTMLElement).closest('.nav__item--dropdown');
-      // Only close if it's not a dropdown parent on mobile, or if it's desktop
-      if (!parent || !isMobile()) {
-        navToggle?.classList.remove('active');
-        navMenu?.classList.remove('active');
-      }
-    });
-  });
-
-  // Close mobile menu when clicking dropdown links
-  document.querySelectorAll('.nav__dropdown-link').forEach(link => {
-    link.addEventListener('click', () => {
-      navToggle?.classList.remove('active');
-      navMenu?.classList.remove('active');
-      document.querySelectorAll('.nav__item--dropdown').forEach(item => {
-        item.classList.remove('expanded');
-      });
-    });
+    link.addEventListener('click', closeMenu);
   });
 
   // Close menu when clicking outside (for minimal mode dropdown)
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (!target.closest('.nav__toggle') && !target.closest('.nav__menu')) {
-      navToggle?.classList.remove('active');
-      navMenu?.classList.remove('active');
+      closeMenu();
     }
   });
 </script>
