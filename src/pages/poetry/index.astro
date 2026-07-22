@@ -80,27 +80,30 @@ const featuredPoems = sortedPoems.filter(poem => poem.data.featured);
 <style>
   .poetry-hero {
     padding: 8rem 0 4rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
     text-align: center;
   }
 
   .poetry-hero h1 {
-    color: white;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--color-pink-dark);
     margin-bottom: 1rem;
   }
 
   .poetry-hero p {
     font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-light);
     max-width: 600px;
     margin: 0 auto;
   }
 
   .section-title {
+    font-family: var(--font-display);
     font-size: 2rem;
+    font-weight: 800;
     margin-bottom: 2rem;
-    color: var(--color-primary);
+    color: var(--color-pink-dark);
     text-align: center;
   }
 
@@ -119,16 +122,16 @@ const featuredPoems = sortedPoems.filter(poem => poem.data.featured);
 
   .poem-card {
     background: white;
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
     padding: 2rem;
     box-shadow: var(--shadow-md);
-    transition: all var(--transition-base);
-    border-left: 4px solid var(--color-accent);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    border-top: 4px solid var(--color-pink);
   }
 
   .poem-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
   }
 
   .poem-card--featured {

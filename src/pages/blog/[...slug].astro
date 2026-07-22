@@ -172,7 +172,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     --measure: 40rem;
     --ink: #2e2a2c;            /* soft warm near-black, not #1a1a1a */
     --muted: var(--color-warm-gray);
-    --rose: var(--color-rose);
+    --rose: var(--color-pink);
     --paper: var(--color-soft-white);
     padding-bottom: 6rem;
     background:
@@ -257,7 +257,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     width: 42px; height: 42px;
     display: grid; place-items: center;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-dark) 100%);
+    background: linear-gradient(135deg, var(--color-pink) 0%, var(--color-pink-dark) 100%);
     color: #fff;
     font-family: var(--font-display);
     font-weight: 600;
@@ -371,7 +371,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
   .prose :global(em) { font-style: italic; }
 
   .prose :global(a) {
-    color: var(--color-rose-dark);
+    color: var(--color-pink-dark);
     text-decoration: none;
     background-image: linear-gradient(var(--rose), var(--rose));
     background-size: 100% 1px;
@@ -386,7 +386,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     margin: 2.4rem 0;
     padding: 1.4rem 1.8rem;
     border-left: 3px solid var(--rose);
-    background: var(--color-beige);
+    background: var(--color-blush);
     border-radius: 0 12px 12px 0;
     font-style: italic;
     font-size: 1.22rem;
@@ -428,7 +428,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     text-decoration: none;
     padding: 0.35rem 0.75rem;
     border-radius: 100px;
-    background: var(--color-beige);
+    background: var(--color-blush);
     transition: background 0.2s, color 0.2s;
   }
   .post-tag:hover { background: var(--rose); color: #fff; }
@@ -448,7 +448,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     border-radius: 50%;
     border: 1px solid var(--color-border);
     color: var(--muted);
-    transition: all 0.2s;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
   }
   .post-share__btn svg { width: 16px; height: 16px; }
   .post-share__btn:hover { background: var(--rose); color: #fff; border-color: var(--rose); transform: translateY(-2px); }
@@ -541,7 +541,7 @@ const authorInitial = (post.author || 'D').trim().charAt(0).toUpperCase();
     padding: 0.8rem 1.6rem;
     border: 1px solid var(--color-border);
     border-radius: 100px;
-    transition: all 0.2s;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
   }
   .post-endnav__link svg { width: 18px; height: 18px; transition: transform 0.2s; }
   .post-endnav__link:hover { border-color: var(--rose); color: var(--rose); }
