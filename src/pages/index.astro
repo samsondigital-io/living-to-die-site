@@ -53,7 +53,9 @@ const content = await getHomepageContent();
         <input type="hidden" name="ml-submit" value="1" />
         <input type="hidden" name="anticsrf" value="true" />
         <div class="preorder__input-group">
+          <label for="preorder-email" class="sr-only">Email address</label>
           <input
+            id="preorder-email"
             type="email"
             name="fields[email]"
             placeholder="Enter your email"
@@ -63,7 +65,7 @@ const content = await getHomepageContent();
           <button type="submit" class="btn btn--primary">Notify Me</button>
         </div>
       </form>
-      <p class="preorder__success" id="preorder-success">Please check your email to confirm.</p>
+      <p class="preorder__success" id="preorder-success" role="status" aria-live="polite">Please check your email to confirm.</p>
     </div>
   </section>
 
@@ -79,31 +81,48 @@ const content = await getHomepageContent();
           {content.summary_paragraph2}
         </p>
       </div>
-      <aside class="summary__highlights reveal-right">
-        <h3>Key Themes</h3>
-        <ul>
-          <li>{content.theme1}</li>
-          <li>{content.theme2}</li>
-          <li>{content.theme3}</li>
-        </ul>
-      </aside>
+      <div class="summary__side reveal-right">
+        <figure class="polaroid">
+          <img src="/living-to-die-hero-parallax.webp"
+               alt="Painting of Brenda seated on her bed, gazing through a wide window at rolling green hills"
+               width="3600" height="2400" loading="lazy" />
+          <figcaption>The view from her window — where the story begins</figcaption>
+        </figure>
+        <aside class="themes">
+          <h3>Key Themes</h3>
+          <ul>
+            <li>{content.theme1}</li>
+            <li>{content.theme2}</li>
+            <li>{content.theme3}</li>
+          </ul>
+        </aside>
+      </div>
     </div>
   </section>
 
   <!-- Book Structure -->
   <section class="section section--muted" id="structure">
-    <div class="container structure reveal-stagger">
-      <div class="structure__card">
-        <h3>{content.structure1_heading}</h3>
-        <p>{content.structure1_text}</p>
+    <div class="container">
+      <div class="section__header reveal">
+        <p class="eyebrow">About the Book</p>
+        <h2 class="display">Inside these pages</h2>
       </div>
-      <div class="structure__card">
-        <h3>{content.structure2_heading}</h3>
-        <p>{content.structure2_text}</p>
-      </div>
-      <div class="structure__card">
-        <h3>{content.structure3_heading}</h3>
-        <p>{content.structure3_text}</p>
+      <div class="structure reveal-stagger">
+        <article class="structure__card">
+          <span class="structure__chip" aria-hidden="true">1</span>
+          <h3>{content.structure1_heading}</h3>
+          <p>{content.structure1_text}</p>
+        </article>
+        <article class="structure__card">
+          <span class="structure__chip" aria-hidden="true">2</span>
+          <h3>{content.structure2_heading}</h3>
+          <p>{content.structure2_text}</p>
+        </article>
+        <article class="structure__card">
+          <span class="structure__chip" aria-hidden="true">3</span>
+          <h3>{content.structure3_heading}</h3>
+          <p>{content.structure3_text}</p>
+        </article>
       </div>
     </div>
   </section>
@@ -112,7 +131,7 @@ const content = await getHomepageContent();
   <section class="section" id="author">
     <div class="container author">
       <div class="author__portrait reveal-left">
-        <img src="/diane-melton.webp" alt="Diane Melton" />
+        <img src="/diane-melton.webp" alt="Diane Melton" width="900" height="983" loading="lazy" />
         <p class="author__caption">Diane Melton</p>
       </div>
       <div class="author__bio reveal-right">
@@ -142,7 +161,7 @@ const content = await getHomepageContent();
 
       <div class="resources-preview reveal-stagger">
         {previewResources.map(resource => (
-          <a href={resource.data.url} target="_blank" rel="noopener" class="resource-preview-card">
+          <a href={resource.data.url} target="_blank" rel="noopener noreferrer" class="resource-preview-card">
             <div class="resource-preview__image">
               <img
                 src={`/api/og-image?url=${encodeURIComponent(resource.data.url)}`}
@@ -166,7 +185,7 @@ const content = await getHomepageContent();
   </section>
 
   <!-- Newsletter -->
-  <section class="section section--alt">
+  <section class="section section--alt" id="newsletter">
     <div class="container">
       <div class="newsletter reveal-scale">
         <div class="newsletter__content">
@@ -182,7 +201,9 @@ const content = await getHomepageContent();
           >
             <input type="hidden" name="ml-submit" value="1" />
             <input type="hidden" name="anticsrf" value="true" />
+            <label for="homepage-newsletter-email" class="sr-only">Email address</label>
             <input
+              id="homepage-newsletter-email"
               type="email"
               name="fields[email]"
               class="newsletter__input"
@@ -192,7 +213,7 @@ const content = await getHomepageContent();
             />
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
-          <p class="newsletter__success" id="homepage-newsletter-success">Please check your email to confirm.</p>
+          <p class="newsletter__success" id="homepage-newsletter-success" role="status" aria-live="polite">Please check your email to confirm.</p>
         </div>
       </div>
     </div>
@@ -319,7 +340,7 @@ const content = await getHomepageContent();
   }
 
   .section--contrast {
-    background: linear-gradient(135deg, #b8d4e3 0%, #9ac2d9 100%);
+    background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
     color: var(--color-soft-black);
   }
 
@@ -356,8 +377,8 @@ const content = await getHomepageContent();
   .preorder__headline h2 {
     font-family: var(--font-display);
     font-size: var(--text-3xl);
-    font-weight: 700;
-    color: white;
+    font-weight: 800;
+    color: var(--color-pink-dark);
     margin-bottom: var(--space-md);
   }
 
@@ -389,17 +410,15 @@ const content = await getHomepageContent();
 
   .preorder__input-group input[type="email"] {
     flex: 1;
-    padding: 0.875rem 1rem;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.9);
+    padding: 0.875rem 1.5rem;
+    border: 2px solid rgba(214, 51, 132, 0.25);
+    border-radius: var(--radius-full);
+    background: #fff;
     font-size: 1rem;
   }
 
   .preorder__input-group input[type="email"]:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    background: white;
+    border-color: var(--color-pink);
   }
 
   .preorder__checkbox {
@@ -436,9 +455,9 @@ const content = await getHomepageContent();
   /* Summary Section */
   .summary {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 4rem;
-    align-items: start;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 5rem;
+    align-items: center;
   }
 
   .summary__body h2 {
@@ -455,42 +474,82 @@ const content = await getHomepageContent();
     color: var(--color-text-light);
   }
 
-  .summary__highlights {
-    background: var(--color-cream);
-    padding: var(--space-lg);
-    border-radius: var(--radius-xl);
-    border-left: 4px solid var(--color-rose);
-    box-shadow: var(--shadow-sm);
+  /* Taped polaroid — echoes the cover's taped photograph */
+  .polaroid {
+    position: relative;
+    background: #fff;
+    padding: 1.1rem 1.1rem 3.25rem;
+    box-shadow: var(--shadow-xl);
+    transform: rotate(-2.5deg);
+    border-radius: 2px;
+    margin: 0;
   }
 
-  .summary__highlights h3 {
-    color: var(--color-primary);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
+  .polaroid img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1px;
   }
 
-  .summary__highlights ul {
+  .polaroid figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.9rem;
+    text-align: center;
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--color-text-light);
+  }
+
+  .polaroid::before,
+  .polaroid::after {
+    content: '';
+    position: absolute;
+    width: 96px;
+    height: 30px;
+    background: rgba(232, 93, 160, 0.28);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .polaroid::before { top: -13px; left: -26px; transform: rotate(-38deg); }
+  .polaroid::after  { top: -13px; right: -26px; transform: rotate(38deg); }
+
+  .themes {
+    margin-top: 2.5rem;
+    background: var(--color-blush);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.5rem;
+  }
+
+  .themes h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-pink-dark);
+    margin-bottom: 1rem;
+  }
+
+  .themes ul {
     list-style: none;
     padding: 0;
   }
 
-  .summary__highlights li {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(108, 117, 125, 0.1);
+  .themes li {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    padding: 0.7rem 0 0.7rem 1.9rem;
     position: relative;
-    padding-left: 1.5rem;
   }
 
-  .summary__highlights li::before {
+  .themes li::before {
     content: '→';
     position: absolute;
     left: 0;
-    color: var(--color-accent);
+    color: var(--color-pink);
     font-weight: bold;
-  }
-
-  .summary__highlights li:last-child {
-    border-bottom: none;
   }
 
   /* Structure Section */
@@ -502,23 +561,38 @@ const content = await getHomepageContent();
 
   .structure__card {
     background: var(--color-pure-white);
-    padding: var(--space-xl);
-    border-radius: var(--radius-xl);
+    padding: 2.75rem 2.25rem 2.5rem;
+    border-radius: 20px;
     box-shadow: var(--shadow-md);
-    text-align: center;
-    transition: all var(--transition-base);
-    border-top: 3px solid var(--color-rose);
+    text-align: left;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
   }
 
   .structure__card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .structure__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    background: var(--gradient-chip);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 16px -6px rgba(214, 51, 132, 0.5);
   }
 
   .structure__card h3 {
     font-family: var(--font-display);
-    color: var(--color-sage-dark);
-    font-size: var(--text-xl);
+    color: var(--color-pink-dark);
+    font-size: 1.35rem;
     margin-bottom: var(--space-md);
     font-weight: 700;
   }
@@ -537,13 +611,31 @@ const content = await getHomepageContent();
     align-items: center;
   }
 
+  .author__portrait {
+    position: relative;
+  }
+
+  .author__portrait::before {
+    content: '';
+    position: absolute;
+    inset: -1.75rem;
+    border-radius: 50% 45% 55% 50% / 55% 50% 50% 45%;
+    background: radial-gradient(circle at 30% 30%, var(--color-blush-deep), var(--color-blush) 70%);
+    z-index: 0;
+  }
+
   .author__portrait img {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    border-radius: var(--radius-lg);
+    height: auto;
+    border-radius: 18px;
     box-shadow: var(--shadow-xl);
   }
 
   .author__caption {
+    position: relative;
+    z-index: 1;
     text-align: center;
     margin-top: var(--space-md);
     font-family: var(--font-body);
@@ -572,74 +664,26 @@ const content = await getHomepageContent();
     margin-top: 2rem;
   }
 
-  /* Blog Grid */
-  .blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-
-  .blog-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    transition: transform var(--transition-base);
-  }
-
-  .blog-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .blog-card__image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .blog-card__content {
-    padding: 1.5rem;
-  }
-
-  .blog-card__category {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: var(--color-accent);
-    color: white;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  .blog-card__title {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .blog-card__title a {
-    color: var(--color-primary);
-  }
-
-  .blog-card__excerpt {
-    color: var(--color-text-light);
-    margin-bottom: 1rem;
-  }
-
-  .blog-card__date {
-    font-size: 0.875rem;
-    color: var(--color-text-lighter);
-  }
-
   /* Newsletter */
   .newsletter {
     background: var(--gradient-warm);
-    border-radius: var(--radius-2xl);
+    border-radius: 28px;
     padding: var(--space-2xl);
     text-align: center;
     box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .newsletter::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 51, 132, 0.12), transparent 70%);
   }
 
   .newsletter__title {
@@ -701,10 +745,11 @@ const content = await getHomepageContent();
 
   .resource-preview-card {
     background: white;
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
+    border-top: 4px solid var(--color-pink);
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    transition: all var(--transition-base);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
   }
 
   .resource-preview-card:hover {
@@ -781,10 +826,20 @@ const content = await getHomepageContent();
       gap: 3rem;
     }
 
+    .polaroid {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
     .author {
       grid-template-columns: 1fr;
       gap: 3rem;
       text-align: center;
+    }
+
+    .author__portrait {
+      max-width: 380px;
+      margin: 0 auto;
     }
 
     .preorder__input-group {
@@ -802,45 +857,27 @@ const content = await getHomepageContent();
 </style>
 
 <script>
-  // Newsletter form submission
-  document.getElementById('homepage-newsletter-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const successEl = document.getElementById('homepage-newsletter-success');
+  // MailerLite signup forms: no-cors fetch, disable the button while
+  // submitting, fall back to a native POST if fetch itself fails.
+  function wireForm(formId: string, statusId: string) {
+    const form = document.getElementById(formId) as HTMLFormElement | null;
+    const status = document.getElementById(statusId);
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      btn?.setAttribute('disabled', '');
+      try {
+        await fetch(form.action, { method: 'POST', body: new FormData(form), mode: 'no-cors' });
+        form.classList.add('hidden');
+        status?.classList.add('show');
+      } catch {
+        form.submit();
+      } finally {
+        btn?.removeAttribute('disabled');
+      }
+    });
+  }
 
-    try {
-      await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-      });
-
-      form.classList.add('hidden');
-      successEl?.classList.add('show');
-    } catch (error) {
-      form.submit();
-    }
-  });
-
-  // Preorder/Newsletter form
-  document.getElementById('preorder-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const successEl = document.getElementById('preorder-success');
-
-    try {
-      await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-      });
-
-      form.classList.add('hidden');
-      successEl?.classList.add('show');
-    } catch (error) {
-      form.submit();
-    }
-  });
+  wireForm('preorder-form', 'preorder-success');
+  wireForm('homepage-newsletter-form', 'homepage-newsletter-success');
 </script>
