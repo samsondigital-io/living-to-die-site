@@ -68,19 +68,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <style>
   .contact-hero {
     padding: 8rem 0 4rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
     text-align: center;
   }
 
   .contact-hero h1 {
-    color: white;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--color-pink-dark);
     margin-bottom: 1rem;
   }
 
   .contact-hero p {
     font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-light);
     max-width: 600px;
     margin: 0 auto;
   }
@@ -104,14 +105,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .contact-card {
     background: var(--color-surface);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border-left: 4px solid var(--color-accent);
+    padding: 2rem 1.75rem;
+    border-radius: 20px;
+    border-top: 4px solid var(--color-pink);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .contact-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
   }
 
   .contact-card h3 {
-    font-family: var(--font-heading);
-    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--color-pink-dark);
     font-size: 1.25rem;
     margin-bottom: 0.75rem;
   }
@@ -125,7 +134,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .contact-form-wrapper {
     background: white;
     padding: 2.5rem;
-    border-radius: var(--radius-xl);
+    border-radius: 20px;
     box-shadow: var(--shadow-lg);
   }
 
@@ -142,8 +151,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .form-group label {
-    font-weight: 500;
-    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-pink-dark);
     font-size: 0.95rem;
   }
 
@@ -161,9 +171,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .form-group input:focus,
   .form-group select:focus,
   .form-group textarea:focus {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.15);
+    border-color: var(--color-pink);
+    box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.12);
   }
 
   .form-group textarea {
@@ -172,22 +181,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   .btn {
-    padding: 1rem 2rem;
-    font-weight: 600;
-    border-radius: var(--radius-md);
+    padding: 1rem 2.1rem;
+    font-weight: 700;
+    border-radius: var(--radius-full);
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    transition: all var(--transition-base);
+    transition: background-color var(--transition-base), transform var(--transition-base),
+                box-shadow var(--transition-base);
   }
 
   .btn--primary {
-    background: var(--color-accent);
+    background: var(--color-pink);
     color: white;
   }
 
   .btn--primary:hover {
-    background: var(--color-accent-dark);
+    background: var(--color-pink-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
   }
