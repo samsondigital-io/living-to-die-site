@@ -9,28 +9,35 @@
    CSS Variables - Style System
    =========================== */
 :root {
-  /* Colors - Primary Palette */
+  /* Colors - Neutrals */
   --color-soft-black: #1a1a1a;
   --color-warm-gray: #4a4a4a;
   --color-light-gray: #757575;
   --color-soft-white: #fdfdf9;
   --color-pure-white: #ffffff;
 
-  /* Colors - Accent Palette */
-  --color-sage: #d63384;
-  --color-sage-dark: #b52a6f;
-  --color-sage-light: #e85da0;
-  --color-rose: #d63384;
-  --color-rose-dark: #b52a6f;
-  --color-beige: #fdf2f7;
+  /* Colors - Daylight palette */
+  --color-pink: #d63384;
+  --color-pink-dark: #b52a6f;
+  --color-pink-light: #e85da0;
+  --color-blush: #fdf2f7;
+  --color-blush-deep: #f8e3ef;
   --color-cream: #fef7fb;
 
+  /* Legacy aliases (do not use in new code; removed in the daylight sweep) */
+  --color-sage: var(--color-pink);
+  --color-sage-dark: var(--color-pink-dark);
+  --color-sage-light: var(--color-pink-light);
+  --color-rose: var(--color-pink);
+  --color-rose-dark: var(--color-pink-dark);
+  --color-beige: var(--color-blush);
+
   /* Semantic Colors */
-  --color-primary: var(--color-sage);
-  --color-primary-dark: var(--color-sage-dark);
-  --color-primary-light: var(--color-sage-light);
-  --color-accent: var(--color-rose);
-  --color-accent-dark: var(--color-rose-dark);
+  --color-primary: var(--color-pink);
+  --color-primary-dark: var(--color-pink-dark);
+  --color-primary-light: var(--color-pink-light);
+  --color-accent: var(--color-pink);
+  --color-accent-dark: var(--color-pink-dark);
   --color-background: var(--color-soft-white);
   --color-surface: var(--color-pure-white);
   --color-text: var(--color-soft-black);
@@ -39,8 +46,9 @@
   --color-border: rgba(0, 0, 0, 0.08);
 
   /* Gradients */
-  --gradient-soft: linear-gradient(180deg, var(--color-soft-white) 0%, var(--color-beige) 100%);
-  --gradient-warm: linear-gradient(135deg, var(--color-cream) 0%, #e8dfd2 100%);
+  --gradient-soft: linear-gradient(180deg, var(--color-soft-white) 0%, var(--color-blush) 100%);
+  --gradient-warm: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
+  --gradient-chip: linear-gradient(135deg, var(--color-pink) 0%, var(--color-pink-light) 100%);
   --gradient-hero: linear-gradient(180deg, rgba(253,253,249,0) 0%, rgba(245,243,240,0.5) 100%);
 
   /* Typography */
@@ -133,7 +141,10 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
 body {
@@ -253,40 +264,42 @@ a:hover {
    =========================== */
 .btn {
   display: inline-block;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 1rem 2.1rem;
   font-family: var(--font-accent);
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   line-height: 1;
   text-align: center;
   text-decoration: none;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: 0.04em;
   border: 2px solid transparent;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-base), color var(--transition-base),
+              border-color var(--transition-base), transform var(--transition-base),
+              box-shadow var(--transition-base);
   cursor: pointer;
 }
 
 .btn--primary {
-  background: var(--color-primary);
+  background: var(--color-pink);
   color: var(--color-pure-white);
 }
 
 .btn--primary:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-pink-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   color: var(--color-pure-white);
 }
 
 .btn--secondary {
   background: transparent;
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--color-pink);
+  border-color: var(--color-pink);
 }
 
 .btn--secondary:hover {
-  background: var(--color-primary);
+  background: var(--color-pink);
   color: var(--color-pure-white);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -342,9 +355,59 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(124, 152, 133, 0.1);
+  border-color: var(--color-pink);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 3px;
+}
+
+/* ===========================
+   Shared Daylight Patterns
+   =========================== */
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-pink);
+  margin-bottom: 1.1rem;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.8vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--color-pink-dark);
+  margin-bottom: 1.5rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.form-status {
+  display: none;
+  color: var(--color-pink-dark);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.form-status.show {
+  display: block;
 }
 
 /* ===========================
