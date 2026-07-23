@@ -3,12 +3,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Book3D from '../components/Book3D.astro';
 import { getCollection } from 'astro:content';
 import { getHomepageContent } from '../lib/content';
+import { listResources } from '../lib/resources';
 
-// Get featured resources for preview
-const allResources = await getCollection('resources');
-const previewResources = allResources.filter(r =>
-  ['nbcf', 'komen', 'patient-advocate'].includes(r.slug)
-);
+// Featured resources for the homepage preview. Same source order as
+// /resources: Redis first (carries admin-curated card images), content
+// collection as fallback — otherwise the preview scrapes og-images that
+// don't match the curated cards.
+const PREVIEW_DOMAINS = ['komen.org', 'nationalbreastcancer.org', 'patientadvocate.org'];
+
+interface PreviewResource {
+  title: string;
+  description: string;
+  url: string;
+  imageUrl?: string;
+}
+
+let previewResources: PreviewResource[] = [];
+try {
+  const redisResources = await listResources();
+  previewResources = PREVIEW_DOMAINS.flatMap(domain => {
+    const match = redisResources.find(r => r.url.includes(domain));
+    return match ? [{ title: match.title, description: match.description, url: match.url, imageUrl: match.imageUrl }] : [];
+  });
+} catch (error) {
+  console.error('Redis unavailable for homepage resources preview, falling back:', error);
+}
+
+if (previewResources.length === 0) {
+  const allResources = await getCollection('resources');
+  previewResources = allResources
+    .filter(r => ['nbcf', 'komen', 'patient-advocate'].includes(r.slug))
+    .map(r => ({ title: r.data.title, description: r.data.description, url: r.data.url }));
+}
 
 // Get editable content (from Redis or defaults)
 const content = await getHomepageContent();
@@ -155,11 +181,11 @@ const content = await getHomepageContent();
 
       <div class="resources-preview reveal-stagger">
         {previewResources.map(resource => (
-          <a href={resource.data.url} target="_blank" rel="noopener noreferrer" class="resource-preview-card">
+          <a href={resource.url} target="_blank" rel="noopener noreferrer" class="resource-preview-card">
             <div class="resource-preview__image">
               <img
-                src={`/api/og-image?url=${encodeURIComponent(resource.data.url)}`}
-                alt={resource.data.title}
+                src={resource.imageUrl && resource.imageUrl.trim() !== '' ? resource.imageUrl : `/api/og-image?url=${encodeURIComponent(resource.url)}`}
+                alt={resource.title}
                 width="400"
                 height="200"
                 loading="lazy"
@@ -167,8 +193,8 @@ const content = await getHomepageContent();
               />
             </div>
             <div class="resource-preview__content">
-              <h3>{resource.data.title}</h3>
-              <p>{resource.data.description}</p>
+              <h3>{resource.title}</h3>
+              <p>{resource.description}</p>
             </div>
           </a>
         ))}
