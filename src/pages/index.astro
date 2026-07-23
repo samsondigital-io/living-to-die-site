@@ -389,7 +389,10 @@ const content = await getHomepageContent();
   }
 
   .section--contrast {
-    background: linear-gradient(135deg, var(--color-blush) 0%, var(--color-blush-deep) 100%);
+    /* deepest tone at the top edge so the band separates cleanly from the
+       hero, which ends in the lighter blush */
+    background: linear-gradient(180deg, #f3d5e6 0%, var(--color-blush-deep) 45%, var(--color-blush) 100%);
+    border-top: 1px solid rgba(214, 51, 132, 0.16);
     color: var(--color-soft-black);
   }
 
