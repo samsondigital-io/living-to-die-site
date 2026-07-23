@@ -82,12 +82,6 @@ const content = await getHomepageContent();
         </p>
       </div>
       <div class="summary__side reveal-right">
-        <figure class="polaroid">
-          <img src="/living-to-die-hero-parallax.webp"
-               alt="Painting of Brenda seated on her bed, gazing through a wide window at rolling green hills"
-               width="3600" height="2400" loading="lazy" />
-          <figcaption>The view from her window — where the story begins</figcaption>
-        </figure>
         <aside class="themes">
           <h3>Key Themes</h3>
           <ul>
@@ -476,51 +470,7 @@ const content = await getHomepageContent();
     color: var(--color-text-light);
   }
 
-  /* Taped polaroid — echoes the cover's taped photograph */
-  .polaroid {
-    position: relative;
-    background: #fff;
-    padding: 1.1rem 1.1rem 3.25rem;
-    box-shadow: var(--shadow-xl);
-    transform: rotate(-2.5deg);
-    border-radius: 2px;
-    margin: 0;
-  }
-
-  .polaroid img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 1px;
-  }
-
-  .polaroid figcaption {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0.9rem;
-    text-align: center;
-    font-family: var(--font-body);
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--color-text-light);
-  }
-
-  .polaroid::before,
-  .polaroid::after {
-    content: '';
-    position: absolute;
-    width: 96px;
-    height: 30px;
-    background: rgba(232, 93, 160, 0.28);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
-
-  .polaroid::before { top: -13px; left: -26px; transform: rotate(-38deg); }
-  .polaroid::after  { top: -13px; right: -26px; transform: rotate(38deg); }
-
   .themes {
-    margin-top: 2.5rem;
     background: var(--color-blush);
     border-radius: 16px;
     padding: 2rem 2rem 1.5rem;
@@ -826,11 +776,6 @@ const content = await getHomepageContent();
     .summary {
       grid-template-columns: 1fr;
       gap: 3rem;
-    }
-
-    .polaroid {
-      max-width: 480px;
-      margin: 0 auto;
     }
 
     .author {
