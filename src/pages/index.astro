@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Book3D from '../components/Book3D.astro';
 import { getCollection } from 'astro:content';
 import { getHomepageContent } from '../lib/content';
 import { listResources } from '../lib/resources';
@@ -44,7 +43,13 @@ const content = await getHomepageContent();
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero__book">
-      <Book3D />
+      <img
+        src="/book-cover-3d.webp"
+        alt="Living To Die hardcover — black damask cover with a photograph of Brenda Sawicki, a pink ribbon, and the scales of justice"
+        width="769"
+        height="1157"
+        fetchpriority="high"
+      />
     </div>
     <div class="hero__content">
       <span class="hero__badge">{content.hero_badge}</span>
@@ -266,24 +271,36 @@ const content = await getHomepageContent();
     position: relative;
     display: flex;
     justify-content: center;
-    perspective: 2100px;
   }
 
   .hero__book::after {
     /* floor shadow ellipse */
     content: '';
     position: absolute;
-    bottom: -5%;
+    bottom: -3%;
     left: 50%;
     transform: translateX(-50%);
     width: 74%;
-    height: 9%;
+    height: 8%;
     background: radial-gradient(ellipse at center, rgba(70, 20, 45, 0.25), transparent 70%);
     filter: blur(7px);
+    z-index: 0;
   }
 
-  .hero__book:hover :global(.book3d) {
-    transform: rotateY(16deg) rotateX(1.5deg) translateY(-8px);
+  .hero__book img {
+    position: relative;
+    z-index: 1;
+    width: min(33vw, 500px);
+    height: auto;
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .hero__book:hover img {
+    transform: translateY(-8px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__book img { transition: none; }
   }
 
   .hero__content {
@@ -787,8 +804,8 @@ const content = await getHomepageContent();
       margin-right: auto;
     }
 
-    .hero__book :global(.book3d) {
-      --bk-w: min(62vw, 340px);
+    .hero__book img {
+      width: min(64vw, 360px);
     }
 
     .hero__title {
