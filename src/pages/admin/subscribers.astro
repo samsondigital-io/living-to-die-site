@@ -1,0 +1,280 @@
+---
+// Admin subscribers — full mailing-list view. Read-only; fetched server-side
+// so the MailerLite API key never reaches the browser.
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
+import { getSubscribers, getSubscriberCount } from '../../lib/mailerlite';
+
+if (!verifySessionToken(Astro.cookies.get(COOKIE_NAME)?.value)) {
+  return Astro.redirect('/admin');
+}
+const currentPath = Astro.url.pathname;
+
+const configured = Boolean(import.meta.env.MAILERLITE_API_KEY);
+const [subscribers, totalCount] = configured
+  ? await Promise.all([getSubscribers(), getSubscriberCount()])
+  : [[], null];
+
+const counts = {
+  total: totalCount ?? subscribers.length,
+  active: subscribers.filter((s) => s.status === 'active').length,
+  unsubscribed: subscribers.filter((s) => s.status === 'unsubscribed').length,
+  other: subscribers.filter((s) => !['active', 'unsubscribed'].includes(s.status)).length,
+};
+
+function fmtDate(d: string | null) {
+  if (!d) return '—';
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Subscribers - Living to Die</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; }
+
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 1.5rem 0; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-header h1 { font-size: 1.125rem; font-weight: 600; color: #d63384; }
+    .sidebar-header span { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+    .nav-section { padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+    .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; margin: 0.25rem 0; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
+    .nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-link.active { background: rgba(214, 51, 132, 0.2); color: #d63384; }
+    .nav-link.external { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-link { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; }
+    .logout-link:hover { color: white; }
+
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .page-header h2 { font-size: 1.6rem; color: #333; margin-bottom: 0.25rem; }
+    .page-header p { color: #666; font-size: 0.95rem; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .stat-card { background: white; border-radius: 14px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #eee; }
+    .stat-card--hero { background: linear-gradient(135deg, #8B3A62 0%, #5e2543 100%); color: #fff; border: none; }
+    .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: #888; font-weight: 600; margin-bottom: 0.4rem; }
+    .stat-card--hero .stat-label { color: rgba(255,255,255,0.7); }
+    .stat-value { font-size: 2.1rem; font-weight: 700; line-height: 1; color: #333; }
+    .stat-card--hero .stat-value { color: #fff; }
+
+    .panel { background: white; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #eee; }
+
+    .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+    .toolbar input[type="search"] { flex: 1; min-width: 220px; padding: 0.6rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+    .toolbar input[type="search"]:focus { outline: 2px solid #d63384; outline-offset: 1px; border-color: #d63384; }
+    .toolbar select { padding: 0.6rem 0.9rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; background: #fff; }
+    .toolbar .count { font-size: 0.85rem; color: #888; margin-left: auto; }
+    .export-btn { display: inline-flex; align-items: center; gap: 0.4rem; background: #8B3A62; color: #fff; border: none; padding: 0.6rem 1.1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .export-btn:hover { background: #6d2e4d; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.7rem 0.6rem; font-size: 0.88rem; border-bottom: 1px solid #f2f2f2; white-space: nowrap; }
+    th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #999; font-weight: 600; position: sticky; top: 0; background: #fff; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .email-cell { color: #333; font-weight: 500; }
+    .muted { color: #999; }
+
+    .badge { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; text-transform: capitalize; }
+    .badge--active { background: #d4edda; color: #1e7b34; }
+    .badge--unsubscribed { background: #f8d7da; color: #a12622; }
+    .badge--unconfirmed { background: #fff3cd; color: #856404; }
+    .badge--bounced, .badge--junk { background: #e2e3e5; color: #555; }
+    .badge--unknown { background: #e2e3e5; color: #555; }
+
+    .empty { color: #888; padding: 2.5rem 0; text-align: center; }
+    .notice { background: #fff3cd; color: #856404; padding: 1rem 1.25rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .sidebar-nav { display: flex; gap: 0.5rem; overflow-x: auto; }
+      .nav-section { padding: 0; display: flex; gap: 0.5rem; }
+      .nav-section-title { display: none; }
+      .main-content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>Admin</span>
+        <h1>Living to Die</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <p class="nav-section-title">Overview</p>
+          <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Content</p>
+          <a href="/admin" class="nav-link">Homepage</a>
+          <a href="/admin/resources" class="nav-link">Resources</a>
+          <a href="/admin/posts" class="nav-link">Blog Posts</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Communication</p>
+          <a href="/admin/newsletter" class="nav-link">Send Newsletter</a>
+          <a href="/admin/subscribers" class={`nav-link ${currentPath.includes('subscribers') ? 'active' : ''}`}>Subscribers</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">External</p>
+          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">MailerLite</a>
+          <a href="/" target="_blank" class="nav-link external">View Website</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/admin/logout" class="logout-link">Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h2>Subscribers</h2>
+          <p>Everyone on your mailing list, newest first.</p>
+        </div>
+        {subscribers.length > 0 && (
+          <button type="button" class="export-btn" id="export-csv">Download CSV</button>
+        )}
+      </div>
+
+      {!configured && (
+        <div class="notice">Subscribers aren't available right now (MailerLite isn't configured).</div>
+      )}
+
+      {configured && (
+        <div class="stat-grid">
+          <div class="stat-card stat-card--hero">
+            <div class="stat-label">Total</div>
+            <div class="stat-value">{counts.total.toLocaleString()}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active</div>
+            <div class="stat-value">{counts.active.toLocaleString()}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Unsubscribed</div>
+            <div class="stat-value">{counts.unsubscribed.toLocaleString()}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Other</div>
+            <div class="stat-value">{counts.other.toLocaleString()}</div>
+          </div>
+        </div>
+      )}
+
+      {configured && (
+        <div class="panel">
+          <div class="toolbar">
+            <label for="sub-search" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Search subscribers</label>
+            <input type="search" id="sub-search" placeholder="Search email or name…" autocomplete="off" />
+            <select id="sub-status" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="unsubscribed">Unsubscribed</option>
+              <option value="unconfirmed">Unconfirmed</option>
+              <option value="bounced">Bounced</option>
+              <option value="junk">Junk</option>
+            </select>
+            <span class="count" id="sub-count">{subscribers.length.toLocaleString()} shown</span>
+          </div>
+
+          {subscribers.length === 0 ? (
+            <div class="empty">No subscribers yet — they'll appear here as people sign up.</div>
+          ) : (
+            <div class="table-wrap">
+              <table id="sub-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Subscribed</th>
+                    <th class="num">Opens</th>
+                    <th class="num">Open rate</th>
+                    <th class="num">Click rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subscribers.map((s) => (
+                    <tr data-email={s.email.toLowerCase()} data-name={(s.name ?? '').toLowerCase()} data-status={s.status}>
+                      <td class="email-cell">{s.email}</td>
+                      <td>{s.name ?? <span class="muted">—</span>}</td>
+                      <td><span class={`badge badge--${['active','unsubscribed','unconfirmed','bounced','junk'].includes(s.status) ? s.status : 'unknown'}`}>{s.status}</span></td>
+                      <td class="muted">{s.source ?? '—'}</td>
+                      <td>{fmtDate(s.subscribedAt)}</td>
+                      <td class="num">{s.opensCount ?? '—'}</td>
+                      <td class="num">{s.openRate ?? '—'}</td>
+                      <td class="num">{s.clickRate ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+    </main>
+  </div>
+
+  <script define:vars={{ subscribers }}>
+    // Client-side search + status filter over the server-rendered rows.
+    const search = document.getElementById('sub-search');
+    const statusSel = document.getElementById('sub-status');
+    const countEl = document.getElementById('sub-count');
+    const rows = Array.from(document.querySelectorAll('#sub-table tbody tr'));
+
+    function applyFilters() {
+      const q = (search?.value ?? '').trim().toLowerCase();
+      const status = statusSel?.value ?? '';
+      let shown = 0;
+      for (const row of rows) {
+        const matchesText = !q || row.dataset.email.includes(q) || row.dataset.name.includes(q);
+        const matchesStatus = !status || row.dataset.status === status;
+        const visible = matchesText && matchesStatus;
+        row.style.display = visible ? '' : 'none';
+        if (visible) shown++;
+      }
+      if (countEl) countEl.textContent = `${shown.toLocaleString()} shown`;
+    }
+
+    search?.addEventListener('input', applyFilters);
+    statusSel?.addEventListener('change', applyFilters);
+
+    // CSV export of the full list (not just the filtered view).
+    document.getElementById('export-csv')?.addEventListener('click', () => {
+      const header = ['Email', 'Name', 'Status', 'Source', 'Subscribed', 'Opens', 'Open rate', 'Click rate'];
+      const esc = (v) => {
+        const s = v == null ? '' : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const lines = [header.join(',')].concat(
+        subscribers.map((s) =>
+          [s.email, s.name, s.status, s.source, s.subscribedAt, s.opensCount, s.openRate, s.clickRate].map(esc).join(',')
+        )
+      );
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `subscribers-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+  </script>
+</body>
+</html>

@@ -354,6 +354,66 @@ export async function getRecentCampaigns(limit = 5): Promise<CampaignStat[]> {
   }
 }
 
+export interface SubscriberRow {
+  id: string;
+  email: string;
+  name: string | null;
+  status: string; // active | unsubscribed | unconfirmed | bounced | junk
+  source: string | null;
+  subscribedAt: string | null;
+  opensCount: number | null;
+  clicksCount: number | null;
+  openRate: string | null;
+  clickRate: string | null;
+}
+
+function toSubscriberRow(s: any): SubscriberRow {
+  const fullName = [s?.fields?.name, s?.fields?.last_name].filter(Boolean).join(' ');
+  return {
+    id: String(s?.id ?? ''),
+    email: s?.email ?? '',
+    name: fullName || null,
+    status: s?.status ?? 'unknown',
+    source: s?.source ?? null,
+    subscribedAt: s?.subscribed_at ?? s?.created_at ?? null,
+    opensCount: typeof s?.opens_count === 'number' ? s.opens_count : null,
+    clicksCount: typeof s?.clicks_count === 'number' ? s.clicks_count : null,
+    openRate: pct(s?.open_rate),
+    clickRate: pct(s?.click_rate),
+  };
+}
+
+/**
+ * All subscribers, newest first. Pages through MailerLite's cursor API,
+ * fail-soft to an empty list. Capped at `max` rows as a runaway guard.
+ */
+export async function getSubscribers(max = 2000): Promise<SubscriberRow[]> {
+  const ml = getMailerLiteClient();
+  if (!ml) return [];
+  const rows: SubscriberRow[] = [];
+  try {
+    let cursor: string | undefined;
+    for (let page = 0; page < Math.ceil(max / 100); page++) {
+      const params: any = { limit: 100 };
+      if (cursor) params.cursor = cursor;
+      const res: any = await ml.subscribers.get(params);
+      const list: any[] = res?.data?.data ?? res?.data ?? [];
+      rows.push(...list.map(toSubscriberRow));
+      cursor = res?.data?.meta?.next_cursor ?? undefined;
+      if (!cursor || list.length === 0 || rows.length >= max) break;
+    }
+  } catch (error) {
+    console.error('getSubscribers failed:', error);
+  }
+  return rows
+    .slice(0, max)
+    .sort((a, b) => {
+      const ta = a.subscribedAt ? new Date(a.subscribedAt).getTime() : 0;
+      const tb = b.subscribedAt ? new Date(b.subscribedAt).getTime() : 0;
+      return tb - ta;
+    });
+}
+
 /** Everything the admin dashboard needs, gathered in parallel and fail-soft. */
 export async function getDashboardStats(): Promise<DashboardStats> {
   const apiKey = import.meta.env.MAILERLITE_API_KEY;
