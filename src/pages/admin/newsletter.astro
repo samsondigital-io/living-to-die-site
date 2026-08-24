@@ -1,159 +1,94 @@
 ---
-// Newsletter admin page - compose and send newsletters
 import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
 
 if (!verifySessionToken(Astro.cookies.get(COOKIE_NAME)?.value)) {
   return Astro.redirect('/admin');
 }
-
-const currentPath = Astro.url.pathname;
 ---
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Send Newsletter - Living to Die</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Write a Newsletter - Living to Die</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #f8f9fa;
-      min-height: 100vh;
-    }
-
-    /* Admin Layout */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-      color: white;
-      padding: 1.5rem 0;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .sidebar-header {
-      padding: 0 1.5rem 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .sidebar-header h1 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #d63384;
-    }
-    .sidebar-header span {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.5);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 1.5rem 0; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-header h1 { font-size: 1.125rem; font-weight: 600; color: #d63384; }
+    .sidebar-header span { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
     .sidebar-nav { flex: 1; padding: 1rem 0; }
     .nav-section { padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; }
-    .nav-section-title {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: rgba(255,255,255,0.4);
-      margin-bottom: 0.75rem;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      margin: 0.25rem 0;
-      color: rgba(255,255,255,0.7);
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+    .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; margin: 0.25rem 0; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
     .nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
     .nav-link.active { background: rgba(214, 51, 132, 0.2); color: #d63384; }
     .nav-link svg { width: 18px; height: 18px; opacity: 0.8; }
     .nav-link.external { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
-    .nav-link.external:hover { color: rgba(255,255,255,0.8); }
-
-    .sidebar-footer {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .logout-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: rgba(255,255,255,0.5);
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: color 0.2s;
-    }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-link { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; }
     .logout-link:hover { color: white; }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    .page-header { margin-bottom: 2rem; }
-    .page-header h2 {
-      font-size: 1.5rem;
-      color: #333;
-      margin-bottom: 0.25rem;
-    }
-    .page-header p { color: #666; font-size: 0.9rem; }
-
-    /* Form Styles */
-    .section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      border: 1px solid #eee;
-    }
-    .section h3 {
-      font-size: 1rem;
-      color: #8B3A62;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .field { margin-bottom: 1.25rem; }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .main-content-inner { max-width: 900px; }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.6rem; color: #333; margin-bottom: 0.25rem; }
+    .page-header p { color: #666; font-size: 0.95rem; }
+    .status { display: none; padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.95rem; }
+    .status.success { display: block; background: #e6f4ea; color: #1e7d34; }
+    .status.error { display: block; background: #fdecea; color: #b3261e; }
+    .section { background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #eee; }
+    .section h3 { font-size: 1rem; color: #8B3A62; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0f0f0; }
+    .field { margin-bottom: 1rem; }
     .field:last-child { margin-bottom: 0; }
-    label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-      color: #444;
-      font-size: 0.875rem;
-    }
-    .label-hint {
-      font-weight: normal;
-      color: #888;
-      font-size: 0.8rem;
-    }
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .checkbox-label input { width: auto; margin: 0; }
-
-    /* Reusable image picker widget */
+    .field label { display: block; font-weight: 600; color: #333; margin-bottom: 0.4rem; font-size: 0.9rem; }
+    .field input[type=text], .field input[type=email] { width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+    .hint { font-weight: 400; color: #888; font-size: 0.8rem; }
+    .req { color: #b3261e; }
+    .editor-toolbar { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.5rem; border: 1px solid #eee; border-bottom: none; border-radius: 8px 8px 0 0; background: #fafafa; }
+    .editor-toolbar button { padding: 0.35rem 0.6rem; border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #333; }
+    .editor-toolbar button:hover { background: #eee; }
+    .editor-toolbar .sep { width: 1px; background: #ddd; margin: 0 0.25rem; }
+    .editor { min-height: 320px; max-height: 60vh; overflow-y: auto; padding: 1rem 1.25rem; border: 1px solid #eee; border-radius: 0 0 8px 8px; font-family: Georgia, 'Times New Roman', serif; font-size: 1.05rem; line-height: 1.7; color: #1a1a1a; outline: none; background: #fff; }
+    .editor:empty:before { content: attr(data-placeholder); color: #aaa; font-style: italic; }
+    .editor h2, .editor h3 { color: #8B3A62; margin: 1.2rem 0 0.5rem; font-family: system-ui, -apple-system, sans-serif; }
+    .editor p { margin: 0 0 0.9rem; }
+    .editor ul, .editor ol { margin: 0 0 0.9rem 1.5rem; }
+    .editor a { color: #d63384; }
+    .editor blockquote { border-left: 3px solid #d63384; margin: 0.9rem 0; padding: 0.25rem 0 0.25rem 1rem; color: #555; font-style: italic; }
+    .editor img { max-width: 100%; height: auto; border-radius: 6px; }
+    .action-bar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; position: sticky; bottom: 0; background: #f8f9fa; padding: 1rem 0; }
+    .action-bar .spacer { flex: 1; }
+    .test-email { padding: 0.65rem 0.75rem; border: 1px solid #ddd; border-radius: 8px; width: 240px; font-size: 0.9rem; }
+    .btn { padding: 0.7rem 1.15rem; font-size: 0.9rem; border-radius: 8px; cursor: pointer; border: none; font-weight: 500; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-primary { background: #8B3A62; color: white; }
+    .btn-primary:hover { background: #6d2e4d; }
+    .btn-secondary { background: #e9e9e9; color: #333; }
+    .btn-secondary:hover { background: #ddd; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-small { padding: 0.4rem 0.75rem; font-size: 0.8rem; border-radius: 6px; }
+    .editing-indicator { display: none; align-items: center; gap: 1rem; background: #fff7e6; border: 1px solid #ffe2b8; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; }
+    .editing-indicator.visible { display: flex; }
+    .editing-indicator button { margin-left: auto; background: none; border: none; color: #8B3A62; cursor: pointer; font-weight: 600; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 2rem; }
+    .modal.visible { display: flex; }
+    .modal__box { background: white; border-radius: 12px; width: 100%; max-width: 520px; max-height: 85vh; display: flex; flex-direction: column; }
+    .modal__box--wide { max-width: 720px; }
+    .modal__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid #eee; }
+    .modal__head h3 { color: #333; }
+    .modal__head > div { display: flex; gap: 0.5rem; }
+    .preview-frame { padding: 1rem; display: flex; justify-content: center; background: #eef0f2; overflow: auto; }
+    .preview-frame iframe { border: none; width: 100%; max-width: 600px; height: 70vh; background: white; border-radius: 4px; }
+    .preview-frame.mobile iframe { max-width: 375px; }
+    .drafts-list { padding: 1rem; overflow-y: auto; }
+    .draft-item { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0.75rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 0.6rem; }
+    .draft-item .draft-subject { font-weight: 600; color: #333; flex: 1; cursor: pointer; }
+    .draft-item .draft-date { color: #888; font-size: 0.8rem; }
+    .drafts-empty { color: #888; padding: 1rem; text-align: center; }
     .ip__row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .ip__prompt { flex: 1; min-width: 180px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; }
     .ip__or { color: #888; font-size: 0.85rem; }
@@ -162,323 +97,10 @@ const currentPath = Astro.url.pathname;
     .ip__remove { background: none; border: none; color: #8B3A62; cursor: pointer; font-size: 0.85rem; padding: 0; }
     .ip__status { font-size: 0.85rem; margin-top: 0.4rem; }
     .ip__upload { display: inline-block; }
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 0.65rem 0.875rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    textarea { min-height: 100px; resize: vertical; }
-    textarea.large { min-height: 150px; }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #8B3A62;
-      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
-    }
-
-    .optional-section {
-      border-top: 1px solid #f0f0f0;
-      padding-top: 1.25rem;
-      margin-top: 1.25rem;
-    }
-    .optional-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #888;
-      margin-bottom: 0.75rem;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-    .btn {
-      padding: 0.875rem 1.5rem;
-      font-size: 0.95rem;
-      border-radius: 8px;
-      cursor: pointer;
-      border: none;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .btn-primary { background: #8B3A62; color: white; }
-    .btn-primary:hover { background: #6d2e4d; }
-    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
-    .btn-secondary { background: #e9e9e9; color: #333; }
-    .btn-secondary:hover { background: #ddd; }
-    .btn-small {
-      padding: 0.4rem 0.75rem;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-small { background: #e9e9e9; color: #333; }
-    .btn-small:hover { background: #ddd; }
-    .btn-danger { background: #dc3545; color: white; }
-    .btn-danger:hover { background: #c82333; }
-    .btn-schedule { background: #0d6efd; color: white; }
-    .btn-schedule:hover { background: #0b5ed7; }
-    .btn-schedule:disabled { background: #ccc; cursor: not-allowed; }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal.visible { display: flex; }
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      max-width: 550px;
-      width: 90%;
-      max-height: 80vh;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #eee;
-    }
-    .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #666;
-      line-height: 1;
-    }
-    .modal-close:hover { color: #333; }
-    .modal-body {
-      padding: 1rem 1.25rem;
-      max-height: 60vh;
-      overflow-y: auto;
-    }
-
-    /* Draft list */
-    .draft-list { }
-    .draft-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid #f0f0f0;
-      gap: 1rem;
-    }
-    .draft-item:last-child { border-bottom: none; }
-    .draft-item:hover { background: #fafafa; margin: 0 -1.25rem; padding: 0.75rem 1.25rem; }
-    .draft-info { flex: 1; min-width: 0; }
-    .draft-subject {
-      display: block;
-      font-weight: 500;
-      color: #333;
-      margin-bottom: 0.25rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .draft-meta {
-      font-size: 0.75rem;
-      color: #888;
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .draft-status {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-    .status-draft { background: #e9e9e9; color: #666; }
-    .status-scheduled { background: #cfe2ff; color: #084298; }
-    .status-sent { background: #d1e7dd; color: #0f5132; }
-    .draft-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
-    .draft-empty { text-align: center; color: #888; padding: 2rem 0; }
-
-    /* Editing indicator */
-    .editing-indicator {
-      display: none;
-      background: #fff3cd;
-      color: #856404;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-    }
-    .editing-indicator.visible { display: flex; justify-content: space-between; align-items: center; }
-    .editing-indicator button {
-      background: none;
-      border: none;
-      color: #856404;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .editing-indicator button:hover { text-decoration: underline; }
-
-    .status {
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: none;
-    }
-    .status.success { display: block; background: #d4edda; color: #155724; }
-    .status.error { display: block; background: #f8d7da; color: #721c24; }
-    .status a { color: inherit; font-weight: 500; }
-
-    /* Preview */
-    .preview-container {
-      display: none;
-      margin-top: 1.5rem;
-    }
-    .preview-container.visible { display: block; }
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .preview-header h3 { margin: 0; color: #333; font-size: 1rem; }
-    .preview-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #666;
-      line-height: 1;
-    }
-    .preview-frame {
-      background: #fdfdf9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 2rem;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    .preview-email {
-      background: white;
-      max-width: 500px;
-      margin: 0 auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      font-family: Georgia, serif;
-      font-size: 15px;
-    }
-    .preview-email-header {
-      background: #fef7fb;
-      padding: 1.5rem;
-      text-align: center;
-      border-radius: 8px 8px 0 0;
-    }
-    .preview-email-header .brand {
-      font-family: Arial, sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      color: #4a4a4a;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 0.25rem;
-    }
-    .preview-email-header h4 {
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-      color: #d63384;
-      margin: 0 0 0.25rem;
-    }
-    .preview-email-header .issue-info { font-size: 13px; color: #4a4a4a; }
-    .preview-email-body { padding: 1.5rem; }
-    .preview-email-body p { line-height: 1.6; color: #1a1a1a; margin-bottom: 0.75rem; }
-    .preview-email-body h5 {
-      font-family: Arial, sans-serif;
-      font-size: 16px;
-      color: #1a1a1a;
-      margin: 1.25rem 0 0.5rem;
-    }
-    .preview-email-footer {
-      background: #fef7fb;
-      padding: 1rem;
-      text-align: center;
-      border-radius: 0 0 8px 8px;
-      font-size: 12px;
-      color: #4a4a4a;
-    }
-    .preview-email-footer a { color: #d63384; }
-    .preview-signature {
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid #fdf2f7;
-    }
-    .preview-signature .gratitude { color: #1a1a1a; margin-bottom: 0.25rem; }
-    .preview-signature .name { font-style: italic; color: #d63384; font-size: 16px; }
-
-    /* Datetime input */
-    input[type="datetime-local"] {
-      width: 100%;
-      padding: 0.65rem 0.875rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input[type="datetime-local"]:focus {
-      outline: none;
-      border-color: #8B3A62;
-      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1);
-    }
-
-    /* Queue section */
-    .queue-section {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-    }
-    .queue-list { }
-    .queue-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      background: white;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      border: 1px solid #eee;
-    }
-    .queue-item:last-child { margin-bottom: 0; }
-    .queue-info { flex: 1; }
-    .queue-subject { font-weight: 500; color: #333; display: block; margin-bottom: 0.15rem; }
-    .queue-date { font-size: 0.8rem; color: #0d6efd; }
-    .queue-actions { display: flex; gap: 0.5rem; }
-    .queue-empty { text-align: center; color: #888; padding: 1rem 0; font-size: 0.9rem; }
-
-    /* Responsive */
     @media (max-width: 768px) {
       .admin-layout { flex-direction: column; }
-      .sidebar { width: 100%; padding: 1rem; }
-      .sidebar-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem; }
-      .nav-section { padding: 0; display: flex; gap: 0.5rem; }
-      .nav-section-title { display: none; }
-      .main-content { padding: 1rem; }
-      .button-row { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .test-email { width: 100%; }
     }
   </style>
 </head>
@@ -489,7 +111,6 @@ const currentPath = Astro.url.pathname;
         <span>Admin</span>
         <h1>Living to Die</h1>
       </div>
-
       <nav class="sidebar-nav">
         <div class="nav-section">
           <p class="nav-section-title">Overview</p>
@@ -501,847 +122,356 @@ const currentPath = Astro.url.pathname;
         <div class="nav-section">
           <p class="nav-section-title">Content</p>
           <a href="/admin" class="nav-link">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             Homepage
           </a>
-          <a href="/admin/resources" class={`nav-link ${currentPath.includes('resources') ? 'active' : ''}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
+          <a href="/admin/resources" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             Resources
           </a>
-          <a href="/admin/posts" class={`nav-link ${currentPath.includes('posts') ? 'active' : ''}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-            </svg>
+          <a href="/admin/posts" class="nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
             Blog Posts
           </a>
         </div>
-
         <div class="nav-section">
           <p class="nav-section-title">Communication</p>
           <a href="/admin/newsletter" class="nav-link active">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             Send Newsletter
           </a>
           <a href="/admin/subscribers" class="nav-link">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Subscribers
           </a>
         </div>
-
         <div class="nav-section">
           <p class="nav-section-title">External</p>
-          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-            MailerLite Dashboard
-          </a>
-          <a href="/" target="_blank" class="nav-link external">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-            View Website
-          </a>
+          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">MailerLite</a>
+          <a href="/" target="_blank" class="nav-link external">View Website</a>
         </div>
       </nav>
-
       <div class="sidebar-footer">
-        <a href="/admin/logout" class="logout-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-          Sign Out
-        </a>
+        <a href="/admin/logout" class="logout-link">Sign Out</a>
       </div>
     </aside>
 
     <main class="main-content">
-      <div class="page-header">
-        <h2>Send Newsletter</h2>
-        <p>Compose and send a newsletter to all subscribers</p>
-      </div>
+      <div class="main-content-inner">
+        <div class="page-header">
+          <h2>Write a Newsletter</h2>
+          <p>Write it like a letter — we handle the rest.</p>
+        </div>
 
-      <div id="status" class="status"></div>
+        <div id="status" class="status"></div>
 
-      <div class="editing-indicator" id="editing-indicator">
-        <span>Editing: <strong id="editing-subject"></strong></span>
-        <button type="button" id="clear-editing">Clear &amp; Start New</button>
-      </div>
+        <div class="editing-indicator" id="editing-indicator">
+          <span>Editing: <strong id="editing-subject"></strong></span>
+          <button type="button" id="clear-editing">Start New</button>
+        </div>
 
-      <form id="newsletter-form">
         <div class="section">
-          <h3>Email Details</h3>
           <div class="field">
-            <label for="subject">Subject Line</label>
-            <input type="text" id="subject" name="subject" placeholder="e.g., A Reflection on Mortality" required />
+            <label for="subject">Subject line <span class="req">*</span></label>
+            <input type="text" id="subject" placeholder="e.g. The book is here" />
           </div>
           <div class="field">
-            <label for="preheader">
-              Preheader Text
-              <span class="label-hint">— preview text shown in inbox</span>
-            </label>
-            <input type="text" id="preheader" name="preheader" placeholder="e.g., This week's thoughts on living fully..." required />
-          </div>
-          <div class="field">
-            <label for="issueInfo">
-              Issue Info
-              <span class="label-hint">— shown in email header</span>
-            </label>
-            <input type="text" id="issueInfo" name="issueInfo" placeholder="e.g., Issue #1 | March 2026" />
+            <label for="title">Blog title <span class="hint">(optional — same as subject if left blank)</span></label>
+            <input type="text" id="title" placeholder="Same as subject" />
           </div>
         </div>
 
         <div class="section">
-          <h3>Content</h3>
-          <div class="field">
-            <label for="openingParagraph">Opening Paragraph</label>
-            <textarea id="openingParagraph" name="openingParagraph" placeholder="A personal greeting or introduction..." required></textarea>
+          <h3>Your writing <span class="hint">— type here or paste from Google Docs</span></h3>
+          <div class="editor-toolbar">
+            <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+            <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+            <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+            <span class="sep"></span>
+            <button type="button" data-cmd="formatBlock" data-val="h2" title="Heading">H2</button>
+            <button type="button" data-cmd="formatBlock" data-val="h3" title="Subheading">H3</button>
+            <button type="button" data-cmd="formatBlock" data-val="p" title="Paragraph">P</button>
+            <span class="sep"></span>
+            <button type="button" data-cmd="insertUnorderedList" title="Bulleted list">&#8226; List</button>
+            <button type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+            <button type="button" data-cmd="formatBlock" data-val="blockquote" title="Quote">&#10077;</button>
+            <span class="sep"></span>
+            <button type="button" data-cmd="createLink" title="Add a link">Link</button>
+            <button type="button" data-cmd="removeFormat" title="Clear formatting">Clear</button>
           </div>
-          <div class="field">
-            <label for="section1Title">Main Section Title</label>
-            <input type="text" id="section1Title" name="section1Title" placeholder="e.g., This Week's Reflection" required />
-          </div>
-          <div class="field">
-            <label for="section1Content">Main Section Content</label>
-            <textarea id="section1Content" name="section1Content" class="large" placeholder="The main content of your newsletter..." required></textarea>
-          </div>
-
-          <div class="optional-section">
-            <p class="optional-label">Optional: Second Section</p>
-            <div class="field">
-              <label for="section2Title">Second Section Title</label>
-              <input type="text" id="section2Title" name="section2Title" placeholder="e.g., Book Update" />
-            </div>
-            <div class="field">
-              <label for="section2Content">Second Section Content</label>
-              <textarea id="section2Content" name="section2Content" placeholder="Additional content..."></textarea>
-            </div>
-          </div>
-
-          <div class="optional-section">
-            <p class="optional-label">Optional: Call to Action</p>
-            <div class="field">
-              <label for="ctaText">Button Text</label>
-              <input type="text" id="ctaText" name="ctaText" placeholder="e.g., Read More" />
-            </div>
-            <div class="field">
-              <label for="ctaUrl">Button Link</label>
-              <input type="text" id="ctaUrl" name="ctaUrl" placeholder="e.g., https://dianemelton.com/blog/..." />
-            </div>
-          </div>
+          <div id="editor" class="editor" contenteditable="true" data-placeholder="Write or paste your newsletter here&#8230;"></div>
         </div>
-
         <div class="section">
-          <h3>Closing</h3>
+          <h3>Blog options <span class="hint">(optional)</span></h3>
           <div class="field">
-            <label for="closingMessage">Closing Message</label>
-            <textarea id="closingMessage" name="closingMessage" placeholder="A warm sign-off..." required></textarea>
-          </div>
-        </div>
-
-        <div class="section" id="blog-section">
-          <h3>Blog</h3>
-          <div class="field">
-            <label>
-              Header image
-              <span class="label-hint">— optional; shown on the blog post</span>
-            </label>
-            <div id="hero-image-picker"></div>
-            <input type="hidden" id="heroImage" name="heroImage" />
+            <label>Featured image</label>
+            <div id="hero-picker"></div>
+            <input type="hidden" id="heroImage" />
           </div>
           <div class="field">
-            <label for="tags">
-              Tags
-              <span class="label-hint">— comma separated; helps readers browse the blog</span>
-            </label>
-            <input type="text" id="tags" name="tags" placeholder="e.g., Book Updates, Events" />
-          </div>
-          <div class="field">
-            <label class="checkbox-label">
-              <input type="checkbox" id="publishToBlog" checked />
-              Publish this to the blog when sent
-            </label>
+            <label for="tags">Tags <span class="hint">(comma separated)</span></label>
+            <input type="text" id="tags" placeholder="Book Updates, Events" />
           </div>
         </div>
 
-        <div class="section" id="schedule-section">
-          <h3>Schedule (Optional)</h3>
-          <div class="field">
-            <label for="scheduledFor">
-              Send At
-              <span class="label-hint">— leave empty to send immediately or save as draft</span>
-            </label>
-            <input type="datetime-local" id="scheduledFor" name="scheduledFor" />
-          </div>
-        </div>
-
-        <div class="button-row">
-          <button type="button" class="btn btn-secondary" id="preview-btn">Preview Email</button>
-          <button type="button" class="btn btn-secondary" id="save-draft-btn">Save Draft</button>
-          <button type="button" class="btn btn-secondary" id="load-draft-btn">Load Draft</button>
-          <button type="button" class="btn btn-schedule" id="schedule-btn" disabled>Schedule</button>
-          <button type="submit" class="btn btn-primary" id="send-btn">Send Now</button>
-        </div>
-      </form>
-
-      <div class="section queue-section" id="queue-section">
-        <h3>Scheduled Queue</h3>
-        <div class="queue-list" id="queue-list"></div>
-        <p class="queue-empty" id="queue-empty">No newsletters scheduled</p>
-      </div>
-
-      <div class="preview-container section" id="preview-container">
-        <div class="preview-header">
-          <h3>Email Preview</h3>
-          <button class="preview-close" id="preview-close">&times;</button>
-        </div>
-        <div class="preview-frame">
-          <div class="preview-email">
-            <div class="preview-email-header">
-              <p class="brand">Living to Die</p>
-              <h4>Newsletter</h4>
-              <p class="issue-info" id="preview-issue-info"></p>
-            </div>
-            <div class="preview-email-body">
-              <p>Dear Reader,</p>
-              <p id="preview-opening"></p>
-              <h5 id="preview-section1-title"></h5>
-              <p id="preview-section1-content"></p>
-              <div id="preview-section2" style="display: none;">
-                <h5 id="preview-section2-title"></h5>
-                <p id="preview-section2-content"></p>
-              </div>
-              <div class="preview-signature">
-                <p id="preview-closing"></p>
-                <p class="gratitude">With gratitude,</p>
-                <p class="name">Diane Melton</p>
-              </div>
-            </div>
-            <div class="preview-email-footer">
-              <p><a href="#">Visit Website</a></p>
-              <p>You're receiving this because you signed up at dianemelton.com</p>
-              <p><a href="#">Unsubscribe</a></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Draft Modal -->
-      <div class="modal" id="draft-modal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Saved Drafts</h3>
-            <button class="modal-close" id="modal-close">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="draft-list" id="draft-list"></div>
-          </div>
+        <div class="action-bar">
+          <button type="button" class="btn btn-secondary" id="save-draft">Save draft</button>
+          <button type="button" class="btn btn-secondary" id="open-drafts">Open drafts</button>
+          <button type="button" class="btn btn-secondary" id="preview-btn">Preview</button>
+          <span class="spacer"></span>
+          <input type="email" id="test-email" class="test-email" placeholder="test@email.com" />
+          <button type="button" class="btn btn-secondary" id="send-test">Send test</button>
+          <button type="button" class="btn btn-primary" id="send-now">Send to subscribers</button>
         </div>
       </div>
     </main>
   </div>
 
+  <div class="modal" id="preview-modal">
+    <div class="modal__box modal__box--wide">
+      <div class="modal__head">
+        <h3>Preview</h3>
+        <div>
+          <button type="button" class="btn btn-small btn-secondary" id="preview-mobile">Phone</button>
+          <button type="button" class="btn btn-small btn-secondary" id="preview-desktop">Desktop</button>
+          <button type="button" class="btn btn-small" id="preview-close">Close</button>
+        </div>
+      </div>
+      <div class="preview-frame" id="preview-frame">
+        <iframe id="preview-iframe" title="Newsletter preview"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="drafts-modal">
+    <div class="modal__box">
+      <div class="modal__head">
+        <h3>Your drafts</h3>
+        <button type="button" class="btn btn-small" id="drafts-close">Close</button>
+      </div>
+      <div id="drafts-list" class="drafts-list"></div>
+    </div>
+  </div>
   <script src="/admin/image-picker.js" is:inline></script>
   <script>
-    // DOM Elements
-    const form = document.getElementById('newsletter-form');
-    const status = document.getElementById('status');
-    const sendBtn = document.getElementById('send-btn');
-    const previewBtn = document.getElementById('preview-btn');
-    const previewContainer = document.getElementById('preview-container');
-    const previewClose = document.getElementById('preview-close');
-    const saveDraftBtn = document.getElementById('save-draft-btn');
-    const loadDraftBtn = document.getElementById('load-draft-btn');
-    const scheduleBtn = document.getElementById('schedule-btn');
-    const scheduledForInput = document.getElementById('scheduledFor');
-    const draftModal = document.getElementById('draft-modal');
-    const modalClose = document.getElementById('modal-close');
-    const draftList = document.getElementById('draft-list');
-    const queueList = document.getElementById('queue-list');
-    const queueEmpty = document.getElementById('queue-empty');
+    const subjectEl = document.getElementById('subject');
+    const titleEl = document.getElementById('title');
+    const editorEl = document.getElementById('editor');
+    const tagsEl = document.getElementById('tags');
+    const heroImageEl = document.getElementById('heroImage');
+    const testEmailEl = document.getElementById('test-email');
+    const statusEl = document.getElementById('status');
     const editingIndicator = document.getElementById('editing-indicator');
     const editingSubject = document.getElementById('editing-subject');
-    const clearEditingBtn = document.getElementById('clear-editing');
+    let editingId = null;
 
-    // State
-    let currentDraftId = null;
-    let formDirty = false;
-
-    // Track form changes
-    form.addEventListener('input', () => { formDirty = true; });
-
-    // Enable/disable schedule button based on datetime
-    scheduledForInput.addEventListener('change', () => {
-      scheduleBtn.disabled = !scheduledForInput.value;
-    });
-
-    // Helper: Format date for display
-    function formatDate(isoString) {
-      const date = new Date(isoString);
-      return date.toLocaleDateString('en-US', {
-        month: 'short', day: 'numeric', year: 'numeric',
-        hour: 'numeric', minute: '2-digit'
-      });
+    function showStatus(msg, type) {
+      statusEl.className = 'status ' + (type || '');
+      statusEl.textContent = msg;
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(() => { statusEl.className = 'status'; }, 6000);
     }
 
-    // Helper: Get form data as object
-    function getFormData() {
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // Use <p> for Enter (cleaner email HTML than the default <div>).
+    try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+
+    document.querySelectorAll('.editor-toolbar [data-cmd]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.dataset.cmd;
+        if (cmd === 'createLink') {
+          const url = prompt('Link URL (https://…):');
+          if (url) { document.execCommand('createLink', false, url); }
+        } else {
+          document.execCommand(cmd, false, btn.dataset.val || null);
+        }
+        editorEl.focus();
+      });
+    });
+
+    function getPayload() {
       return {
-        subject: document.getElementById('subject').value,
-        preheader: document.getElementById('preheader').value,
-        issueInfo: document.getElementById('issueInfo').value || undefined,
-        openingParagraph: document.getElementById('openingParagraph').value,
-        section1Title: document.getElementById('section1Title').value,
-        section1Content: document.getElementById('section1Content').value,
-        section2Title: document.getElementById('section2Title').value || undefined,
-        section2Content: document.getElementById('section2Content').value || undefined,
-        ctaUrl: document.getElementById('ctaUrl').value || undefined,
-        ctaText: document.getElementById('ctaText').value || undefined,
-        closingMessage: document.getElementById('closingMessage').value,
-        tags: document.getElementById('tags').value
-          .split(',').map(t => t.trim()).filter(Boolean),
-        publishToBlog: document.getElementById('publishToBlog').checked,
-        heroImage: document.getElementById('heroImage').value || undefined,
+        subject: subjectEl.value.trim(),
+        title: titleEl.value.trim(),
+        bodyHtml: editorEl.innerHTML,
+        heroImage: heroImageEl.value || undefined,
+        tags: tagsEl.value.split(',').map(t => t.trim()).filter(Boolean),
       };
     }
 
-    // Helper: Fill form from draft
-    function fillFormFromDraft(draft) {
-      document.getElementById('subject').value = draft.subject || '';
-      document.getElementById('preheader').value = draft.preheader || '';
-      document.getElementById('issueInfo').value = draft.issueInfo || '';
-      document.getElementById('openingParagraph').value = draft.openingParagraph || '';
-      document.getElementById('section1Title').value = draft.section1Title || '';
-      document.getElementById('section1Content').value = draft.section1Content || '';
-      document.getElementById('section2Title').value = draft.section2Title || '';
-      document.getElementById('section2Content').value = draft.section2Content || '';
-      document.getElementById('ctaUrl').value = draft.ctaUrl || '';
-      document.getElementById('ctaText').value = draft.ctaText || '';
-      document.getElementById('closingMessage').value = draft.closingMessage || '';
-      document.getElementById('tags').value = Array.isArray(draft.tags) ? draft.tags.join(', ') : '';
-      document.getElementById('publishToBlog').checked = draft.publishToBlog !== false;
-      document.getElementById('heroImage').value = draft.heroImage || '';
-      mountHeroPicker(draft.heroImage || '');
-      document.getElementById('scheduledFor').value = draft.scheduledFor ?
-        new Date(draft.scheduledFor).toISOString().slice(0, 16) : '';
-      scheduleBtn.disabled = !document.getElementById('scheduledFor').value;
-      formDirty = false;
-    }
-
-    // Helper: Update editing indicator
-    function setEditingState(draftId, subject) {
-      currentDraftId = draftId;
-      if (draftId) {
+    function setEditingState(id, subject) {
+      editingId = id;
+      if (id) {
         editingIndicator.classList.add('visible');
-        editingSubject.textContent = subject;
+        editingSubject.textContent = subject || '(untitled)';
       } else {
         editingIndicator.classList.remove('visible');
       }
     }
 
-    // Clear editing and reset form
-    clearEditingBtn.addEventListener('click', () => {
-      if (formDirty && !confirm('Clear current changes and start a new draft?')) {
-        return;
-      }
-      form.reset();
-      document.getElementById('heroImage').value = '';
-      mountHeroPicker('');
+    function clearForm() {
+      subjectEl.value = '';
+      titleEl.value = '';
+      editorEl.innerHTML = '';
+      tagsEl.value = '';
+      heroImageEl.value = '';
       setEditingState(null, '');
-      formDirty = false;
-      previewContainer.classList.remove('visible');
-      status.className = 'status';
-      scheduleBtn.disabled = true;
-    });
-
-    // Preview functionality
-    function showPreview() {
-      document.getElementById('preview-issue-info').textContent =
-        document.getElementById('issueInfo').value || 'Newsletter';
-      document.getElementById('preview-opening').textContent =
-        document.getElementById('openingParagraph').value;
-      document.getElementById('preview-section1-title').textContent =
-        document.getElementById('section1Title').value;
-      document.getElementById('preview-section1-content').textContent =
-        document.getElementById('section1Content').value;
-
-      const section2Title = document.getElementById('section2Title').value;
-      const section2Content = document.getElementById('section2Content').value;
-      const section2Container = document.getElementById('preview-section2');
-
-      if (section2Title || section2Content) {
-        section2Container.style.display = 'block';
-        document.getElementById('preview-section2-title').textContent = section2Title;
-        document.getElementById('preview-section2-content').textContent = section2Content;
-      } else {
-        section2Container.style.display = 'none';
-      }
-
-      document.getElementById('preview-closing').textContent =
-        document.getElementById('closingMessage').value;
-
-      previewContainer.classList.add('visible');
-      previewContainer.scrollIntoView({ behavior: 'smooth' });
+      mountHeroPicker('');
     }
 
-    previewBtn.addEventListener('click', showPreview);
-    previewClose.addEventListener('click', () => {
-      previewContainer.classList.remove('visible');
-    });
+    document.getElementById('clear-editing').addEventListener('click', clearForm);
 
-    // ====== Draft Management ======
-
-    // Save draft
-    saveDraftBtn.addEventListener('click', async () => {
-      const data = getFormData();
-
-      if (!data.subject) {
-        status.className = 'status error';
-        status.textContent = 'Please enter a subject line to save draft';
-        return;
-      }
-
-      saveDraftBtn.disabled = true;
-      saveDraftBtn.textContent = 'Saving...';
-
+    document.getElementById('save-draft').addEventListener('click', async () => {
+      const p = getPayload();
+      if (!p.subject) return showStatus('Please add a subject line.', 'error');
+      if (!editorEl.textContent.trim()) return showStatus('Please write something first.', 'error');
+      const url = editingId ? '/api/drafts/' + editingId : '/api/drafts';
+      const method = editingId ? 'PUT' : 'POST';
       try {
-        const url = currentDraftId ? `/api/drafts/${currentDraftId}` : '/api/drafts';
-        const method = currentDraftId ? 'PUT' : 'POST';
-
-        const res = await fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-          credentials: 'same-origin'
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          status.className = 'status success';
-          status.textContent = currentDraftId ? 'Draft updated!' : 'Draft saved!';
-          formDirty = false;
-
-          if (!currentDraftId && result.data) {
-            setEditingState(result.data.id, data.subject);
-          }
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), credentials: 'same-origin' });
+        const data = await res.json();
+        if (data.success) {
+          setEditingState(data.data.id, data.data.subject);
+          showStatus(editingId ? 'Draft updated.' : 'Draft saved.');
         } else {
-          throw new Error(result.error || 'Failed to save draft');
+          throw new Error(data.error || 'Failed to save');
         }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to save: ${error.message}`;
-      }
-
-      saveDraftBtn.disabled = false;
-      saveDraftBtn.textContent = 'Save Draft';
+      } catch (e) { showStatus('Could not save draft: ' + e.message, 'error'); }
     });
-
-    // Load drafts into modal
-    async function loadDrafts() {
-      draftList.innerHTML = '<p style="text-align:center;color:#888;">Loading...</p>';
-
-      try {
-        const res = await fetch('/api/drafts', { credentials: 'same-origin' });
-        const result = await res.json();
-
-        if (!result.success || !result.data || result.data.length === 0) {
-          draftList.innerHTML = '<p class="draft-empty">No saved drafts</p>';
-          return;
-        }
-
-        draftList.innerHTML = result.data.map(draft => `
-          <div class="draft-item" data-id="${draft.id}">
-            <div class="draft-info">
-              <strong class="draft-subject">${draft.subject || 'Untitled'}</strong>
-              <div class="draft-meta">
-                <span>${formatDate(draft.updatedAt)}</span>
-                <span class="draft-status status-${draft.status}">${draft.status}</span>
-              </div>
-            </div>
-            <div class="draft-actions">
-              <button class="btn-small" data-action="load">Load</button>
-              <button class="btn-small btn-danger" data-action="delete">Delete</button>
-            </div>
-          </div>
-        `).join('');
-
-        // Add event listeners to buttons
-        draftList.querySelectorAll('.draft-item').forEach(item => {
-          const draftId = item.dataset.id;
-
-          item.querySelector('[data-action="load"]').addEventListener('click', async () => {
-            if (formDirty && !confirm('Load this draft? Unsaved changes will be lost.')) {
-              return;
-            }
-            await loadDraft(draftId);
-            draftModal.classList.remove('visible');
-          });
-
-          item.querySelector('[data-action="delete"]').addEventListener('click', async () => {
-            if (confirm('Delete this draft?')) {
-              await deleteDraft(draftId);
-              await loadDrafts();
-              await loadQueue();
-            }
-          });
-        });
-
-      } catch (error) {
-        draftList.innerHTML = `<p class="draft-empty">Error loading drafts: ${error.message}</p>`;
-      }
-    }
-
-    // Load single draft
-    async function loadDraft(id) {
-      try {
-        const res = await fetch(`/api/drafts/${id}`, { credentials: 'same-origin' });
-        const result = await res.json();
-
-        if (result.success && result.data) {
-          fillFormFromDraft(result.data);
-          setEditingState(id, result.data.subject);
-          status.className = 'status success';
-          status.textContent = 'Draft loaded';
-        } else {
-          throw new Error(result.error || 'Draft not found');
-        }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to load draft: ${error.message}`;
-      }
-    }
-
-    // Delete draft
-    async function deleteDraft(id) {
-      try {
-        const res = await fetch(`/api/drafts/${id}`, {
-          method: 'DELETE',
-          credentials: 'same-origin'
-        });
-        const result = await res.json();
-
-        if (result.success) {
-          // If we deleted the currently editing draft, clear form
-          if (currentDraftId === id) {
-            form.reset();
-            setEditingState(null, '');
-            formDirty = false;
-            scheduleBtn.disabled = true;
-            status.className = 'status success';
-            status.textContent = 'Draft deleted';
-          }
-        } else {
-          throw new Error(result.error || 'Failed to delete');
-        }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to delete: ${error.message}`;
-      }
-    }
-
-    // Modal controls
-    loadDraftBtn.addEventListener('click', async () => {
-      draftModal.classList.add('visible');
+    // ---- Drafts modal ----
+    const draftsModal = document.getElementById('drafts-modal');
+    const draftsList = document.getElementById('drafts-list');
+    document.getElementById('open-drafts').addEventListener('click', async () => {
+      draftsModal.classList.add('visible');
       await loadDrafts();
     });
+    document.getElementById('drafts-close').addEventListener('click', () => draftsModal.classList.remove('visible'));
+    draftsModal.addEventListener('click', e => { if (e.target === draftsModal) draftsModal.classList.remove('visible'); });
 
-    modalClose.addEventListener('click', () => {
-      draftModal.classList.remove('visible');
-    });
-
-    draftModal.addEventListener('click', (e) => {
-      if (e.target === draftModal) {
-        draftModal.classList.remove('visible');
-      }
-    });
-
-    // ====== Scheduling ======
-
-    // Schedule newsletter
-    scheduleBtn.addEventListener('click', async () => {
-      const data = getFormData();
-      const scheduledFor = scheduledForInput.value;
-
-      if (!scheduledFor) {
-        status.className = 'status error';
-        status.textContent = 'Please select a date and time';
-        return;
-      }
-
-      // Validate required fields
-      if (!data.subject || !data.preheader || !data.openingParagraph ||
-          !data.section1Title || !data.section1Content || !data.closingMessage) {
-        status.className = 'status error';
-        status.textContent = 'Please fill in all required fields before scheduling';
-        return;
-      }
-
-      // Validate future date (minimum 15 minutes)
-      const scheduledDate = new Date(scheduledFor);
-      const minDate = new Date(Date.now() + 15 * 60 * 1000);
-
-      if (scheduledDate < minDate) {
-        status.className = 'status error';
-        status.textContent = 'Schedule time must be at least 15 minutes in the future';
-        return;
-      }
-
-      if (!confirm(`Schedule this newsletter for ${formatDate(scheduledDate.toISOString())}?`)) {
-        return;
-      }
-
-      scheduleBtn.disabled = true;
-      scheduleBtn.textContent = 'Scheduling...';
-
-      try {
-        const url = currentDraftId ? `/api/drafts/${currentDraftId}` : '/api/drafts';
-        const method = currentDraftId ? 'PUT' : 'POST';
-
-        const res = await fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...data,
-            scheduledFor: scheduledDate.toISOString(),
-            status: 'scheduled'
-          }),
-          credentials: 'same-origin'
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          status.className = 'status success';
-          status.innerHTML = `<strong>Newsletter scheduled!</strong> Will be sent at ${formatDate(scheduledDate.toISOString())}`;
-
-          form.reset();
-          setEditingState(null, '');
-          formDirty = false;
-          scheduleBtn.disabled = true;
-          previewContainer.classList.remove('visible');
-
-          await loadQueue();
-        } else {
-          throw new Error(result.error || 'Failed to schedule');
-        }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to schedule: ${error.message}`;
-      }
-
-      scheduleBtn.disabled = !scheduledForInput.value;
-      scheduleBtn.textContent = 'Schedule';
-    });
-
-    // Load scheduled queue
-    async function loadQueue() {
+    async function loadDrafts() {
       try {
         const res = await fetch('/api/drafts', { credentials: 'same-origin' });
-        const result = await res.json();
-
-        if (!result.success || !result.data) {
-          queueList.innerHTML = '';
-          queueEmpty.style.display = 'block';
-          return;
-        }
-
-        // Filter for scheduled, sort by scheduledFor
-        const scheduled = result.data
-          .filter(d => d.status === 'scheduled' && d.scheduledFor)
-          .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
-
-        if (scheduled.length === 0) {
-          queueList.innerHTML = '';
-          queueEmpty.style.display = 'block';
-          return;
-        }
-
-        queueEmpty.style.display = 'none';
-        queueList.innerHTML = scheduled.map(draft => `
-          <div class="queue-item" data-id="${draft.id}">
-            <div class="queue-info">
-              <strong class="queue-subject">${draft.subject}</strong>
-              <span class="queue-date">Scheduled: ${formatDate(draft.scheduledFor)}</span>
-            </div>
-            <div class="queue-actions">
-              <button class="btn-small" data-action="edit">Edit</button>
-              <button class="btn-small btn-danger" data-action="cancel">Cancel</button>
-            </div>
-          </div>
-        `).join('');
-
-        // Add event listeners
-        queueList.querySelectorAll('.queue-item').forEach(item => {
-          const draftId = item.dataset.id;
-
-          item.querySelector('[data-action="edit"]').addEventListener('click', async () => {
-            if (formDirty && !confirm('Load this scheduled newsletter? Unsaved changes will be lost.')) {
-              return;
-            }
-            await loadDraft(draftId);
-          });
-
-          item.querySelector('[data-action="cancel"]').addEventListener('click', async () => {
-            if (confirm('Cancel this scheduled newsletter? It will be moved back to drafts.')) {
-              await cancelScheduled(draftId);
-              await loadQueue();
-            }
-          });
-        });
-
-      } catch (error) {
-        queueList.innerHTML = '';
-        queueEmpty.style.display = 'block';
-        queueEmpty.textContent = `Error loading queue: ${error.message}`;
-      }
-    }
-
-    // Cancel scheduled newsletter
-    async function cancelScheduled(id) {
-      try {
-        const res = await fetch(`/api/drafts/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            status: 'draft',
-            scheduledFor: null
-          }),
-          credentials: 'same-origin'
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          status.className = 'status success';
-          status.textContent = 'Scheduled send cancelled. Newsletter moved to drafts.';
-        } else {
-          throw new Error(result.error || 'Failed to cancel');
-        }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to cancel: ${error.message}`;
-      }
-    }
-
-    // ====== Send Now ======
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (!confirm('Send this newsletter to all subscribers? This action cannot be undone.')) {
-        return;
-      }
-
-      sendBtn.disabled = true;
-      sendBtn.textContent = 'Sending...';
-      status.className = 'status';
-
-      const formData = getFormData();
-
-      const body = {
-        subject: formData.subject,
-        preheader: formData.preheader,
-        useTemplate: true,
-        content: {
-          issueInfo: formData.issueInfo,
-          openingParagraph: formData.openingParagraph,
-          section1Title: formData.section1Title,
-          section1Content: formData.section1Content,
-          section2Title: formData.section2Title,
-          section2Content: formData.section2Content,
-          ctaUrl: formData.ctaUrl,
-          ctaText: formData.ctaText,
-          closingMessage: formData.closingMessage,
-          tags: formData.tags,
-          publishToBlog: formData.publishToBlog,
-          heroImage: formData.heroImage,
-        },
-      };
-
-      try {
-        const res = await fetch('/api/newsletter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-          credentials: 'same-origin'
-        });
-
         const data = await res.json();
-
-        if (data.success) {
-          // If we were editing a draft, mark it as sent
-          if (currentDraftId) {
-            await fetch(`/api/drafts/${currentDraftId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: 'sent' }),
-              credentials: 'same-origin'
-            });
-          }
-
-          status.className = 'status success';
-          status.innerHTML = `
-            <strong>Newsletter sent!</strong>
-            Campaign ID: ${data.campaignId} —
-            <a href="https://dashboard.mailerlite.com/campaigns" target="_blank">View in MailerLite</a>
-          `;
-          form.reset();
-          setEditingState(null, '');
-          formDirty = false;
-          scheduleBtn.disabled = true;
-          previewContainer.classList.remove('visible');
-        } else {
-          throw new Error(data.error || 'Unknown error');
+        if (!data.success) throw new Error(data.error);
+        if (!data.data || data.data.length === 0) {
+          draftsList.innerHTML = '<p class="drafts-empty">No drafts yet.</p>';
+          return;
         }
-      } catch (error) {
-        status.className = 'status error';
-        status.textContent = `Failed to send: ${error.message}`;
-      }
+        draftsList.innerHTML = data.data.map(d => `
+          <div class="draft-item">
+            <span class="draft-subject" data-id="${d.id}">${escapeHtml(d.subject)}</span>
+            <span class="draft-date">${new Date(d.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            <button type="button" class="btn btn-small btn-danger" data-del="${d.id}">Delete</button>
+          </div>`).join('');
+        draftsList.querySelectorAll('.draft-subject').forEach(el => el.addEventListener('click', () => loadDraft(el.dataset.id)));
+        draftsList.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => deleteDraft(el.dataset.del)));
+      } catch (e) { draftsList.innerHTML = '<p class="drafts-empty">Error loading drafts.</p>'; }
+    }
 
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'Send Now';
+    async function loadDraft(id) {
+      const res = await fetch('/api/drafts/' + id, { credentials: 'same-origin' });
+      const data = await res.json();
+      if (!data.success) return showStatus('Could not load draft.', 'error');
+      const d = data.data;
+      subjectEl.value = d.subject || '';
+      titleEl.value = d.title || '';
+      editorEl.innerHTML = d.bodyHtml || '';
+      tagsEl.value = (d.tags || []).join(', ');
+      heroImageEl.value = d.heroImage || '';
+      mountHeroPicker(d.heroImage || '');
+      setEditingState(d.id, d.subject);
+      draftsModal.classList.remove('visible');
+      showStatus('Draft loaded.');
+    }
+
+    async function deleteDraft(id) {
+      if (!confirm('Delete this draft?')) return;
+      const res = await fetch('/api/drafts/' + id, { method: 'DELETE', credentials: 'same-origin' });
+      const data = await res.json();
+      if (data.success) { if (editingId === id) clearForm(); await loadDrafts(); }
+      else showStatus('Could not delete draft.', 'error');
+    }
+    // ---- Preview ----
+    const previewModal = document.getElementById('preview-modal');
+    const previewFrame = document.getElementById('preview-frame');
+    const previewIframe = document.getElementById('preview-iframe');
+    document.getElementById('preview-btn').addEventListener('click', async () => {
+      const p = getPayload();
+      if (!editorEl.textContent.trim()) return showStatus('Please write something first.', 'error');
+      showStatus('Building preview…');
+      try {
+        const res = await fetch('/api/preview-newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), credentials: 'same-origin' });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Preview failed');
+        previewIframe.srcdoc = data.html;
+        previewModal.classList.add('visible');
+        statusEl.className = 'status';
+      } catch (e) { showStatus('Preview failed: ' + e.message, 'error'); }
+    });
+    document.getElementById('preview-close').addEventListener('click', () => previewModal.classList.remove('visible'));
+    previewModal.addEventListener('click', e => { if (e.target === previewModal) previewModal.classList.remove('visible'); });
+    document.getElementById('preview-mobile').addEventListener('click', () => previewFrame.classList.add('mobile'));
+    document.getElementById('preview-desktop').addEventListener('click', () => previewFrame.classList.remove('mobile'));
+
+    // ---- Send test ----
+    document.getElementById('send-test').addEventListener('click', async () => {
+      const p = getPayload();
+      if (!p.subject) return showStatus('Please add a subject line.', 'error');
+      if (!editorEl.textContent.trim()) return showStatus('Please write something first.', 'error');
+      const email = testEmailEl.value.trim();
+      if (!email) return showStatus('Enter the email address to send the test to.', 'error');
+      const btn = document.getElementById('send-test');
+      btn.disabled = true; btn.textContent = 'Sending test…';
+      try {
+        const res = await fetch('/api/send-test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...p, email }), credentials: 'same-origin' });
+        const data = await res.json();
+        if (data.success) showStatus('Test email sent to ' + email + '. Check your inbox!', 'success');
+        else throw new Error(data.error || 'Test send failed');
+      } catch (e) { showStatus('Test send failed: ' + e.message, 'error'); }
+      btn.disabled = false; btn.textContent = 'Send test';
     });
 
-    // ====== Image picker ======
+    // ---- Send to subscribers ----
+    const sendNowBtn = document.getElementById('send-now');
+    let subscriberCount = null;
+    fetch('/api/subscriber-count', { credentials: 'same-origin' }).then(r => r.json()).then(d => {
+      if (typeof d.count === 'number') { subscriberCount = d.count; sendNowBtn.textContent = 'Send to subscribers (' + d.count + ')'; }
+    }).catch(() => {});
+
+    sendNowBtn.addEventListener('click', async () => {
+      const p = getPayload();
+      if (!p.subject) return showStatus('Please add a subject line.', 'error');
+      if (!editorEl.textContent.trim()) return showStatus('Please write something first.', 'error');
+      const n = subscriberCount != null ? subscriberCount.toLocaleString() + ' ' : '';
+      if (!confirm('Send this newsletter to ' + n + 'subscribers now? This cannot be undone.')) return;
+      sendNowBtn.disabled = true; sendNowBtn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), credentials: 'same-origin' });
+        const data = await res.json();
+        if (data.success) {
+          showStatus('Sent! It is now live on your blog.', 'success');
+          clearForm();
+        } else {
+          throw new Error(data.error || 'Send failed');
+        }
+      } catch (e) { showStatus('Send failed: ' + e.message, 'error'); }
+      sendNowBtn.disabled = false;
+      sendNowBtn.textContent = subscriberCount != null ? 'Send to subscribers (' + subscriberCount + ')' : 'Send to subscribers';
+    });
+
+    // ---- Hero image picker (reuses /admin/image-picker.js) ----
     function mountHeroPicker(initialUrl) {
-      const el = document.getElementById('hero-image-picker');
-      if (!el) return;
-      // image-picker.js is a plain (non-module) script and runs before this
-      // deferred module, so window.ImagePicker is available. Guard just in case.
+      const el = document.getElementById('hero-picker');
       if (!window.ImagePicker) { setTimeout(() => mountHeroPicker(initialUrl), 50); return; }
       window.ImagePicker.mount(el, {
         initialUrl: initialUrl || '',
-        onChange: (url) => { document.getElementById('heroImage').value = url || ''; },
+        onChange: (url) => { heroImageEl.value = url || ''; },
       });
     }
-
-    // ====== Initialize ======
-    loadQueue();
-    mountHeroPicker(document.getElementById('heroImage').value);
+    mountHeroPicker('');
   </script>
 </body>
 </html>

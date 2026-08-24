@@ -54,6 +54,14 @@ const currentYear = new Date().getFullYear();
         >
           <input type="hidden" name="ml-submit" value="1" />
           <input type="hidden" name="anticsrf" value="true" />
+          <label for="footer-newsletter-name" class="sr-only">First name (optional)</label>
+          <input
+            id="footer-newsletter-name"
+            type="text"
+            name="fields[name]"
+            placeholder="First name"
+            autocomplete="given-name"
+          />
           <label for="footer-newsletter-email" class="sr-only">Email address</label>
           <input
             id="footer-newsletter-email"

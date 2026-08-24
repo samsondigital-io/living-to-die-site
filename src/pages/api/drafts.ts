@@ -42,17 +42,11 @@ export const GET: APIRoute = async ({ cookies }) => {
  * Request body:
  * {
  *   subject: string,
- *   preheader: string,
- *   issueInfo?: string,
- *   openingParagraph: string,
- *   section1Title: string,
- *   section1Content: string,
- *   section2Title?: string,
- *   section2Content?: string,
- *   ctaUrl?: string,
- *   ctaText?: string,
- *   closingMessage: string,
- *   scheduledFor?: string (ISO date)
+ *   title?: string,
+ *   preheader?: string,
+ *   bodyHtml: string,
+ *   tags?: string[],
+ *   heroImage?: string
  * }
  *
  * Response:
@@ -71,7 +65,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const body = await request.json();
 
     // Validate required fields
-    const requiredFields = ['subject', 'preheader', 'openingParagraph', 'section1Title', 'section1Content', 'closingMessage'];
+    const requiredFields = ['subject', 'bodyHtml'];
     for (const field of requiredFields) {
       if (!body[field] || typeof body[field] !== 'string') {
         return new Response(JSON.stringify({ success: false, error: `Missing required field: ${field}` }), {
@@ -83,20 +77,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const draftInput: CreateDraftInput = {
       subject: body.subject,
+      title: body.title,
       preheader: body.preheader,
-      issueInfo: body.issueInfo,
-      openingParagraph: body.openingParagraph,
-      section1Title: body.section1Title,
-      section1Content: body.section1Content,
-      section2Title: body.section2Title,
-      section2Content: body.section2Content,
-      ctaUrl: body.ctaUrl,
-      ctaText: body.ctaText,
-      closingMessage: body.closingMessage,
-      tags: body.tags,
-      publishToBlog: body.publishToBlog,
+      bodyHtml: body.bodyHtml,
+      tags: Array.isArray(body.tags) ? body.tags : undefined,
       heroImage: body.heroImage,
-      scheduledFor: body.scheduledFor,
     };
 
     const draft = await saveDraft(draftInput);

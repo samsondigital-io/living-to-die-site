@@ -1,6 +1,7 @@
 import MailerLite from '@mailerlite/mailerlite-nodejs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { stripHtml } from './sanitize';
 
 interface NewsletterResult {
   success: boolean;
@@ -48,92 +49,34 @@ async function getNewsletterTemplate(): Promise<string> {
 }
 
 /**
- * Build newsletter HTML from template with content replacements
+ * Wrap a newsletter body in the branded email template. The template supplies
+ * the header, "Dear {$name}," greeting, signature, and unsubscribe footer; the
+ * body is injected verbatim.
  */
 export function buildNewsletterHtml(
   template: string,
-  params: {
-    preheader: string;
-    issueInfo?: string;
-    openingParagraph: string;
-    section1Title: string;
-    section1Content: string;
-    section2Title?: string;
-    section2Content?: string;
-    ctaUrl?: string;
-    ctaText?: string;
-    closingMessage: string;
-  }
+  params: { preheader: string; bodyHtml: string }
 ): string {
-  let html = template;
+  return template
+    .replace('{{PREHEADER}}', params.preheader)
+    .replace('{{CONTENT}}', params.bodyHtml);
+}
 
-  // Replace preheader
-  html = html.replace(
-    '[PREHEADER_TEXT - Replace with preview text for this issue]',
-    params.preheader
-  );
+/** Derive inbox preview text from the first sentence(s) of the body. */
+export function derivePreheader(bodyHtml: string, fallback = ''): string {
+  const text = stripHtml(bodyHtml);
+  if (!text) return fallback;
+  const first = text.slice(0, 140);
+  return first.length < text.length ? `${first}…` : first;
+}
 
-  // Replace issue info or remove placeholder
-  if (params.issueInfo) {
-    html = html.replace(
-      '[ISSUE_NUMBER - e.g., "Issue #1 | March 2026"]',
-      params.issueInfo
-    );
-  } else {
-    // Remove the issue info line entirely
-    html = html.replace(
-      /<p style="margin: 10px[^>]*>\s*\[ISSUE_NUMBER[^\]]*\]\s*<\/p>/,
-      ''
-    );
-  }
-
-  // Replace opening paragraph
-  html = html.replace(
-    '[OPENING_PARAGRAPH - A personal greeting or introduction to this issue\'s theme]',
-    params.openingParagraph
-  );
-
-  // Replace section 1
-  html = html.replace('[SECTION_1_TITLE]', params.section1Title);
-  html = html.replace(
-    '[SECTION_1_CONTENT - Main content for this section. Can include reflections, updates, excerpts, or stories.]',
-    params.section1Content
-  );
-
-  // Replace section 2 if provided, otherwise remove the entire section
-  if (params.section2Title && params.section2Content) {
-    html = html.replace('[SECTION_2_TITLE]', params.section2Title);
-    html = html.replace(
-      '[SECTION_2_CONTENT - Additional content, news, or reflections. Delete this section if not needed.]',
-      params.section2Content
-    );
-  } else {
-    // Remove the entire section 2 block (including divider before it)
-    html = html.replace(
-      /<!-- Divider -->[\s\S]*?<!-- Content Section 2 \(Optional\) -->[\s\S]*?<\/tr>\s*(?=<!-- Optional CTA Button -->)/,
-      ''
-    );
-  }
-
-  // Replace CTA if provided, otherwise remove the entire CTA block
-  if (params.ctaUrl && params.ctaText) {
-    html = html.replace('[CTA_URL]', params.ctaUrl);
-    html = html.replace('[CTA_BUTTON_TEXT]', params.ctaText);
-  } else {
-    // Remove the entire CTA button block
-    html = html.replace(
-      /<!-- Optional CTA Button -->[\s\S]*?<\/tr>\s*(?=<!-- Closing -->)/,
-      ''
-    );
-  }
-
-  // Replace closing message
-  html = html.replace(
-    '[CLOSING_MESSAGE - A warm sign-off appropriate to this issue\'s content]',
-    params.closingMessage
-  );
-
-  return html;
+/** Read the template and wrap the body — used by send, test, and preview. */
+export async function renderNewsletterHtml(params: {
+  preheader: string;
+  bodyHtml: string;
+}): Promise<string> {
+  const template = await getNewsletterTemplate();
+  return buildNewsletterHtml(template, params);
 }
 
 /**
@@ -232,41 +175,86 @@ export async function createAndSendNewsletter(
   }
 }
 
-/**
- * Convenience function: Load template, build HTML, and send
- */
-export async function sendNewsletterFromTemplate(
-  subject: string,
-  preheader: string,
-  content: {
-    issueInfo?: string;
-    openingParagraph: string;
-    section1Title: string;
-    section1Content: string;
-    section2Title?: string;
-    section2Content?: string;
-    ctaUrl?: string;
-    ctaText?: string;
-    closingMessage: string;
-  }
-): Promise<NewsletterResult> {
+/** Build the full email from the template and send it immediately. */
+export async function buildAndSendNewsletter(input: {
+  subject: string;
+  preheader: string;
+  bodyHtml: string;
+}): Promise<NewsletterResult> {
   try {
-    const template = await getNewsletterTemplate();
-    const htmlContent = buildNewsletterHtml(template, {
-      preheader,
-      ...content
+    const htmlContent = await renderNewsletterHtml({
+      preheader: input.preheader,
+      bodyHtml: input.bodyHtml,
     });
-
     return await createAndSendNewsletter({
-      subject,
-      preheader,
-      htmlContent
+      subject: input.subject,
+      preheader: input.preheader,
+      htmlContent,
     });
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to process template'
+      error: error instanceof Error ? error.message : 'Failed to process template',
     };
+  }
+}
+
+/**
+ * Send a test copy of the newsletter to specific addresses (e.g. the author's
+ * own inbox). The MailerLite SDK has no test-send wrapper, so this creates a
+ * draft campaign, calls the v2 REST send-test endpoint, then deletes the draft.
+ */
+export async function sendTestEmail(input: {
+  subject: string;
+  preheader: string;
+  bodyHtml: string;
+  emails: string[];
+}): Promise<NewsletterResult> {
+  const apiKey = import.meta.env.MAILERLITE_API_KEY;
+  const groupId = import.meta.env.MAILERLITE_GROUP_ID;
+  const fromEmail = import.meta.env.MAILERLITE_FROM_EMAIL;
+  const fromName = import.meta.env.MAILERLITE_FROM_NAME || 'Diane Melton';
+  const ml = getMailerLiteClient();
+
+  if (!ml || !apiKey) return { success: false, error: 'MailerLite not configured' };
+  if (!groupId || !fromEmail) return { success: false, error: 'MailerLite group or sender email not configured' };
+
+  try {
+    const htmlContent = await renderNewsletterHtml({
+      preheader: input.preheader,
+      bodyHtml: input.bodyHtml,
+    });
+
+    const created = await ml.campaigns.create({
+      name: `Test: ${input.subject}`,
+      type: 'regular',
+      emails: [{ subject: input.subject, from_name: fromName, from: fromEmail, content: htmlContent }],
+      groups: [groupId],
+    });
+    const campaignId = created.data?.data?.id;
+    if (!campaignId) return { success: false, error: 'Failed to create test campaign' };
+
+    // MailerLite v2 REST test-send endpoint (not wrapped by the SDK).
+    const res = await fetch(`https://connect.mailerlite.com/api/campaigns/${campaignId}/send-test`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ emails: input.emails }),
+    });
+
+    // Clean up the draft campaign regardless of outcome.
+    await ml.campaigns.delete(String(campaignId)).catch(() => {});
+
+    if (!res.ok) {
+      const text = await res.text();
+      return { success: false, error: `Test send failed (${res.status}): ${text.slice(0, 200)}` };
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error?.message || 'Test send failed' };
   }
 }
 

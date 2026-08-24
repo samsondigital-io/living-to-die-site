@@ -85,12 +85,7 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 
     // Build update object from allowed fields
     const updates: UpdateDraftInput = {};
-    const allowedFields = [
-      'subject', 'preheader', 'issueInfo', 'openingParagraph',
-      'section1Title', 'section1Content', 'section2Title', 'section2Content',
-      'ctaUrl', 'ctaText', 'closingMessage', 'scheduledFor', 'status',
-      'tags', 'publishToBlog', 'heroImage'
-    ];
+    const allowedFields = ['subject', 'title', 'preheader', 'bodyHtml', 'tags', 'heroImage'];
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {

@@ -1,32 +1,22 @@
 import { Redis } from '@upstash/redis';
 
-// Newsletter draft interface matching existing newsletter admin structure
+// A newsletter is a subject line + one free-form HTML body. The greeting,
+// signature, header, and footer all come from the email template at send time,
+// so the author never has to think about "sections".
 export interface NewsletterDraft {
   id: string;
   subject: string;
-  preheader: string;
-  issueInfo?: string;
-  openingParagraph: string;
-  section1Title: string;
-  section1Content: string;
-  section2Title?: string;
-  section2Content?: string;
-  ctaUrl?: string;
-  ctaText?: string;
-  closingMessage: string;
-  // Blog autopublish fields
-  tags?: string[];
-  publishToBlog?: boolean;
+  title?: string; // optional blog title; defaults to the subject
+  preheader?: string; // optional inbox preview text; auto-derived if empty
+  bodyHtml: string;
   heroImage?: string;
-  // Scheduling fields
-  scheduledFor?: string; // ISO date string, null = draft only
-  status: 'draft' | 'scheduled' | 'sent';
+  tags?: string[];
   createdAt: string;
   updatedAt: string;
 }
 
 // Input type for creating a new draft (omits auto-generated fields)
-export type CreateDraftInput = Omit<NewsletterDraft, 'id' | 'createdAt' | 'updatedAt' | 'status'>;
+export type CreateDraftInput = Omit<NewsletterDraft, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Input type for updating a draft
 export type UpdateDraftInput = Partial<Omit<NewsletterDraft, 'id' | 'createdAt'>>;
@@ -62,7 +52,6 @@ export async function saveDraft(input: CreateDraftInput): Promise<NewsletterDraf
   const draft: NewsletterDraft = {
     ...input,
     id: generateId(),
-    status: 'draft',
     createdAt: now,
     updatedAt: now,
   };
@@ -177,27 +166,4 @@ export async function deleteDraft(id: string): Promise<boolean> {
   }
 }
 
-/**
- * Get drafts that are scheduled and ready to send (scheduledFor is in the past)
- */
-export async function getScheduledDrafts(): Promise<NewsletterDraft[]> {
-  const redis = getRedis();
 
-  try {
-    // Get all drafts first
-    const allDrafts = await listDrafts();
-
-    // Filter for scheduled drafts that are ready to send
-    const now = new Date();
-    return allDrafts.filter(draft => {
-      if (draft.status !== 'scheduled' || !draft.scheduledFor) {
-        return false;
-      }
-      const scheduledDate = new Date(draft.scheduledFor);
-      return scheduledDate <= now;
-    });
-  } catch (error) {
-    console.error('Error getting scheduled drafts:', error);
-    return [];
-  }
-}

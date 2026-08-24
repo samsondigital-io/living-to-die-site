@@ -122,6 +122,7 @@ export async function getPostsByTag(tagParam: string): Promise<BlogPost[]> {
 /** Persist an autopublished newsletter as a Redis blog post. */
 export async function publishPostFromNewsletter(input: {
   subject: string;
+  title?: string;
   preheader: string;
   bodyHtml: string;
   tags?: string[];
@@ -281,20 +282,22 @@ export function slugify(input: string): string {
  */
 export function buildRedisPostFromNewsletter(input: {
   subject: string;
+  title?: string;
   preheader: string;
   bodyHtml: string;
   tags?: string[];
   heroImage?: string;
   sentAt: string;
 }): RedisBlogPost {
+  const title = input.title?.trim() || input.subject;
   const tags = dedupeTags(['newsletter', ...(input.tags ?? [])]);
-  const base = slugify(input.subject) || 'newsletter';
+  const base = slugify(title) || 'newsletter';
   // Suffix with the send date for a stable, unique slug (no randomness, which
   // would break determinism in serverless retries).
   const datePart = input.sentAt.slice(0, 10);
   return {
     slug: `${base}-${datePart}`,
-    title: input.subject,
+    title,
     description: input.preheader,
     pubDate: input.sentAt,
     heroImage: input.heroImage,
