@@ -97,6 +97,14 @@ function fmtDate(d: string | null) {
     .empty { color: #888; padding: 2.5rem 0; text-align: center; }
     .notice { background: #fff3cd; color: #856404; padding: 1rem 1.25rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1.5rem; }
 
+    .drilldown-panel { margin-bottom: 1.5rem; }
+    .toolbar label { font-size: 0.9rem; font-weight: 600; color: #333; }
+    .activity-pager { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; }
+    .activity-pager button { background: #e9e9e9; color: #333; border: none; padding: 0.4rem 0.9rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    .activity-pager button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .activity-pager button:hover:not(:disabled) { background: #ddd; }
+    .activity-empty { color: #888; padding: 1.5rem 0; text-align: center; }
+
     @media (max-width: 768px) {
       .admin-layout { flex-direction: column; }
       .sidebar { width: 100%; }
@@ -152,12 +160,51 @@ function fmtDate(d: string | null) {
         )}
       </div>
 
+      {configured && (
+        <div class="panel drilldown-panel">
+          <div class="toolbar">
+            <label for="campaign-select">Newsletter:</label>
+            <select id="campaign-select" aria-label="Choose a newsletter">
+              <option value="">All subscribers</option>
+            </select>
+            <label for="type-select" id="type-label" hidden>Show:</label>
+            <select id="type-select" aria-label="Filter activity" hidden>
+              <option value="all">All activity</option>
+              <option value="opened">Opened</option>
+              <option value="clicked">Clicked</option>
+              <option value="unopened">Didn't open</option>
+              <option value="unsubscribed">Unsubscribed</option>
+              <option value="hardbounced">Bounced</option>
+            </select>
+            <span class="count" id="activity-count"></span>
+          </div>
+          <div class="table-wrap" id="activity-table-wrap" hidden>
+            <table id="activity-table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th class="num">Opens</th>
+                  <th class="num">Clicks</th>
+                </tr>
+              </thead>
+              <tbody id="activity-tbody"></tbody>
+            </table>
+          </div>
+          <div class="activity-pager" id="activity-pager" hidden>
+            <button type="button" id="activity-prev">← Prev</button>
+            <span id="activity-page-info" class="count"></span>
+            <button type="button" id="activity-next">Next →</button>
+          </div>
+        </div>
+      )}
+
       {!configured && (
         <div class="notice">Subscribers aren't available right now (MailerLite isn't configured).</div>
       )}
 
       {configured && (
-        <div class="stat-grid">
+        <div class="stat-grid" id="list-stats">
           <div class="stat-card stat-card--hero">
             <div class="stat-label">Total</div>
             <div class="stat-value">{counts.total.toLocaleString()}</div>
@@ -178,7 +225,7 @@ function fmtDate(d: string | null) {
       )}
 
       {configured && (
-        <div class="panel">
+        <div class="panel" id="all-subscribers-panel">
           <div class="toolbar">
             <label for="sub-search" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Search subscribers</label>
             <input type="search" id="sub-search" placeholder="Search email or name…" autocomplete="off" />
@@ -275,6 +322,124 @@ function fmtDate(d: string | null) {
       a.click();
       URL.revokeObjectURL(a.href);
     });
+  </script>
+  <script>
+    // Newsletter drill-down: pick a sent campaign to see per-subscriber activity.
+    (function () {
+      const campaignSel = document.getElementById('campaign-select');
+      const typeSel = document.getElementById('type-select');
+      const typeLabel = document.getElementById('type-label');
+      const activityWrap = document.getElementById('activity-table-wrap');
+      const activityTbody = document.getElementById('activity-tbody');
+      const activityCount = document.getElementById('activity-count');
+      const pager = document.getElementById('activity-pager');
+      const prevBtn = document.getElementById('activity-prev');
+      const nextBtn = document.getElementById('activity-next');
+      const pageInfo = document.getElementById('activity-page-info');
+      const listStats = document.getElementById('list-stats');
+      const allPanel = document.getElementById('all-subscribers-panel');
+
+      const TYPES = [
+        { value: 'all', label: 'All activity', countKey: 'all' },
+        { value: 'opened', label: 'Opened', countKey: 'opened' },
+        { value: 'clicked', label: 'Clicked', countKey: 'clicked' },
+        { value: 'unopened', label: "Didn't open", countKey: 'unopened' },
+        { value: 'unsubscribed', label: 'Unsubscribed', countKey: 'unsubscribed' },
+        { value: 'hardbounced', label: 'Bounced', countKey: 'hardbounced' },
+      ];
+
+      let currentCampaignId = '';
+      let currentPage = 1;
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function showList() {
+        currentCampaignId = '';
+        if (listStats) listStats.style.display = '';
+        if (allPanel) allPanel.style.display = '';
+        activityWrap.hidden = true;
+        pager.hidden = true;
+        typeSel.hidden = true;
+        typeLabel.hidden = true;
+        activityCount.textContent = '';
+      }
+
+      function renderTypeOptions(counts) {
+        for (const opt of typeSel.options) {
+          const t = TYPES.find(x => x.value === opt.value);
+          const n = counts && t ? counts[t.countKey] : null;
+          opt.textContent = t ? (n != null ? t.label + ' (' + n + ')' : t.label) : opt.value;
+        }
+      }
+
+      function renderRows(rows) {
+        if (!rows.length) {
+          activityTbody.innerHTML = '<tr><td colspan="4" class="activity-empty">No activity for this selection.</td></tr>';
+          return;
+        }
+        activityTbody.innerHTML = rows.map(r =>
+          '<tr>' +
+          '<td class="email-cell">' + escapeHtml(r.email) + '</td>' +
+          '<td>' + (r.name ? escapeHtml(r.name) : '<span class="muted">—</span>') + '</td>' +
+          '<td class="num">' + r.opensCount + '</td>' +
+          '<td class="num">' + r.clicksCount + '</td>' +
+          '</tr>'
+        ).join('');
+      }
+
+      async function loadActivity(page) {
+        if (!currentCampaignId) return;
+        const type = typeSel.value;
+        try {
+          const res = await fetch('/api/campaign-activity?id=' + encodeURIComponent(currentCampaignId) + '&type=' + encodeURIComponent(type) + '&page=' + page, { credentials: 'same-origin' });
+          const data = await res.json();
+          if (!data.success) {
+            activityTbody.innerHTML = '<tr><td colspan="4" class="activity-empty">' + escapeHtml(data.error || 'Could not load activity.') + '</td></tr>';
+            return;
+          }
+          currentPage = data.page;
+          renderTypeOptions(data.counts);
+          renderRows(data.rows);
+          activityCount.textContent = data.total.toLocaleString() + ' shown';
+          pager.hidden = !(data.hasMore || currentPage > 1);
+          prevBtn.disabled = currentPage <= 1;
+          nextBtn.disabled = !data.hasMore;
+          pageInfo.textContent = 'Page ' + currentPage;
+        } catch (e) {
+          activityTbody.innerHTML = '<tr><td colspan="4" class="activity-empty">Could not load activity.</td></tr>';
+        }
+      }
+
+      // Populate the newsletter dropdown with sent campaigns.
+      fetch('/api/campaigns', { credentials: 'same-origin' }).then(r => r.json()).then(d => {
+        if (!d.success || !d.data || !d.data.length) return;
+        for (const c of d.data) {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          const date = c.sentAt ? new Date(c.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+          opt.textContent = c.subject + ' (' + date + ')';
+          campaignSel.appendChild(opt);
+        }
+      }).catch(() => {});
+
+      campaignSel.addEventListener('change', () => {
+        if (!campaignSel.value) { showList(); return; }
+        currentCampaignId = campaignSel.value;
+        if (listStats) listStats.style.display = 'none';
+        if (allPanel) allPanel.style.display = 'none';
+        typeSel.hidden = false;
+        typeLabel.hidden = false;
+        activityWrap.hidden = false;
+        typeSel.value = 'all';
+        loadActivity(1);
+      });
+
+      typeSel.addEventListener('change', () => { if (currentCampaignId) loadActivity(1); });
+      prevBtn.addEventListener('click', () => { if (currentPage > 1) loadActivity(currentPage - 1); });
+      nextBtn.addEventListener('click', () => loadActivity(currentPage + 1));
+    })();
   </script>
 </body>
 </html>

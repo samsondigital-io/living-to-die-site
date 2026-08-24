@@ -326,7 +326,7 @@ export async function getRecentCampaigns(limit = 5): Promise<CampaignStat[]> {
     // The campaigns endpoint with a `sent` status filter reliably returns
     // campaigns WITH their full stats object (the stats.getSentCampaigns
     // wrapper 422s without a specific filter).
-    const res: any = await ml.campaigns.get({ filter: { status: 'sent' } });
+    const res: any = await ml.campaigns.get({ filter: { status: 'sent' }, limit: Math.min(Math.max(limit, 1), 100) });
     const list: any[] = res?.data?.data ?? res?.data ?? [];
     return list
       .map(toCampaignStat)
@@ -400,6 +400,64 @@ export async function getSubscribers(max = 2000): Promise<SubscriberRow[]> {
       const tb = b.subscribedAt ? new Date(b.subscribedAt).getTime() : 0;
       return tb - ta;
     });
+}
+
+export interface CampaignActivityRow {
+  email: string;
+  name: string | null;
+  opensCount: number;
+  clicksCount: number;
+}
+
+export interface CampaignActivityPage {
+  rows: CampaignActivityRow[];
+  counts: Record<string, number> | null;
+  total: number;
+  page: number;
+  hasMore: boolean;
+}
+
+/**
+ * Per-subscriber activity for a single sent campaign. `type` is a MailerLite
+ * activity filter ("opened", "clicked", "unopened", "unsubscribed", etc.);
+ * omit it for all activity. The response also carries summary counts per type
+ * so the UI can show "Opened (42)" style labels.
+ */
+export async function getCampaignActivity(
+  campaignId: string,
+  type?: string,
+  search = '',
+  page = 1,
+  limit = 100
+): Promise<CampaignActivityPage | null> {
+  const ml = getMailerLiteClient();
+  if (!ml) return null;
+  try {
+    const params: any = { include: 'subscriber', limit, page };
+    if (type && type !== 'all') {
+      params.filter = { type, ...(search ? { search } : {}) };
+    } else if (search) {
+      params.filter = { search };
+    }
+    const res: any = await ml.stats.getSentCampaignSubscribers(campaignId, params);
+    const list: any[] = res?.data?.data ?? [];
+    const counts: Record<string, number> | null = res?.data?.meta?.counts ?? null;
+    const total: number = res?.data?.meta?.total ?? list.length;
+    const rows: CampaignActivityRow[] = list.map((a: any) => {
+      const sub = a?.subscriber ?? {};
+      const name = [sub?.fields?.name, sub?.fields?.last_name].filter(Boolean).join(' ') || null;
+      return {
+        email: sub?.email ?? '',
+        name,
+        opensCount: typeof a?.opens_count === 'number' ? a.opens_count : 0,
+        clicksCount: typeof a?.clicks_count === 'number' ? a.clicks_count : 0,
+      };
+    });
+    return { rows, counts, total, page, hasMore: page * limit < total };
+  } catch (error) {
+    console.error('getCampaignActivity failed:', error);
+    return null;
+  }
 }
 
 /** Everything the admin dashboard needs, gathered in parallel and fail-soft. */
