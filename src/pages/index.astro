@@ -78,17 +78,15 @@ const content = await getHomepageContent();
       <form
         class="preorder__form"
         id="preorder-form"
-        action="https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe"
+        action="/api/subscribe"
         method="POST"
       >
-        <input type="hidden" name="ml-submit" value="1" />
-        <input type="hidden" name="anticsrf" value="true" />
         <div class="preorder__input-group">
           <label for="preorder-email" class="sr-only">Email address</label>
           <input
             id="preorder-email"
             type="email"
-            name="fields[email]"
+            name="email"
             placeholder="Enter your email"
             required
             autocomplete="email"
@@ -96,7 +94,7 @@ const content = await getHomepageContent();
           <button type="submit" class="btn btn--primary">Notify Me</button>
         </div>
       </form>
-      <p class="preorder__success" id="preorder-success" role="status" aria-live="polite">Please check your email to confirm.</p>
+      <p class="preorder__success" id="preorder-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
     </div>
   </section>
 
@@ -223,16 +221,14 @@ const content = await getHomepageContent();
           <form
             class="newsletter__form"
             id="homepage-newsletter-form"
-            action="https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe"
+            action="/api/subscribe"
             method="POST"
           >
-            <input type="hidden" name="ml-submit" value="1" />
-            <input type="hidden" name="anticsrf" value="true" />
             <label for="homepage-newsletter-email" class="sr-only">Email address</label>
             <input
               id="homepage-newsletter-email"
               type="email"
-              name="fields[email]"
+              name="email"
               class="newsletter__input"
               placeholder="Enter your email"
               required
@@ -240,7 +236,7 @@ const content = await getHomepageContent();
             />
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
-          <p class="newsletter__success" id="homepage-newsletter-success" role="status" aria-live="polite">Please check your email to confirm.</p>
+          <p class="newsletter__success" id="homepage-newsletter-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
         </div>
       </div>
     </div>
@@ -739,6 +735,12 @@ const content = await getHomepageContent();
     display: block;
   }
 
+  .newsletter__success.error,
+  .preorder__success.error {
+    color: #b00020;
+    font-style: normal;
+  }
+
   .newsletter__form.hidden {
     display: none;
   }
@@ -860,21 +862,36 @@ const content = await getHomepageContent();
 </style>
 
 <script>
-  // MailerLite signup forms: no-cors fetch, disable the button while
-  // submitting, fall back to a native POST if fetch itself fails.
+  // Newsletter signup: POST the email to /api/subscribe and show success/error.
   function wireForm(formId: string, statusId: string) {
     const form = document.getElementById(formId) as HTMLFormElement | null;
     const status = document.getElementById(statusId);
+    const input = form?.querySelector('input[type="email"]') as HTMLInputElement | null;
+    const btn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
     form?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = form.querySelector('button[type="submit"]');
+      const email = input?.value?.trim();
+      if (!email || !form || !status) return;
       btn?.setAttribute('disabled', '');
       try {
-        await fetch(form.action, { method: 'POST', body: new FormData(form), mode: 'no-cors' });
-        form.classList.add('hidden');
-        status?.classList.add('show');
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          form.classList.add('hidden');
+          status.textContent = "You're subscribed! We'll be in touch.";
+          status.classList.remove('error');
+          status.classList.add('show');
+        } else {
+          status.textContent = data.error || 'Something went wrong. Please try again.';
+          status.classList.add('show', 'error');
+        }
       } catch {
-        form.submit();
+        status.textContent = 'Something went wrong. Please try again.';
+        status.classList.add('show', 'error');
       } finally {
         btn?.removeAttribute('disabled');
       }

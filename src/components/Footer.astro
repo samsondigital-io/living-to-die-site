@@ -49,23 +49,21 @@ const currentYear = new Date().getFullYear();
         <form
           class="footer__form"
           id="newsletter-form"
-          action="https://assets.mailerlite.com/jsonp/2188276/forms/181849541197170482/subscribe"
+          action="/api/subscribe"
           method="POST"
         >
-          <input type="hidden" name="ml-submit" value="1" />
-          <input type="hidden" name="anticsrf" value="true" />
           <label for="footer-newsletter-email" class="sr-only">Email address</label>
           <input
             id="footer-newsletter-email"
             type="email"
-            name="fields[email]"
+            name="email"
             placeholder="Your email"
             required
             autocomplete="email"
           />
           <button type="submit" class="btn btn--primary">Subscribe</button>
         </form>
-        <p class="footer__success" id="newsletter-success" role="status" aria-live="polite">Please check your email to confirm.</p>
+        <p class="footer__success" id="newsletter-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
       </div>
     </div>
 
@@ -180,6 +178,11 @@ const currentYear = new Date().getFullYear();
     display: block;
   }
 
+  .footer__success.error {
+    color: #ffb3c1;
+    font-style: normal;
+  }
+
   .footer__form.hidden {
     display: none;
   }
@@ -204,23 +207,31 @@ const currentYear = new Date().getFullYear();
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const successEl = document.getElementById('newsletter-success');
+    const input = form.querySelector('input[type="email"]') as HTMLInputElement | null;
     const btn = form.querySelector('button[type="submit"]');
+    const email = input?.value?.trim();
+    if (!email || !successEl) return;
     btn?.setAttribute('disabled', '');
 
     try {
-      // Submit to MailerLite using no-cors mode (their API doesn't support CORS)
-      await fetch(form.action, {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
-        body: new FormData(form),
-        mode: 'no-cors'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
       });
-
-      // Hide form and show success message
-      form.classList.add('hidden');
-      successEl?.classList.add('show');
-    } catch (error) {
-      // Fallback: submit form normally if fetch fails
-      form.submit();
+      const data = await res.json();
+      if (data.success) {
+        form.classList.add('hidden');
+        successEl.textContent = "You're subscribed! We'll be in touch.";
+        successEl.classList.remove('error');
+        successEl.classList.add('show');
+      } else {
+        successEl.textContent = data.error || 'Something went wrong. Please try again.';
+        successEl.classList.add('show', 'error');
+      }
+    } catch {
+      successEl.textContent = 'Something went wrong. Please try again.';
+      successEl.classList.add('show', 'error');
     } finally {
       btn?.removeAttribute('disabled');
     }

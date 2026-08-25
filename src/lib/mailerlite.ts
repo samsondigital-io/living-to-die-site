@@ -204,6 +204,21 @@ function mailerliteErrorMessage(error: any, fallback = 'MailerLite API error'): 
 }
 
 /**
+ * Subscribe an email to the account's subscriber list. No group, single opt-in:
+ * the subscriber is created as `active`, so no confirmation email is sent.
+ */
+export async function subscribeEmail(email: string): Promise<{ success: boolean; error?: string }> {
+  const ml = getMailerLiteClient();
+  if (!ml) return { success: false, error: 'MailerLite not configured' };
+  try {
+    await ml.subscribers.createOrUpdate({ email, status: 'active' });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: mailerliteErrorMessage(error, 'Subscribe failed') };
+  }
+}
+
+/**
  * Send a test copy of the newsletter to specific addresses (e.g. the author's
  * own inbox). The MailerLite API has no dedicated "send test" endpoint, so this
  * creates a throwaway group containing only the test recipients, creates and
