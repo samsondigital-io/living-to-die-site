@@ -99,11 +99,12 @@ const categoryTitles = {
           <p class="newsletter__text">
             Subscribe to receive updates about advocacy efforts, new resources, and important developments in patient rights.
           </p>
-          <form class="newsletter__form">
+          <form id="resources-newsletter-form" class="newsletter__form" action="/api/subscribe" method="POST">
             <label for="resources-newsletter-email" class="sr-only">Email address</label>
-            <input id="resources-newsletter-email" type="email" class="newsletter__input" placeholder="Enter your email" required autocomplete="email" />
+            <input id="resources-newsletter-email" name="email" type="email" class="newsletter__input" placeholder="Enter your email" required autocomplete="email" />
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
+          <p class="newsletter__success" id="resources-newsletter-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
         </div>
       </div>
     </div>
@@ -212,6 +213,26 @@ const categoryTitles = {
     font-size: 1rem;
   }
 
+  .newsletter__success {
+    display: none;
+    color: var(--color-pink-dark);
+    font-style: italic;
+    margin-top: 1rem;
+  }
+
+  .newsletter__success.show {
+    display: block;
+  }
+
+  .newsletter__success.error {
+    color: #b00020;
+    font-style: normal;
+  }
+
+  .newsletter__form.hidden {
+    display: none;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .resource-grid {
@@ -241,3 +262,38 @@ const categoryTitles = {
     }
   }
 </style>
+
+<script>
+  document.getElementById('resources-newsletter-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const input = form.querySelector('input[type="email"]') as HTMLInputElement | null;
+    const btn = form.querySelector('button[type="submit"]');
+    const status = document.getElementById('resources-newsletter-success');
+    const email = input?.value?.trim();
+    if (!email || !status) return;
+    btn?.setAttribute('disabled', '');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.classList.add('hidden');
+        status.textContent = "You're subscribed! We'll be in touch.";
+        status.classList.remove('error');
+        status.classList.add('show');
+      } else {
+        status.textContent = data.error || 'Something went wrong. Please try again.';
+        status.classList.add('show', 'error');
+      }
+    } catch {
+      status.textContent = 'Something went wrong. Please try again.';
+      status.classList.add('show', 'error');
+    } finally {
+      btn?.removeAttribute('disabled');
+    }
+  });
+</script>
