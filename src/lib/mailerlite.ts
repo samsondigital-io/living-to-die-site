@@ -80,11 +80,11 @@ export async function renderNewsletterHtml(params: {
 }
 
 /**
- * Create and immediately send a newsletter campaign via MailerLite
+ * Create and immediately send a newsletter campaign via MailerLite.
  *
  * This function:
  * 1. Creates a campaign with the provided HTML content
- * 2. Schedules it for immediate delivery to the Book Updates group
+ * 2. Schedules it for immediate delivery to all active subscribers
  *
  * The HTML content must include the {$unsubscribe} placeholder for MailerLite.
  */
@@ -97,15 +97,6 @@ export async function createAndSendNewsletter(
     return {
       success: false,
       error: 'MailerLite not configured - missing API key'
-    };
-  }
-
-  const groupId = import.meta.env.MAILERLITE_GROUP_ID;
-
-  if (!groupId) {
-    return {
-      success: false,
-      error: 'MailerLite group ID not configured'
     };
   }
 
@@ -132,7 +123,6 @@ export async function createAndSendNewsletter(
         from: fromEmail,
         content: params.htmlContent,
       }],
-      groups: [groupId],
     });
 
     const campaignId = campaignResponse.data?.data?.id;
@@ -200,9 +190,24 @@ export async function buildAndSendNewsletter(input: {
 }
 
 /**
+ * Extract a readable message from a MailerLite (axios) error. The SDK wraps the
+ * API's 4xx responses in an AxiosError whose message is just "Request failed
+ * with status code NNN", so we pull the real reason out of `response.data`.
+ */
+function mailerliteErrorMessage(error: any, fallback = 'MailerLite API error'): string {
+  if (error?.response?.data) {
+    const data = error.response.data;
+    if (typeof data?.message === 'string' && data.message) return data.message;
+    return JSON.stringify(data);
+  }
+  return error instanceof Error ? error.message : fallback;
+}
+
+/**
  * Send a test copy of the newsletter to specific addresses (e.g. the author's
- * own inbox). The MailerLite SDK has no test-send wrapper, so this creates a
- * draft campaign, calls the v2 REST send-test endpoint, then deletes the draft.
+ * own inbox). The MailerLite API has no dedicated "send test" endpoint, so this
+ * creates a throwaway group containing only the test recipients, creates and
+ * immediately sends a campaign to that group, then deletes both in `finally`.
  */
 export async function sendTestEmail(input: {
   subject: string;
@@ -210,14 +215,15 @@ export async function sendTestEmail(input: {
   bodyHtml: string;
   emails: string[];
 }): Promise<NewsletterResult> {
-  const apiKey = import.meta.env.MAILERLITE_API_KEY;
-  const groupId = import.meta.env.MAILERLITE_GROUP_ID;
   const fromEmail = import.meta.env.MAILERLITE_FROM_EMAIL;
   const fromName = import.meta.env.MAILERLITE_FROM_NAME || 'Diane Melton';
   const ml = getMailerLiteClient();
 
-  if (!ml || !apiKey) return { success: false, error: 'MailerLite not configured' };
-  if (!groupId || !fromEmail) return { success: false, error: 'MailerLite group or sender email not configured' };
+  if (!ml) return { success: false, error: 'MailerLite not configured' };
+  if (!fromEmail) return { success: false, error: 'MailerLite sender email (MAILERLITE_FROM_EMAIL) not configured' };
+
+  let testGroupId: string | undefined;
+  let campaignId: string | undefined;
 
   try {
     const htmlContent = await renderNewsletterHtml({
@@ -225,36 +231,37 @@ export async function sendTestEmail(input: {
       bodyHtml: input.bodyHtml,
     });
 
+    // 1. Throwaway group that only contains the test recipients.
+    const groupRes = await ml.groups.create({ name: `Test send ${Date.now()}` });
+    testGroupId = groupRes.data?.data?.id;
+    if (!testGroupId) return { success: false, error: 'Failed to create test group' };
+
+    // 2. Add each test recipient as an active subscriber of that group (active
+    //    so no double opt-in delays the test).
+    for (const email of input.emails) {
+      await ml.subscribers.createOrUpdate({ email, groups: [testGroupId], status: 'active' });
+    }
+
+    // 3. Create the campaign against the throwaway group and send it now.
     const created = await ml.campaigns.create({
       name: `Test: ${input.subject}`,
       type: 'regular',
       emails: [{ subject: input.subject, from_name: fromName, from: fromEmail, content: htmlContent }],
-      groups: [groupId],
+      groups: [testGroupId],
     });
-    const campaignId = created.data?.data?.id;
+    campaignId = created.data?.data?.id;
     if (!campaignId) return { success: false, error: 'Failed to create test campaign' };
 
-    // MailerLite v2 REST test-send endpoint (not wrapped by the SDK).
-    const res = await fetch(`https://connect.mailerlite.com/api/campaigns/${campaignId}/send-test`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: JSON.stringify({ emails: input.emails }),
-    });
+    await ml.campaigns.schedule(String(campaignId), { delivery: 'instant' });
 
-    // Clean up the draft campaign regardless of outcome.
-    await ml.campaigns.delete(String(campaignId)).catch(() => {});
-
-    if (!res.ok) {
-      const text = await res.text();
-      return { success: false, error: `Test send failed (${res.status}): ${text.slice(0, 200)}` };
-    }
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error?.message || 'Test send failed' };
+    console.error('sendTestEmail failed:', error?.response?.data ?? error);
+    return { success: false, error: mailerliteErrorMessage(error, 'Test send failed') };
+  } finally {
+    // Clean up the throwaway campaign and group regardless of outcome.
+    if (campaignId) await ml.campaigns.delete(String(campaignId)).catch(() => {});
+    if (testGroupId) await ml.groups.delete(String(testGroupId)).catch(() => {});
   }
 }
 
