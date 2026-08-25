@@ -1,0 +1,209 @@
+---
+import { COOKIE_NAME, verifySessionToken } from '../../lib/auth';
+
+if (!verifySessionToken(Astro.cookies.get(COOKIE_NAME)?.value)) {
+  return Astro.redirect('/admin');
+}
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Comments - Living to Die</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 1.5rem 0; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-header h1 { font-size: 1.125rem; font-weight: 600; color: #d63384; }
+    .sidebar-header span { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+    .nav-section { padding: 0.5rem 1.5rem; margin-bottom: 0.5rem; }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+    .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; margin: 0.25rem 0; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
+    .nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-link.active { background: rgba(214, 51, 132, 0.2); color: #d63384; }
+    .nav-link.external { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+    .logout-link { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; }
+    .logout-link:hover { color: white; }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.6rem; color: #333; margin-bottom: 0.25rem; }
+    .page-header p { color: #666; font-size: 0.95rem; }
+    .status { display: none; padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.95rem; }
+    .status.success { display: block; background: #e6f4ea; color: #1e7d34; }
+    .status.error { display: block; background: #fdecea; color: #b3261e; }
+    .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+    .toolbar label { font-size: 0.9rem; font-weight: 600; color: #333; }
+    .toolbar select { padding: 0.6rem 0.9rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; background: #fff; }
+    .toolbar .count { font-size: 0.85rem; color: #888; margin-left: auto; }
+    .comment-item { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.9rem; }
+    .comment-item__head { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+    .comment-item__name { font-weight: 600; color: #333; }
+    .comment-item__date { color: #888; font-size: 0.8rem; }
+    .comment-item__post { color: #8B3A62; font-size: 0.8rem; text-decoration: none; }
+    .comment-item__body { white-space: pre-line; color: #444; line-height: 1.55; margin-bottom: 0.75rem; }
+    .comment-item__actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: capitalize; }
+    .badge--pending { background: #fff3cd; color: #856404; }
+    .badge--approved { background: #d4edda; color: #1e7b34; }
+    .badge--spam { background: #f8d7da; color: #a12622; }
+    .btn { padding: 0.4rem 0.9rem; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; }
+    .btn-approve { background: #28a745; color: #fff; }
+    .btn-spam { background: #e9e9e9; color: #333; }
+    .btn-delete { background: #dc3545; color: #fff; }
+    .btn:hover { filter: brightness(0.92); }
+    .empty { color: #888; padding: 2.5rem 0; text-align: center; }
+    @media (max-width: 768px) { .admin-layout { flex-direction: column; } .sidebar { width: 100%; } .main-content { padding: 1rem; } }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>Admin</span>
+        <h1>Living to Die</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <p class="nav-section-title">Overview</p>
+          <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Content</p>
+          <a href="/admin" class="nav-link">Homepage</a>
+          <a href="/admin/resources" class="nav-link">Resources</a>
+          <a href="/admin/posts" class="nav-link">Blog Posts</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">Communication</p>
+          <a href="/admin/newsletter" class="nav-link">Send Newsletter</a>
+          <a href="/admin/subscribers" class="nav-link">Subscribers</a>
+          <a href="/admin/comments" class="nav-link active">Comments</a>
+        </div>
+        <div class="nav-section">
+          <p class="nav-section-title">External</p>
+          <a href="https://dashboard.mailerlite.com/" target="_blank" rel="noopener" class="nav-link external">MailerLite</a>
+          <a href="/" target="_blank" class="nav-link external">View Website</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/admin/logout" class="logout-link">Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Comments</h2>
+        <p>New comments are held here for review before appearing on your blog.</p>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div class="toolbar">
+        <label for="status-filter">Show:</label>
+        <select id="status-filter">
+          <option value="pending" selected>Pending</option>
+          <option value="approved">Approved</option>
+          <option value="spam">Spam</option>
+          <option value="">All</option>
+        </select>
+        <span class="count" id="count"></span>
+      </div>
+
+      <div id="comments-container"></div>
+    </main>
+  </div>
+  <script>
+    const container = document.getElementById('comments-container');
+    const filter = document.getElementById('status-filter');
+    const count = document.getElementById('count');
+    const status = document.getElementById('status');
+
+    function showStatus(msg, type) {
+      status.className = 'status ' + (type || '');
+      status.textContent = msg;
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(() => { status.className = 'status'; }, 5000);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function fmtDate(d) {
+      const date = new Date(d);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    async function load() {
+      const f = filter.value;
+      try {
+        const res = await fetch('/api/admin/comments' + (f ? '?status=' + encodeURIComponent(f) : ''), { credentials: 'same-origin' });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+        count.textContent = (data.data || []).length + ' comment(s)';
+        if (!data.data || !data.data.length) {
+          container.innerHTML = '<div class="empty">No comments here.</div>';
+          return;
+        }
+        container.innerHTML = data.data.map(c => `
+          <div class="comment-item" data-id="${c.id}">
+            <div class="comment-item__head">
+              <span class="comment-item__name">${escapeHtml(c.name)}</span>
+              <span class="badge badge--${c.status}">${c.status}</span>
+              <span class="comment-item__date">${fmtDate(c.createdAt)}</span>
+              <a class="comment-item__post" href="/blog/${encodeURIComponent(c.postSlug)}" target="_blank">on "${escapeHtml(c.postSlug)}" →</a>
+            </div>
+            <div class="comment-item__body">${escapeHtml(c.body)}</div>
+            <div class="comment-item__actions">
+              ${c.status !== 'approved' ? `<button class="btn btn-approve" data-act="approve">Approve</button>` : ''}
+              ${c.status !== 'spam' ? `<button class="btn btn-spam" data-act="spam">Mark spam</button>` : ''}
+              <button class="btn btn-delete" data-act="delete">Delete</button>
+            </div>
+          </div>`).join('');
+
+        container.querySelectorAll('[data-act]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const item = btn.closest('.comment-item');
+            const act = btn.dataset.act;
+            if (act === 'delete' && !confirm('Delete this comment permanently?')) return;
+            actOn(item.dataset.id, act);
+          });
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="empty">Error loading comments.</div>';
+      }
+    }
+
+    async function actOn(id, act) {
+      try {
+        if (act === 'delete') {
+          const res = await fetch('/api/admin/comments/' + id, { method: 'DELETE', credentials: 'same-origin' });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error);
+          showStatus('Comment deleted.', 'success');
+        } else {
+          const res = await fetch('/api/admin/comments/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: act === 'spam' ? 'spam' : 'approved' }), credentials: 'same-origin' });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error);
+          showStatus(act === 'spam' ? 'Marked as spam.' : 'Comment approved.', 'success');
+        }
+        await load();
+      } catch (e) {
+        showStatus('Action failed: ' + e.message, 'error');
+      }
+    }
+
+    filter.addEventListener('change', load);
+    load();
+  </script>
+</body>
+</html>
