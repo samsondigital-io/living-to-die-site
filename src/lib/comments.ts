@@ -1,12 +1,13 @@
 import { Redis } from '@upstash/redis';
 import { createHmac, timingSafeEqual } from 'crypto';
+import { notifyNewComment } from './notify';
 
 export interface Comment {
   id: string;
   postSlug: string;
   name: string;
   body: string;
-  status: 'pending' | 'approved' | 'spam';
+  status: 'pending' | 'approved' | 'hidden';
   createdAt: string;
 }
 
@@ -119,11 +120,15 @@ export async function submitComment(input: {
 
   try {
     await redis.set(`${COMMENT_PREFIX}${comment.id}`, comment);
-    return { ok: true, id: comment.id };
   } catch (error) {
     console.error('Error saving comment:', error);
     return { ok: false, error: 'Could not save your comment. Please try again.' };
   }
+
+  // Notify admins (best-effort; a failure here must not fail the comment).
+  notifyNewComment(comment).catch((e) => console.error('Failed to send comment notification:', e));
+
+  return { ok: true, id: comment.id };
 }
 
 export async function listComments(status?: Comment['status']): Promise<Comment[]> {

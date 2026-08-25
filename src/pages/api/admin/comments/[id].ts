@@ -19,7 +19,7 @@ export const PATCH: APIRoute = async ({ params, request, cookies }) => {
   } catch {
     return json({ success: false, error: 'Invalid request' }, 400);
   }
-  if (!['approved', 'spam', 'pending'].includes(body.status)) {
+  if (!['approved', 'hidden', 'pending'].includes(body.status)) {
     return json({ success: false, error: 'Invalid status' }, 400);
   }
   const comment = await setCommentStatus(id, body.status);
