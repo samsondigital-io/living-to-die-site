@@ -103,8 +103,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const blob = await put(filename, bytes, { access: 'public', contentType: img.mime });
 
     return json({ success: true, url: blob.url }, 200);
-  } catch (error) {
+  } catch (error: any) {
     console.error('generate-image error:', error);
+    const msg = error?.message || String(error);
+    if (/429|quota|billing|RESOURCE_EXHAUSTED|limit: 0/i.test(msg)) {
+      return json(
+        { success: false, error: 'Image generation needs billing enabled on your Gemini API key — the free tier does not include image models. Please upload an image instead for now.' },
+        500
+      );
+    }
     return json(
       { success: false, error: 'Could not create the image right now. Please upload one instead.' },
       500

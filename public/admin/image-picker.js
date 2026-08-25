@@ -12,7 +12,7 @@ window.ImagePicker = {
         </div>
         <div class="ip__row">
           <label class="ip__upload btn-small">Upload image
-            <input type="file" accept="image/*" hidden class="ip__file" />
+            <input type="file" accept="image/*" class="ip__file" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);" />
           </label>
           <span class="ip__or">or</span>
           <input type="text" class="ip__prompt" placeholder="Describe an image to create…" />
