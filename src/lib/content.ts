@@ -7,7 +7,7 @@ export const defaultContent = {
   hero_title: 'Living To Die',
   hero_subtitle: 'A powerful story of hope and a mother\'s resilient fight for life and justice for all women',
   hero_badge: 'Coming 2026',
-  preorder_heading: 'Pre-Order Your Copy',
+  preorder_heading: 'Pre-Order Your Copy Today',
   preorder_text: 'LIVING TO DIE draws readers into a family\'s fourteen-year-long odyssey through a mother\'s recurrent breast cancer, medical negligence, and the relentless pursuit of justice.',
   summary_heading: 'An Unconventional Journey',
   summary_paragraph1: 'In a small town in Connecticut one summer day, a thirty-nine-year-old mother goes for a routine screening mammogram and an abnormality is suspected. Six days later at the follow-up mammogram, the woman\'s breast cancer is missed. Ten months later, by the time her cancer is finally diagnosed, it had spread to her lymph nodes. Drawing on a wellspring of hope and raw grit, she wages a fight for her life and for accountability, challenging a medical system that failed her.',

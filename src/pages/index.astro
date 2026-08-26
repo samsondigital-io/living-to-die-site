@@ -59,7 +59,7 @@ const content = await getHomepageContent();
         {content.hero_subtitle}
       </p>
       <div class="hero__buttons">
-        <a href="#preorder" class="btn btn--primary">Notify Me at Release</a>
+        <a href="#preorder" class="btn btn--primary">Pre-Order Your Copy</a>
         <a href="#author" class="btn btn--secondary">Meet the Author</a>
       </div>
       <p class="hero__note">A true story of hope, negligence &amp; justice</p>
@@ -75,26 +75,20 @@ const content = await getHomepageContent();
           {content.preorder_text}
         </p>
       </div>
-      <form
-        class="preorder__form"
-        id="preorder-form"
-        action="/api/subscribe"
-        method="POST"
-      >
-        <div class="preorder__input-group">
-          <label for="preorder-email" class="sr-only">Email address</label>
-          <input
-            id="preorder-email"
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-            autocomplete="email"
-          />
-          <button type="submit" class="btn btn--primary">Notify Me</button>
-        </div>
-      </form>
-      <p class="preorder__success" id="preorder-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
+      <div class="preorder__buttons">
+        <a
+          href="https://www.warrenpublishing.net/store/p700/PRE-SALE_Living_to_Die_%28Hard_Cover%29_by_Diane_Melton.html"
+          class="btn btn--primary"
+          target="_blank"
+          rel="noopener"
+        >Pre-Order Hard Cover</a>
+        <a
+          href="https://www.warrenpublishing.net/store/p701/PRE-SALE_Living_to_Die_%28Soft_Cover%29_by_Diane_Melton.html"
+          class="btn btn--primary"
+          target="_blank"
+          rel="noopener"
+        >Pre-Order Soft Cover</a>
+      </div>
     </div>
   </section>
 
@@ -437,67 +431,11 @@ const content = await getHomepageContent();
     color: var(--color-warm-gray);
   }
 
-  .preorder__form {
-    max-width: 500px;
-    margin: 0 auto;
-    min-height: 120px;
-  }
-
-  .preorder__form.hidden + .preorder__success {
-    min-height: 120px;
+  .preorder__buttons {
     display: flex;
-    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .preorder__input-group {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .preorder__input-group input[type="email"] {
-    flex: 1;
-    padding: 0.875rem 1.5rem;
-    border: 2px solid rgba(214, 51, 132, 0.25);
-    border-radius: var(--radius-full);
-    background: #fff;
-    font-size: 1rem;
-  }
-
-  .preorder__input-group input[type="email"]:focus {
-    border-color: var(--color-pink);
-  }
-
-  .preorder__checkbox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: var(--color-warm-gray);
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .preorder__checkbox input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    cursor: pointer;
-  }
-
-  .preorder__success {
-    display: none;
-    color: var(--color-primary);
-    font-weight: 500;
-    margin-top: 1rem;
-  }
-
-  .preorder__success.show {
-    display: block;
-  }
-
-  .preorder__form.hidden {
-    display: none;
   }
 
   /* Summary Section */
@@ -735,8 +673,7 @@ const content = await getHomepageContent();
     display: block;
   }
 
-  .newsletter__success.error,
-  .preorder__success.error {
+  .newsletter__success.error {
     color: #b00020;
     font-style: normal;
   }
@@ -847,11 +784,7 @@ const content = await getHomepageContent();
       margin: 0 auto;
     }
 
-    .preorder__input-group {
-      flex-direction: column;
-    }
-
-    .preorder__input-group button {
+    .preorder__buttons .btn {
       width: 100%;
     }
 
@@ -898,6 +831,5 @@ const content = await getHomepageContent();
     });
   }
 
-  wireForm('preorder-form', 'preorder-success');
   wireForm('homepage-newsletter-form', 'homepage-newsletter-success');
 </script>
