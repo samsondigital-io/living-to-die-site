@@ -59,7 +59,7 @@ const content = await getHomepageContent();
         {content.hero_subtitle}
       </p>
       <div class="hero__buttons">
-        <a href="#preorder" class="btn btn--primary">Pre-Order Your Copy</a>
+        <button type="button" class="btn btn--primary" data-open-newsletter>Join My Newsletter</button>
         <a href="#author" class="btn btn--secondary">Meet the Author</a>
       </div>
       <p class="hero__note">A true story of hope, negligence &amp; justice</p>
@@ -235,6 +235,37 @@ const content = await getHomepageContent();
       </div>
     </div>
   </section>
+
+  <!-- Newsletter modal: opened by ?subscribe links (email campaign), scroll depth, or the hero button -->
+  <div class="newsletter-modal" id="newsletter-modal" role="dialog" aria-modal="true" aria-labelledby="newsletter-modal-title" hidden>
+    <div class="newsletter-modal__backdrop" data-close-newsletter></div>
+    <div class="newsletter-modal__card">
+      <button type="button" class="newsletter-modal__close" data-close-newsletter aria-label="Close">&times;</button>
+      <h2 class="newsletter__title" id="newsletter-modal-title">{content.newsletter_heading}</h2>
+      <p class="newsletter__text">
+        {content.newsletter_text}
+      </p>
+      <form
+        class="newsletter__form"
+        id="newsletter-modal-form"
+        action="/api/subscribe"
+        method="POST"
+      >
+        <label for="newsletter-modal-email" class="sr-only">Email address</label>
+        <input
+          id="newsletter-modal-email"
+          type="email"
+          name="email"
+          class="newsletter__input"
+          placeholder="Enter your email"
+          required
+          autocomplete="email"
+        />
+        <button type="submit" class="btn btn--primary">Subscribe</button>
+      </form>
+      <p class="newsletter__success" id="newsletter-modal-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
@@ -682,6 +713,86 @@ const content = await getHomepageContent();
     display: none;
   }
 
+  /* Newsletter Modal */
+  .newsletter-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .newsletter-modal[hidden] {
+    display: none;
+  }
+
+  .newsletter-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(46, 12, 28, 0.55);
+  }
+
+  .newsletter-modal__card {
+    position: relative;
+    background: var(--gradient-warm);
+    border-radius: 28px;
+    padding: var(--space-2xl);
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    width: 100%;
+    max-width: 760px;
+    animation: modal-rise 0.35s ease;
+  }
+
+  .newsletter-modal__card::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 51, 132, 0.12), transparent 70%);
+  }
+
+  .newsletter-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--color-pink-dark);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    z-index: 1;
+  }
+
+  .newsletter-modal__close:hover {
+    color: var(--color-pink);
+  }
+
+  @keyframes modal-rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .newsletter-modal__card .newsletter__form {
+      flex-direction: column;
+    }
+  }
+
   /* Resources Preview */
   .resources-preview {
     display: grid;
@@ -796,7 +907,7 @@ const content = await getHomepageContent();
 
 <script>
   // Newsletter signup: POST the email to /api/subscribe and show success/error.
-  function wireForm(formId: string, statusId: string) {
+  function wireForm(formId: string, statusId: string, onSuccess?: () => void) {
     const form = document.getElementById(formId) as HTMLFormElement | null;
     const status = document.getElementById(statusId);
     const input = form?.querySelector('input[type="email"]') as HTMLInputElement | null;
@@ -818,6 +929,7 @@ const content = await getHomepageContent();
           status.textContent = "You're subscribed! We'll be in touch.";
           status.classList.remove('error');
           status.classList.add('show');
+          onSuccess?.();
         } else {
           status.textContent = data.error || 'Something went wrong. Please try again.';
           status.classList.add('show', 'error');
@@ -831,5 +943,69 @@ const content = await getHomepageContent();
     });
   }
 
-  wireForm('homepage-newsletter-form', 'homepage-newsletter-success');
+  wireForm('homepage-newsletter-form', 'homepage-newsletter-success', markSubscribed);
+
+  // Newsletter modal. The primary push is newsletter signups: the modal opens
+  // immediately for ?subscribe links (the email campaign lands here), at 40%
+  // scroll depth for organic visitors, and from the hero button on demand.
+  // Subscribing anywhere suppresses it for good; dismissing suppresses it for
+  // the rest of the browser session.
+  const SUBSCRIBED_KEY = 'ltd-newsletter-subscribed';
+  const DISMISSED_KEY = 'ltd-newsletter-dismissed';
+  const modal = document.getElementById('newsletter-modal');
+
+  function markSubscribed() {
+    try { localStorage.setItem(SUBSCRIBED_KEY, '1'); } catch { /* storage unavailable */ }
+  }
+
+  function hasSubscribed(): boolean {
+    try { return localStorage.getItem(SUBSCRIBED_KEY) === '1'; } catch { return false; }
+  }
+
+  function wasDismissed(): boolean {
+    try { return sessionStorage.getItem(DISMISSED_KEY) === '1'; } catch { return false; }
+  }
+
+  function openNewsletterModal() {
+    if (!modal || !modal.hidden) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    (document.getElementById('newsletter-modal-email') as HTMLInputElement | null)?.focus();
+  }
+
+  function closeNewsletterModal() {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    try { sessionStorage.setItem(DISMISSED_KEY, '1'); } catch { /* storage unavailable */ }
+  }
+
+  wireForm('newsletter-modal-form', 'newsletter-modal-success', () => {
+    markSubscribed();
+    setTimeout(closeNewsletterModal, 2500);
+  });
+
+  document.querySelectorAll('[data-open-newsletter]').forEach((el) => {
+    el.addEventListener('click', openNewsletterModal);
+  });
+  document.querySelectorAll('[data-close-newsletter]').forEach((el) => {
+    el.addEventListener('click', closeNewsletterModal);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNewsletterModal();
+  });
+
+  const wantsSubscribe = new URLSearchParams(location.search).has('subscribe');
+  if (wantsSubscribe && !hasSubscribed()) {
+    setTimeout(openNewsletterModal, 400);
+  } else if (!hasSubscribed() && !wasDismissed()) {
+    const onScroll = () => {
+      const depth = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+      if (depth >= 0.4) {
+        window.removeEventListener('scroll', onScroll);
+        openNewsletterModal();
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 </script>
