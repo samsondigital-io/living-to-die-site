@@ -88,7 +88,7 @@ function fmtShort(d: Date) {
   .topic-pill__count { opacity: 0.6; font-size: 0.85em; margin-left: 0.15rem; }
   .topic-pill--active .topic-pill__count { opacity: 0.8; }
 
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-lg); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: var(--space-lg); }
   .card {
     display: flex; flex-direction: column; text-decoration: none;
     background: var(--color-pure-white); border: 1px solid var(--color-border);

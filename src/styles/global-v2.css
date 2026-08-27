@@ -54,10 +54,12 @@
   --text-base: 1.125rem;  /* 18px */
   --text-lg: 1.25rem;     /* 20px */
   --text-xl: 1.5rem;      /* 24px */
-  --text-2xl: 1.875rem;   /* 30px */
-  --text-3xl: 2.5rem;     /* 40px */
-  --text-4xl: 3.5rem;     /* 56px */
-  --text-5xl: 4.5rem;     /* 72px */
+  /* Large sizes scale fluidly: full size on desktop (≥~800px viewports),
+     shrinking on phones so long words like "Unconventional" still wrap. */
+  --text-2xl: clamp(1.5rem, 1.1rem + 1.6vw, 1.875rem);   /* 24-30px */
+  --text-3xl: clamp(1.75rem, 1.1rem + 2.8vw, 2.5rem);    /* 28-40px */
+  --text-4xl: clamp(2.25rem, 1.4rem + 4.2vw, 3.5rem);    /* 36-56px */
+  --text-5xl: clamp(2.75rem, 1.6rem + 5.8vw, 4.5rem);    /* 44-72px */
 
   /* Line Heights */
   --leading-tight: 1.1;
@@ -78,9 +80,11 @@
   --space-md: 1.5rem;     /* 24px */
   --space-lg: 2rem;       /* 32px */
   --space-xl: 3rem;       /* 48px */
-  --space-2xl: 4rem;      /* 64px */
-  --space-3xl: 6rem;      /* 96px */
-  --space-4xl: 8rem;      /* 128px */
+  /* Large spacing scales fluidly: full size on desktop, tighter on phones
+     so cards keep a usable content width and sections don't feel empty. */
+  --space-2xl: clamp(2.25rem, 1rem + 4vw, 4rem);     /* 36-64px */
+  --space-3xl: clamp(3.5rem, 2rem + 5vw, 6rem);      /* 56-96px */
+  --space-4xl: clamp(4.5rem, 2.5rem + 7vw, 8rem);    /* 72-128px */
 
   /* Border Radius */
   --radius-sm: 4px;
@@ -164,6 +168,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--tracking-tight);
   line-height: var(--leading-tight);
   color: var(--color-text);
+  overflow-wrap: break-word;
 }
 
 h1 {

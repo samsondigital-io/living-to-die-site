@@ -528,7 +528,7 @@ const content = await getHomepageContent();
   /* Structure Section */
   .structure {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2rem;
   }
 
@@ -796,7 +796,7 @@ const content = await getHomepageContent();
   /* Resources Preview */
   .resources-preview {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
   }
@@ -872,7 +872,7 @@ const content = await getHomepageContent();
     }
 
     .hero__title {
-      font-size: var(--text-3xl);
+      font-size: clamp(2.25rem, 10vw, 2.75rem);
     }
 
     .hero__buttons {
