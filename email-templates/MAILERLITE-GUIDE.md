@@ -113,4 +113,5 @@ Use these brand settings when creating emails in MailerLite's drag-and-drop edit
 
 - Background: Light pink (`#fef7fb`)
 - Text: "You're receiving this email because you signed up at dianemelton.com"
+- Physical mailing address: "Diane Melton · 2386 NW 59th Street · Boca Raton, FL 33496" (required for CAN-SPAM compliance on every commercial send — update this if the address changes)
 - Link: Unsubscribe (use MailerLite's automatic unsubscribe link)
