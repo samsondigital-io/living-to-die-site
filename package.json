@@ -1,6 +1,9 @@
 {
   "name": "living-to-die-site",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
@@ -11,16 +14,16 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/node": "^9.5.2",
-    "@astrojs/rss": "^4.0.15",
-    "@astrojs/sitemap": "^3.7.0",
-    "@astrojs/vercel": "^8.2.11",
+    "@astrojs/mdx": "^8.1.2",
+    "@astrojs/node": "^11.1.9",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/vercel": "^11.0.18",
     "@google/genai": "^2.9.0",
     "@mailerlite/mailerlite-nodejs": "^1.5.0",
     "@upstash/redis": "^1.37.0",
     "@vercel/blob": "^2.3.1",
-    "astro": "^5.16.14",
+    "astro": "^7.4.5",
     "astro-seo": "^0.8.4",
     "sanitize-html": "^2.17.7"
   },

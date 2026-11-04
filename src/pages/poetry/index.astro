@@ -25,7 +25,7 @@ const featuredPoems = sortedPoems.filter(poem => poem.data.featured);
             <article class="poem-card poem-card--featured">
               <div class="poem-card__content">
                 <h3 class="poem-card__title">
-                  <a href={`/poetry/${poem.slug}`}>{poem.data.title}</a>
+                  <a href={`/poetry/${poem.id}`}>{poem.data.title}</a>
                 </h3>
                 {poem.data.description && (
                   <p class="poem-card__description">{poem.data.description}</p>
@@ -56,7 +56,7 @@ const featuredPoems = sortedPoems.filter(poem => poem.data.featured);
           <article class="poem-card">
             <div class="poem-card__content">
               <h3 class="poem-card__title">
-                <a href={`/poetry/${poem.slug}`}>{poem.data.title}</a>
+                <a href={`/poetry/${poem.id}`}>{poem.data.title}</a>
               </h3>
               {poem.data.description && (
                 <p class="poem-card__description">{poem.data.description}</p>

@@ -13,7 +13,7 @@ const post = allPosts.find((p) => p.slug === slug);
 if (!post) return Astro.redirect('/blog');
 
 const allEntries = await getCollection('blog');
-const entry = allEntries.find((p) => p.slug === slug);
+const entry = allEntries.find((p) => p.id === slug);
 let Content: any = null;
 let bodyText = post.bodyHtml || '';
 if (entry) {

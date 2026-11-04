@@ -94,7 +94,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
   const { getCollection } = await import('astro:content');
   const entries = await getCollection('blog');
   const repoPosts: BlogPost[] = entries.map((entry: any) => ({
-    slug: entry.slug,
+    slug: entry.id,
     title: entry.data.title,
     description: entry.data.description,
     pubDate: entry.data.pubDate,

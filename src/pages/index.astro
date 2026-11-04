@@ -31,7 +31,7 @@ try {
 if (previewResources.length === 0) {
   const allResources = await getCollection('resources');
   previewResources = allResources
-    .filter(r => ['nbcf', 'komen', 'patient-advocate'].includes(r.slug))
+    .filter(r => ['nbcf', 'komen', 'patient-advocate'].includes(r.id))
     .map(r => ({ title: r.data.title, description: r.data.description, url: r.data.url }));
 }
 
