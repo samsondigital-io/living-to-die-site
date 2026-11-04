@@ -5,7 +5,6 @@ import {
   sortPostsByDateDesc,
   aggregateTags,
   slugify,
-  buildRedisPostFromNewsletter,
   type BlogPost,
 } from './blog';
 
@@ -70,23 +69,5 @@ describe('aggregateTags', () => {
 describe('slugify', () => {
   it('lowercases, hyphenates, strips punctuation', () => {
     expect(slugify('A Reflection on Mortality!')).toBe('a-reflection-on-mortality');
-  });
-});
-
-describe('buildRedisPostFromNewsletter', () => {
-  it('maps subject/preheader/html and forces the newsletter tag', () => {
-    const p = buildRedisPostFromNewsletter({
-      subject: 'June Issue',
-      preheader: 'This month',
-      bodyHtml: '<p>hi</p>',
-      tags: ['Book Updates'],
-      sentAt: '2026-06-01T00:00:00.000Z',
-    });
-    expect(p.title).toBe('June Issue');
-    expect(p.description).toBe('This month');
-    expect(p.bodyHtml).toBe('<p>hi</p>');
-    expect(p.tags).toContain('newsletter');
-    expect(p.tags).toContain('Book Updates');
-    expect(p.slug.startsWith('june-issue')).toBe(true);
   });
 });

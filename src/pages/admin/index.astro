@@ -466,13 +466,6 @@ const currentPath = Astro.url.pathname;
 
           <div class="nav-section">
             <p class="nav-section-title">Communication</p>
-            <a href="/admin/newsletter" class={`nav-link ${currentPath.includes('newsletter') ? 'active' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-              Send Newsletter
-            </a>
             <a href="/admin/subscribers" class={`nav-link ${currentPath.includes('subscribers') ? 'active' : ''}`}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>

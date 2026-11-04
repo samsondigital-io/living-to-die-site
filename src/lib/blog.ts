@@ -17,7 +17,7 @@ export interface TagCount {
   count: number;
 }
 
-/** How an autopublished newsletter is stored in Redis (pubDate as ISO string). */
+/** How an admin-created blog post is stored in Redis (pubDate as ISO string). */
 export interface RedisBlogPost {
   slug: string;
   title: string;
@@ -33,7 +33,7 @@ import { Redis } from '@upstash/redis';
 
 const BLOG_PREFIX = 'blogpost:';
 
-/** Upstash Redis client, sharing the same env vars as the drafts store. */
+/** Upstash Redis client. */
 function getRedis(): Redis {
   const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
   const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
@@ -119,25 +119,8 @@ export async function getPostsByTag(tagParam: string): Promise<BlogPost[]> {
   return posts.filter((p) => p.tags.some((t) => normalizeTag(t) === key));
 }
 
-/** Persist an autopublished newsletter as a Redis blog post. */
-export async function publishPostFromNewsletter(input: {
-  subject: string;
-  title?: string;
-  preheader: string;
-  bodyHtml: string;
-  tags?: string[];
-  heroImage?: string;
-  sentAt: string;
-}): Promise<RedisBlogPost> {
-  const post = buildRedisPostFromNewsletter(input);
-  const redis = getRedis();
-  await redis.set(`${BLOG_PREFIX}${post.slug}`, post);
-  return post;
-}
-
 /**
- * Create a free-form blog post directly from the admin (NOT a newsletter — no
- * email is sent, no `newsletter` tag is forced). Generates a unique slug.
+ * Create a free-form blog post directly from the admin. Generates a unique slug.
  */
 export async function createBlogPost(input: {
   title: string;
@@ -273,36 +256,4 @@ export function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 80);
-}
-
-/**
- * Build the stored Redis post for an autopublished newsletter. The `newsletter`
- * tag is always applied, alongside any tags the author added. Pure function
- * (no I/O) so it can be unit-tested; persistence lives in publishPostFromNewsletter.
- */
-export function buildRedisPostFromNewsletter(input: {
-  subject: string;
-  title?: string;
-  preheader: string;
-  bodyHtml: string;
-  tags?: string[];
-  heroImage?: string;
-  sentAt: string;
-}): RedisBlogPost {
-  const title = input.title?.trim() || input.subject;
-  const tags = dedupeTags(['newsletter', ...(input.tags ?? [])]);
-  const base = slugify(title) || 'newsletter';
-  // Suffix with the send date for a stable, unique slug (no randomness, which
-  // would break determinism in serverless retries).
-  const datePart = input.sentAt.slice(0, 10);
-  return {
-    slug: `${base}-${datePart}`,
-    title,
-    description: input.preheader,
-    pubDate: input.sentAt,
-    heroImage: input.heroImage,
-    tags,
-    author: 'Diane Melton',
-    bodyHtml: input.bodyHtml,
-  };
 }
