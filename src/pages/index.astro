@@ -230,6 +230,7 @@ const content = await getHomepageContent();
             <button type="submit" class="btn btn--primary">Subscribe</button>
           </form>
           <p class="newsletter__success" id="homepage-newsletter-success" role="status" aria-live="polite">You're subscribed! We'll be in touch.</p>
+          <a href="/blog" class="newsletter__archive">Read my past newsletters →</a>
         </div>
       </div>
     </div>
@@ -681,6 +682,20 @@ const content = await getHomepageContent();
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
+
+  .newsletter__archive {
+    display: inline-block;
+    margin-top: var(--space-lg);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-pink);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .newsletter__archive:hover { color: var(--color-pink-dark); text-decoration: underline; text-underline-offset: 4px; }
 
   .newsletter__success {
     display: none;
