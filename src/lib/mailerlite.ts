@@ -265,3 +265,67 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     configured: true,
   };
 }
+
+/* ---------------------------------------------------------------------------
+ * Sent campaigns → blog. Unlike the dashboard helpers these throw on failure,
+ * so the webhook can return an error and let MailerLite retry.
+ * ------------------------------------------------------------------------- */
+
+/** A sent campaign's email, as needed to republish it on the blog. */
+export interface SentCampaignEmail {
+  campaignId: string;
+  subject: string;
+  preheader: string;
+  html: string;
+  /** ISO timestamp the send finished, or null if MailerLite doesn't say. */
+  sentAt: string | null;
+}
+
+/** MailerLite returns "2026-11-02 16:43:47" (UTC); make it ISO. */
+function toIso(value: unknown): string | null {
+  if (typeof value !== 'string' || !value) return null;
+  const iso = /[zZ]|[+-]\d\d:?\d\d$/.test(value) ? value : `${value.replace(' ', 'T')}Z`;
+  return Number.isNaN(Date.parse(iso)) ? null : new Date(iso).toISOString();
+}
+
+/** Fetch a sent campaign with its email HTML. Returns null if it isn't a sent campaign. */
+export async function getSentCampaignEmail(campaignId: string): Promise<SentCampaignEmail | null> {
+  const ml = getMailerLiteClient();
+  if (!ml) throw new Error('MailerLite not configured');
+  try {
+    const res: any = await ml.campaigns.find(campaignId);
+    const c = res?.data?.data;
+    if (!c || c.status !== 'sent') return null;
+    const email = c.emails?.[0];
+    if (!email?.content) return null;
+    return {
+      campaignId: String(c.id),
+      subject: email.subject ?? c.name ?? '',
+      preheader: email.preheader ?? '',
+      html: email.content,
+      sentAt: toIso(c.finished_at ?? c.started_at ?? c.scheduled_for),
+    };
+  } catch (error: any) {
+    if (error?.response?.status === 404) return null;
+    throw new Error(mailerliteErrorMessage(error, 'Failed to fetch campaign'));
+  }
+}
+
+/** IDs of every sent campaign, oldest first. */
+export async function listSentCampaignIds(): Promise<string[]> {
+  const ml = getMailerLiteClient();
+  if (!ml) throw new Error('MailerLite not configured');
+  const rows: { id: string; at: string }[] = [];
+  try {
+    for (let page = 1; page <= 50; page++) {
+      const res: any = await ml.campaigns.get({ filter: { status: 'sent' }, limit: 100, page });
+      const list: any[] = res?.data?.data ?? [];
+      for (const c of list) rows.push({ id: String(c.id), at: toIso(c.finished_at) ?? '' });
+      const last = res?.data?.meta?.last_page ?? 1;
+      if (page >= last || list.length === 0) break;
+    }
+  } catch (error: any) {
+    throw new Error(mailerliteErrorMessage(error, 'Failed to list campaigns'));
+  }
+  return rows.sort((a, b) => a.at.localeCompare(b.at)).map((r) => r.id);
+}

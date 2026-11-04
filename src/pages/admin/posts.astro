@@ -204,6 +204,12 @@ const currentPath = Astro.url.pathname;
       </div>
 
       <div class="section">
+        <h3>Newsletters</h3>
+        <p class="label-hint" style="margin-bottom:1rem;">Newsletters you send from MailerLite are added to the blog automatically, tagged “Newsletter”. If one is missing, import it here — newsletters already on the blog (or ones you've deleted) are skipped.</p>
+        <button type="button" class="btn btn-secondary" id="import-newsletters-btn">Import from MailerLite</button>
+      </div>
+
+      <div class="section">
         <h3>Published Posts</h3>
         <div id="post-list"><p class="post-empty">Loading…</p></div>
       </div>
@@ -212,66 +218,102 @@ const currentPath = Astro.url.pathname;
 
   <script src="/admin/image-picker.js" is:inline></script>
   <script>
-    const form = document.getElementById('post-form');
-    const status = document.getElementById('status');
-    const rte = document.getElementById('rte');
-    const publishBtn = document.getElementById('publish-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const postList = document.getElementById('post-list');
-    const formHeading = document.getElementById('form-heading');
-    const editingIndicator = document.getElementById('editing-indicator');
-    const editingTitle = document.getElementById('editing-title');
-    const clearEditingBtn = document.getElementById('clear-editing');
-    let editingSlug = null;
+    interface ImagePickerApi {
+      mount(el: HTMLElement, opts: { initialUrl: string; onChange: (url: string | null) => void }): void;
+    }
+    interface PostSummary { slug: string; title: string; pubDate: string; tags?: string[] }
 
-    function showStatus(msg, type) {
+    /** Look up an element the page markup always renders. */
+    function byId<T extends HTMLElement = HTMLElement>(id: string): T {
+      const el = document.getElementById(id);
+      if (!el) throw new Error(`Missing #${id}`);
+      return el as T;
+    }
+    const errorMessage = (err: unknown) => (err instanceof Error ? err.message : String(err));
+
+    const form = byId<HTMLFormElement>('post-form');
+    const status = byId('status');
+    const rte = byId('rte');
+    const publishBtn = byId<HTMLButtonElement>('publish-btn');
+    const resetBtn = byId<HTMLButtonElement>('reset-btn');
+    const postList = byId('post-list');
+    const formHeading = byId('form-heading');
+    const editingIndicator = byId('editing-indicator');
+    const editingTitle = byId('editing-title');
+    const clearEditingBtn = byId<HTMLButtonElement>('clear-editing');
+    const titleInput = byId<HTMLInputElement>('title');
+    const descriptionInput = byId<HTMLTextAreaElement>('description');
+    const heroImageInput = byId<HTMLInputElement>('heroImage');
+    const tagsInput = byId<HTMLInputElement>('tags');
+    let editingSlug: string | null = null;
+
+    function showStatus(msg: string, type: 'success' | 'error') {
       status.className = `status ${type}`;
       status.textContent = msg;
       if (type === 'success') setTimeout(() => { status.className = 'status'; }, 4000);
     }
 
+    const importBtn = byId<HTMLButtonElement>('import-newsletters-btn');
+    importBtn.addEventListener('click', async () => {
+      importBtn.disabled = true;
+      importBtn.textContent = 'Importing…';
+      try {
+        const res = await fetch('/api/import-newsletters', { method: 'POST', credentials: 'same-origin' });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || 'Import failed');
+        const n: number = result.imported.length;
+        showStatus(n === 0 ? 'No new newsletters to import.' : `Imported ${n} newsletter${n === 1 ? '' : 's'} to the blog.`, 'success');
+        if (n > 0) loadPosts();
+      } catch (err) {
+        showStatus(`Import failed: ${errorMessage(err)}`, 'error');
+      }
+      importBtn.disabled = false;
+      importBtn.textContent = 'Import from MailerLite';
+    });
+
     // Rich text toolbar
-    document.getElementById('rte-toolbar').addEventListener('click', (e) => {
-      const btn = e.target.closest('.rte-btn');
+    byId('rte-toolbar').addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>('.rte-btn');
       if (!btn) return;
       e.preventDefault();
       rte.focus();
-      const cmd = btn.dataset.cmd;
+      const cmd = btn.dataset.cmd ?? '';
       if (cmd === 'createLink') {
         const url = prompt('Link URL:');
         if (url) document.execCommand('createLink', false, url);
       } else if (cmd === 'formatBlock') {
         document.execCommand('formatBlock', false, btn.dataset.value);
       } else {
-        document.execCommand(cmd, false, null);
+        document.execCommand(cmd, false);
       }
     });
 
-    // Image picker
-    function mountPicker(initialUrl) {
+    // Image picker (loaded by /admin/image-picker.js, which may arrive after this script)
+    function mountPicker(initialUrl: string) {
       const el = document.getElementById('image-picker');
       if (!el) return;
-      if (!window.ImagePicker) { setTimeout(() => mountPicker(initialUrl), 50); return; }
-      window.ImagePicker.mount(el, {
+      const picker = (window as Window & { ImagePicker?: ImagePickerApi }).ImagePicker;
+      if (!picker) { setTimeout(() => mountPicker(initialUrl), 50); return; }
+      picker.mount(el, {
         initialUrl: initialUrl || '',
-        onChange: (url) => { document.getElementById('heroImage').value = url || ''; },
+        onChange: (url) => { heroImageInput.value = url || ''; },
       });
     }
 
     function getFormData() {
       return {
-        title: document.getElementById('title').value.trim(),
-        description: document.getElementById('description').value.trim(),
-        heroImage: document.getElementById('heroImage').value || undefined,
+        title: titleInput.value.trim(),
+        description: descriptionInput.value.trim(),
+        heroImage: heroImageInput.value || undefined,
         bodyHtml: rte.innerHTML.trim(),
-        tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean),
+        tags: tagsInput.value.split(',').map((t) => t.trim()).filter(Boolean),
       };
     }
 
     function resetForm() {
       form.reset();
       rte.innerHTML = '';
-      document.getElementById('heroImage').value = '';
+      heroImageInput.value = '';
       mountPicker('');
       editingSlug = null;
       formHeading.textContent = 'New Post';
@@ -308,7 +350,7 @@ const currentPath = Astro.url.pathname;
           throw new Error(result.error || 'Failed to save');
         }
       } catch (err) {
-        showStatus(`Failed: ${err.message}`, 'error');
+        showStatus(`Failed: ${errorMessage(err)}`, 'error');
       }
       publishBtn.disabled = false;
       publishBtn.textContent = editingSlug ? 'Save Changes' : 'Publish Post';
@@ -322,13 +364,13 @@ const currentPath = Astro.url.pathname;
           postList.innerHTML = '<p class="post-empty">No posts yet.</p>';
           return;
         }
-        postList.innerHTML = result.data.map(p => `
+        postList.innerHTML = (result.data as PostSummary[]).map((p) => `
           <div class="post-item" data-slug="${p.slug}">
             <div class="post-info">
               <strong class="post-title-text">${escapeHtml(p.title)}</strong>
               <div class="post-meta">
                 <span>${new Date(p.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                ${(p.tags || []).map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('')}
+                ${(p.tags || []).map((t) => `<span class="post-tag">${escapeHtml(t)}</span>`).join('')}
               </div>
             </div>
             <div class="post-actions">
@@ -339,26 +381,26 @@ const currentPath = Astro.url.pathname;
           </div>
         `).join('');
 
-        postList.querySelectorAll('.post-item').forEach(item => {
-          const slug = item.dataset.slug;
-          item.querySelector('[data-action="edit"]').addEventListener('click', () => editPost(slug));
-          item.querySelector('[data-action="delete"]').addEventListener('click', () => deletePost(slug, item));
+        postList.querySelectorAll<HTMLElement>('.post-item').forEach((item) => {
+          const slug = item.dataset.slug ?? '';
+          item.querySelector('[data-action="edit"]')?.addEventListener('click', () => editPost(slug));
+          item.querySelector('[data-action="delete"]')?.addEventListener('click', () => deletePost(slug, item));
         });
       } catch (err) {
-        postList.innerHTML = `<p class="post-empty">Error loading posts: ${err.message}</p>`;
+        postList.innerHTML = `<p class="post-empty">Error loading posts: ${escapeHtml(errorMessage(err))}</p>`;
       }
     }
 
-    async function editPost(slug) {
+    async function editPost(slug: string) {
       try {
         const res = await fetch(`/api/posts/${slug}`, { credentials: 'same-origin' });
         const result = await res.json();
         if (!result.success) throw new Error(result.error);
         const p = result.data;
-        document.getElementById('title').value = p.title || '';
-        document.getElementById('description').value = p.description || '';
-        document.getElementById('tags').value = (p.tags || []).join(', ');
-        document.getElementById('heroImage').value = p.heroImage || '';
+        titleInput.value = p.title || '';
+        descriptionInput.value = p.description || '';
+        tagsInput.value = (p.tags || []).join(', ');
+        heroImageInput.value = p.heroImage || '';
         rte.innerHTML = p.bodyHtml || '';
         mountPicker(p.heroImage || '');
         editingSlug = slug;
@@ -368,11 +410,11 @@ const currentPath = Astro.url.pathname;
         editingIndicator.classList.add('visible');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
-        showStatus(`Failed to load post: ${err.message}`, 'error');
+        showStatus(`Failed to load post: ${errorMessage(err)}`, 'error');
       }
     }
 
-    async function deletePost(slug, item) {
+    async function deletePost(slug: string, item: HTMLElement) {
       if (!confirm('Delete this post? This removes it from the blog.')) return;
       try {
         const res = await fetch(`/api/posts/${slug}`, { method: 'DELETE', credentials: 'same-origin' });
@@ -386,12 +428,13 @@ const currentPath = Astro.url.pathname;
           throw new Error(result.error);
         }
       } catch (err) {
-        showStatus(`Failed to delete: ${err.message}`, 'error');
+        showStatus(`Failed to delete: ${errorMessage(err)}`, 'error');
       }
     }
 
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const HTML_ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    function escapeHtml(s: unknown) {
+      return String(s).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
     }
 
     mountPicker('');

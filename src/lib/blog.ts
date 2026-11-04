@@ -129,6 +129,8 @@ export async function createBlogPost(input: {
   tags?: string[];
   heroImage?: string;
   author?: string;
+  /** ISO publish date; defaults to now (used when importing a sent newsletter). */
+  pubDate?: string;
 }): Promise<RedisBlogPost> {
   const redis = getRedis();
   const base = slugify(input.title) || 'post';
@@ -139,12 +141,11 @@ export async function createBlogPost(input: {
   while (await redis.get<RedisBlogPost>(`${BLOG_PREFIX}${slug}`)) {
     slug = `${base}-${n++}`;
   }
-  const now = new Date().toISOString();
   const post: RedisBlogPost = {
     slug,
     title: input.title,
     description: input.description,
-    pubDate: now,
+    pubDate: input.pubDate ?? new Date().toISOString(),
     heroImage: input.heroImage,
     tags: dedupeTags(input.tags ?? []),
     author: input.author?.trim() || 'Diane Melton',

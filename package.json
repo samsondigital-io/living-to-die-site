@@ -24,9 +24,12 @@
     "@upstash/redis": "^1.37.0",
     "@vercel/blob": "^2.3.1",
     "astro": "^7.4.5",
-    "astro-seo": "^0.8.4"
+    "astro-seo": "^0.8.4",
+    "node-html-parser": "^9.0.5",
+    "sanitize-html": "^2.18.1"
   },
   "devDependencies": {
+    "@types/sanitize-html": "^2.16.2",
     "vitest": "^2.1.9"
   }
 }
