@@ -148,6 +148,11 @@ const others = stats.recentCampaigns.slice(1);
           <div class="stat-sub">people on your mailing list</div>
         </div>
         <div class="stat-card">
+          <div class="stat-label">New since last newsletter</div>
+          <div class="stat-value">{stats.newSinceLastCampaign != null ? stats.newSinceLastCampaign.toLocaleString() : '—'}</div>
+          <div class="stat-sub">{last ? `joined since ${fmtDate(last.sentAt)}` : 'no newsletters sent yet'}</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-label">Last open rate</div>
           <div class="stat-value">{last?.openRate ?? '—'}</div>
           <div class="stat-sub">{last ? 'most recent newsletter' : 'no newsletters sent yet'}</div>
@@ -184,13 +189,14 @@ const others = stats.recentCampaigns.slice(1);
           <h3>Recent newsletters</h3>
           <table>
             <thead>
-              <tr><th>Newsletter</th><th>Sent</th><th class="num">Opened</th><th class="num">Clicked</th></tr>
+              <tr><th>Newsletter</th><th>Sent</th><th class="num">Recipients</th><th class="num">Opened</th><th class="num">Clicked</th></tr>
             </thead>
             <tbody>
               {others.map((c) => (
                 <tr>
                   <td class="subject-cell">{c.subject}</td>
                   <td>{fmtDate(c.sentAt)}</td>
+                  <td class="num">{c.recipients != null ? c.recipients.toLocaleString() : '—'}</td>
                   <td class="num">{c.openRate ?? '—'}</td>
                   <td class="num">{c.clickRate ?? '—'}</td>
                 </tr>

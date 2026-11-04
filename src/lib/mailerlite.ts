@@ -63,6 +63,8 @@ export interface CampaignStat {
 
 export interface DashboardStats {
   subscriberCount: number | null;
+  /** Active subscribers who joined after the most recent newsletter was sent. */
+  newSinceLastCampaign: number | null;
   lastCampaign: CampaignStat | null;
   recentCampaigns: CampaignStat[];
   configured: boolean;
@@ -252,14 +254,16 @@ export async function getCampaignActivity(
 export async function getDashboardStats(): Promise<DashboardStats> {
   const apiKey = import.meta.env.MAILERLITE_API_KEY;
   if (!apiKey) {
-    return { subscriberCount: null, lastCampaign: null, recentCampaigns: [], configured: false };
+    return { subscriberCount: null, newSinceLastCampaign: null, lastCampaign: null, recentCampaigns: [], configured: false };
   }
-  const [subscriberCount, recentCampaigns] = await Promise.all([
+  const [subscriberCount, recentCampaigns, subscribers] = await Promise.all([
     getSubscriberCount(),
     getRecentCampaigns(5),
+    getSubscribers(),
   ]);
   return {
     subscriberCount,
+    newSinceLastCampaign: countJoinedSince(subscribers, recentCampaigns[0]?.sentAt ?? null),
     lastCampaign: recentCampaigns[0] ?? null,
     recentCampaigns,
     configured: true,
@@ -328,4 +332,17 @@ export async function listSentCampaignIds(): Promise<string[]> {
     throw new Error(mailerliteErrorMessage(error, 'Failed to list campaigns'));
   }
   return rows.sort((a, b) => a.at.localeCompare(b.at)).map((r) => r.id);
+}
+
+/**
+ * Active subscribers who joined after `since` (a MailerLite timestamp).
+ * Null when there's no newsletter to measure from or no subscriber data.
+ */
+function countJoinedSince(subscribers: SubscriberRow[], since: string | null): number | null {
+  const sinceIso = toIso(since);
+  if (!sinceIso || subscribers.length === 0) return null;
+  return subscribers.filter((s) => {
+    const joined = toIso(s.subscribedAt);
+    return s.status === 'active' && joined !== null && joined > sinceIso;
+  }).length;
 }
