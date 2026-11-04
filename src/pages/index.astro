@@ -910,8 +910,11 @@ const content = await getHomepageContent();
 </style>
 
 <script>
-  // Newsletter signup: POST the email to /api/subscribe and show success/error.
-  function wireForm(formId: string, statusId: string, onSuccess?: () => void) {
+  import { signupContext } from '../lib/attribution-client';
+
+  // Newsletter signup: POST the email (plus where the visitor came from) to
+  // /api/subscribe and show success/error. `source` names the form.
+  function wireForm(formId: string, statusId: string, source: string, onSuccess?: () => void) {
     const form = document.getElementById(formId) as HTMLFormElement | null;
     const status = document.getElementById(statusId);
     const input = form?.querySelector('input[type="email"]') as HTMLInputElement | null;
@@ -925,7 +928,7 @@ const content = await getHomepageContent();
         const res = await fetch('/api/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email, ...signupContext(source) }),
         });
         const data = await res.json();
         if (data.success) {
@@ -947,7 +950,7 @@ const content = await getHomepageContent();
     });
   }
 
-  wireForm('homepage-newsletter-form', 'homepage-newsletter-success', markSubscribed);
+  wireForm('homepage-newsletter-form', 'homepage-newsletter-success', 'homepage', markSubscribed);
 
   // Newsletter modal. The primary push is newsletter signups: the modal opens
   // immediately for ?subscribe links (the email campaign lands here), at 40%
@@ -984,7 +987,7 @@ const content = await getHomepageContent();
     try { sessionStorage.setItem(DISMISSED_KEY, '1'); } catch { /* storage unavailable */ }
   }
 
-  wireForm('newsletter-modal-form', 'newsletter-modal-success', () => {
+  wireForm('newsletter-modal-form', 'newsletter-modal-success', 'popup', () => {
     markSubscribed();
     setTimeout(closeNewsletterModal, 2500);
   });

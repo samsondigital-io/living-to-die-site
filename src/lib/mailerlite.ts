@@ -34,12 +34,23 @@ function mailerliteErrorMessage(error: any, fallback = 'MailerLite API error'): 
 /**
  * Subscribe an email to the account's subscriber list. No group, single opt-in:
  * the subscriber is created as `active`, so no confirmation email is sent.
+ *
+ * `signupFields` records where they came from. Someone already on the list
+ * keeps their original signup_* values rather than having them overwritten.
  */
-export async function subscribeEmail(email: string): Promise<{ success: boolean; error?: string }> {
+export async function subscribeEmail(
+  email: string,
+  signupFields?: Record<string, string>
+): Promise<{ success: boolean; error?: string }> {
   const ml = getMailerLiteClient();
   if (!ml) return { success: false, error: 'MailerLite not configured' };
   try {
-    await ml.subscribers.createOrUpdate({ email, status: 'active' });
+    let fields = signupFields;
+    if (fields) {
+      const existing: any = await ml.subscribers.find(email).catch(() => null);
+      if (existing?.data?.data?.fields?.signup_source) fields = undefined;
+    }
+    await ml.subscribers.createOrUpdate({ email, status: 'active', ...(fields ? { fields } : {}) });
     return { success: true };
   } catch (error: any) {
     return { success: false, error: mailerliteErrorMessage(error, 'Subscribe failed') };
@@ -143,6 +154,11 @@ export interface SubscriberRow {
   clicksCount: number | null;
   openRate: string | null;
   clickRate: string | null;
+  /** Where they came from (signup_* custom fields); null for people who joined before tracking. */
+  signupSource: string | null;
+  signupForm: string | null;
+  signupReferrer: string | null;
+  signupLanding: string | null;
 }
 
 function toSubscriberRow(s: any): SubscriberRow {
@@ -158,6 +174,10 @@ function toSubscriberRow(s: any): SubscriberRow {
     clicksCount: typeof s?.clicks_count === 'number' ? s.clicks_count : null,
     openRate: pct(s?.open_rate),
     clickRate: pct(s?.click_rate),
+    signupSource: s?.fields?.signup_source || null,
+    signupForm: s?.fields?.signup_form || null,
+    signupReferrer: s?.fields?.signup_referrer || null,
+    signupLanding: s?.fields?.signup_landing_page || null,
   };
 }
 

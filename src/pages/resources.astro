@@ -264,6 +264,8 @@ const categoryTitles = {
 </style>
 
 <script>
+  import { signupContext } from '../lib/attribution-client';
+
   document.getElementById('resources-newsletter-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -277,7 +279,7 @@ const categoryTitles = {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, ...signupContext('resources') })
       });
       const data = await res.json();
       if (data.success) {

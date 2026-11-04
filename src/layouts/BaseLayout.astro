@@ -96,6 +96,10 @@ const ogImage = new URL(image, Astro.site);
     <Footer />
 
     <script>
+      import { rememberVisitOrigin } from '../lib/attribution-client';
+      // Note how the visitor arrived (Google, Facebook, a tagged link…) for newsletter signups.
+      rememberVisitOrigin();
+
       // Netlify Identity redirect
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {

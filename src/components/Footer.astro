@@ -203,6 +203,8 @@ const currentYear = new Date().getFullYear();
 </style>
 
 <script>
+  import { signupContext } from '../lib/attribution-client';
+
   document.getElementById('newsletter-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -217,7 +219,7 @@ const currentYear = new Date().getFullYear();
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, ...signupContext('footer') })
       });
       const data = await res.json();
       if (data.success) {
