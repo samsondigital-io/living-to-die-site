@@ -9,6 +9,10 @@ export interface BlogPost {
   featured: boolean;
   source: 'repo' | 'redis';
   bodyHtml: string;
+  /** The opening of the post as plain text, cut at a word with "…" (for cards). */
+  excerpt: string;
+  /** `description` when it's a real subtitle; empty when it merely repeats the opening. */
+  subtitle: string;
 }
 
 export interface TagCount {
@@ -104,6 +108,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     featured: entry.data.featured,
     source: 'repo' as const,
     bodyHtml: '',
+    ...summarize(entry.data.description, markdownToText(entry.body ?? '')),
   }));
   const redisPosts = await listRedisPosts();
   return sortPostsByDateDesc([...repoPosts, ...redisPosts]);
@@ -245,6 +250,7 @@ async function listRedisPosts(): Promise<BlogPost[]> {
       featured: false,
       source: 'redis',
       bodyHtml: r.bodyHtml,
+      ...summarize(r.description, htmlToText(r.bodyHtml)),
     });
   }
   return out;
@@ -257,4 +263,64 @@ export function slugify(input: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 80);
+}
+
+/* ---------------------------------------------------------------------------
+ * Excerpts. Pure helpers so they can be unit-tested.
+ * ------------------------------------------------------------------------- */
+
+const ENTITIES: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+  lsquo: '\u2018', rsquo: '\u2019', ldquo: '\u201c', rdquo: '\u201d',
+  ndash: '\u2013', mdash: '\u2014', hellip: '\u2026',
+};
+
+function decodeEntities(s: string): string {
+  return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, e: string) => {
+    if (e[0] === '#') {
+      const code = e[1].toLowerCase() === 'x' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : match;
+    }
+    return ENTITIES[e.toLowerCase()] ?? match;
+  });
+}
+
+/** Visible text of an HTML fragment, whitespace collapsed. */
+export function htmlToText(html: string): string {
+  const spaced = html.replace(/<(br|\/p|\/h[1-6]|\/li|\/blockquote)\b[^>]*>/gi, ' ');
+  return decodeEntities(spaced.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+}
+
+/** Rough plain text of a Markdown body (enough for an excerpt). */
+function markdownToText(md: string): string {
+  return md
+    .replace(/^#{1,6}\s+.*$/gm, ' ') // headings
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links -> text
+    .replace(/[*_`>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Cut text to about `max` characters at a word boundary, ending in "…". */
+export function excerptText(text: string, max = 240): string {
+  if (text.length <= max) return text;
+  // Look one character past the limit so a word ending exactly at `max` is kept.
+  const lastSpace = text.slice(0, max + 1).lastIndexOf(' ');
+  const trimmed = lastSpace > max * 0.6 ? text.slice(0, lastSpace) : text.slice(0, max);
+  return trimmed.replace(/[\s,;:.!?\u2013\u2014-]+$/, '') + '\u2026';
+}
+
+/** True when a summary is just the post's opening words (auto-generated), not a subtitle. */
+export function isOpeningSummary(summary: string, bodyText: string): boolean {
+  const norm = (s: string) => s.toLowerCase().replace(/\u2026$/, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const opening = norm(summary);
+  return opening.length > 0 && norm(bodyText).startsWith(opening);
+}
+
+function summarize(description: string, bodyText: string): { excerpt: string; subtitle: string } {
+  return {
+    excerpt: excerptText(bodyText),
+    subtitle: isOpeningSummary(description, bodyText) ? '' : description,
+  };
 }

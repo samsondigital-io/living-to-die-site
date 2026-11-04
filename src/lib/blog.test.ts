@@ -5,6 +5,9 @@ import {
   sortPostsByDateDesc,
   aggregateTags,
   slugify,
+  htmlToText,
+  excerptText,
+  isOpeningSummary,
   type BlogPost,
 } from './blog';
 
@@ -19,6 +22,8 @@ function post(partial: Partial<BlogPost>): BlogPost {
     featured: false,
     source: 'repo',
     bodyHtml: '',
+    excerpt: '',
+    subtitle: '',
     ...partial,
   };
 }
@@ -69,5 +74,34 @@ describe('aggregateTags', () => {
 describe('slugify', () => {
   it('lowercases, hyphenates, strips punctuation', () => {
     expect(slugify('A Reflection on Mortality!')).toBe('a-reflection-on-mortality');
+  });
+});
+
+describe('htmlToText', () => {
+  it('strips tags, decodes entities, and keeps words apart across blocks', () => {
+    expect(htmlToText('<p><strong>On the</strong> show &amp; more</p><p>Next&nbsp;one&#8217;s</p>')).toBe('On the show & more Next one\u2019s');
+  });
+});
+
+describe('excerptText', () => {
+  it('leaves short text alone', () => {
+    expect(excerptText('Short text.', 50)).toBe('Short text.');
+  });
+  it('cuts at a word boundary and adds an ellipsis', () => {
+    expect(excerptText('The quick brown fox jumps over the lazy dog, again and again', 30)).toBe('The quick brown fox jumps over\u2026');
+  });
+  it('drops trailing punctuation before the ellipsis', () => {
+    expect(excerptText('Hello there, friend of mine', 13)).toBe('Hello there\u2026');
+  });
+});
+
+describe('isOpeningSummary', () => {
+  const body = 'Hi everyone, and welcome to my first newsletter! Did you know that books are published daily.';
+  it('detects a summary that is just the opening (even truncated)', () => {
+    expect(isOpeningSummary('Hi everyone, and welcome to my first newsletter! Did you know\u2026', body)).toBe(true);
+  });
+  it('treats a different line as a real subtitle', () => {
+    expect(isOpeningSummary('The Privilege of a Jury', body)).toBe(false);
+    expect(isOpeningSummary('', body)).toBe(false);
   });
 });

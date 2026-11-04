@@ -72,7 +72,7 @@ const commentToken = createCommentToken();
           <a href={`/blog/tag/${encodeURIComponent(normalizeTag(tags[0]))}`} class="post-eyebrow">{tags[0]}</a>
         )}
         <h1 class="post-title">{post.title}</h1>
-        <p class="post-standfirst">{post.description}</p>
+        {post.subtitle && <p class="post-standfirst">{post.subtitle}</p>}
 
         <div class="post-byline">
           <span class="post-byline__avatar" aria-hidden="true">{authorInitial}</span>
@@ -275,7 +275,7 @@ const commentToken = createCommentToken();
     font-size: clamp(2.1rem, 5vw, 3.4rem);
     line-height: 1.1;
     letter-spacing: -0.015em;
-    color: var(--ink);
+    color: var(--color-pink-dark); /* matches the card titles on /blog */
     margin: 0 0 1.2rem;
     text-wrap: balance;
   }
@@ -335,10 +335,14 @@ const commentToken = createCommentToken();
     max-width: 58rem;
     padding: 0 clamp(1.25rem, 5vw, 2rem);
   }
+  /* Show the whole photo (no cropping): natural proportions, capped in height. */
   .post-hero img {
-    width: 100%;
-    height: clamp(220px, 42vw, 460px);
-    object-fit: cover;
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: min(75vh, 640px);
+    margin: 0 auto;
     border-radius: 14px;
     box-shadow: 0 30px 60px -30px rgba(0,0,0,0.35);
   }

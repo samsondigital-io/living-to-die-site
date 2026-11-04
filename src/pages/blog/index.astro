@@ -5,18 +5,13 @@ import { getAllPosts, getAllTags } from '../../lib/blog';
 const posts = await getAllPosts();
 const tags = await getAllTags();
 const featured = posts.find((p) => p.featured) ?? posts[0] ?? null;
-// "All Writing" lists the complete archive. When there are enough posts we drop
-// the featured one from the grid to avoid duplication; with only a couple of
-// posts we keep it so the grid never looks empty.
-const rest = posts.length > 2 ? posts.filter((p) => p.slug !== featured?.slug) : posts;
+// Every post gets the same full-width card; the featured one (or the newest) leads.
+const ordered = featured ? [featured, ...posts.filter((p) => p.slug !== featured.slug)] : posts;
 
 function fmt(d: Date) {
   return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
-function fmtShort(d: Date) {
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase();
+const initial = (author: string) => (author || 'D').trim().charAt(0).toUpperCase();
 ---
 
 <BaseLayout
@@ -45,60 +40,36 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
     </div>
   </header>
 
-  {featured && (
-    <section class="section blog-featured-section">
-      <div class="container">
-        <a class="feature" href={`/blog/${featured.slug}`}>
-          {featured.heroImage && (
-            <div class="feature__media">
-              <img src={featured.heroImage} alt={featured.title} loading="eager" />
-            </div>
-          )}
-          <div class={`feature__body ${featured.heroImage ? '' : 'feature__body--full'}`}>
-            <span class="feature__kicker">
-              <span class="feature__pin">Featured</span>
-              {featured.tags.length > 0 && <span class="feature__tag">{featured.tags[0]}</span>}
-            </span>
-            <h2 class="feature__title">{featured.title}</h2>
-            <p class="feature__excerpt">{featured.description}</p>
-            <div class="feature__meta">
-              <span class="feature__avatar" aria-hidden="true">{featuredInitial}</span>
-              <span class="feature__byline">{featured.author}</span>
-              <span class="feature__dot">·</span>
-              <time>{fmt(featured.pubDate)}</time>
-            </div>
-            <span class="feature__cta">Read the post →</span>
-          </div>
-        </a>
-      </div>
-    </section>
-  )}
-
-  <section class="section section--muted blog-list-section">
+  <section class="section blog-posts-section">
     <div class="container">
-      {rest.length === 0 && !featured ? (
+      {ordered.length === 0 ? (
         <p class="blog-empty">No posts yet — check back soon.</p>
       ) : (
-        <div class="card-grid">
-          {rest.map((post) => (
-            <a class="card" href={`/blog/${post.slug}`}>
-              {post.heroImage ? (
-                <div class="card__media">
-                  <img src={post.heroImage} alt={post.title} loading="lazy" />
-                </div>
-              ) : (
-                <div class="card__media card__media--placeholder" aria-hidden="true">
-                  <span>{post.tags[0] || 'Living to Die'}</span>
+        <div class="feature-stack">
+          {ordered.map((post, i) => (
+            <a class="feature" href={`/blog/${post.slug}`}>
+              {post.heroImage && (
+                <div class="feature__media">
+                  <img src={post.heroImage} alt={post.title} loading={i === 0 ? 'eager' : 'lazy'} />
                 </div>
               )}
-              <div class="card__body">
-                {post.tags.length > 0 && <span class="card__tag">{post.tags[0]}</span>}
-                <h3 class="card__title">{post.title}</h3>
-                <p class="card__excerpt">{post.description}</p>
-                <div class="card__meta">
-                  <time>{fmtShort(post.pubDate)}</time>
-                  <span class="card__more">Read →</span>
+              <div class={`feature__body ${post.heroImage ? '' : 'feature__body--full'}`}>
+                <span class="feature__kicker">
+                  {post === featured && <span class="feature__pin">Featured</span>}
+                  {post.tags.length > 0 && (
+                    <span class={`feature__tag ${post === featured ? '' : 'feature__tag--solo'}`}>{post.tags[0]}</span>
+                  )}
+                </span>
+                <h2 class="feature__title">{post.title}</h2>
+                {post.subtitle && <p class="feature__subtitle">{post.subtitle}</p>}
+                <p class="feature__excerpt">{post.excerpt || post.description}</p>
+                <div class="feature__meta">
+                  <span class="feature__avatar" aria-hidden="true">{initial(post.author)}</span>
+                  <span class="feature__byline">{post.author}</span>
+                  <span class="feature__dot">·</span>
+                  <time>{fmt(post.pubDate)}</time>
                 </div>
+                <span class="feature__cta">Read the post →</span>
               </div>
             </a>
           ))}
@@ -127,8 +98,9 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
     margin: 0 auto;
   }
 
-  /* ---------- Featured ---------- */
-  .blog-featured-section { padding-top: var(--space-md); padding-bottom: var(--space-xl); }
+  /* ---------- Posts: one full-width card each ---------- */
+  .blog-posts-section { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }
+  .feature-stack { display: flex; flex-direction: column; gap: var(--space-xl); }
 
   .feature {
     display: grid;
@@ -144,7 +116,9 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
   }
   .feature:hover { transform: translateY(-4px); box-shadow: var(--shadow-xl); }
   .feature__media { position: relative; min-height: 340px; background: var(--color-blush); }
-  .feature__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Cards need a uniform frame, so photos are cropped — anchored near the top,
+     where faces usually are in portrait shots, rather than the middle. */
+  .feature__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; }
   .feature__body {
     padding: clamp(2rem, 4vw, 3.25rem);
     display: flex;
@@ -172,6 +146,8 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
     padding-left: 0.6rem;
     border-left: 1px solid var(--color-border);
   }
+  /* Without the "Featured" pin there's nothing to separate the tag from. */
+  .feature__tag--solo { padding-left: 0; border-left: 0; }
   .feature__title {
     font-family: var(--font-display);
     font-size: var(--text-3xl);
@@ -181,12 +157,25 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
     color: var(--color-pink-dark);
     margin-bottom: var(--space-sm);
   }
+  .feature__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--text-lg);
+    font-style: italic;
+    line-height: var(--leading-snug);
+    color: var(--color-warm-gray);
+    margin-bottom: var(--space-sm);
+  }
   .feature__excerpt {
     font-family: var(--font-body);
     font-size: var(--text-base);
     line-height: var(--leading-relaxed);
     color: var(--color-warm-gray);
     margin-bottom: var(--space-lg);
+    /* Keep cards a similar height when a summary runs long. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .feature__meta {
     display: flex;
@@ -205,6 +194,8 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
     color: #fff; font-weight: 600; font-size: 0.85rem;
     margin-right: 0.25rem;
   }
+  .feature__meta { flex-wrap: wrap; }
+  .feature__meta > * { white-space: nowrap; }
   .feature__byline { color: var(--color-warm-gray); font-weight: 600; }
   .feature__dot { opacity: 0.5; }
   .feature__cta {
@@ -217,8 +208,7 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
   }
   .feature:hover .feature__cta { color: var(--color-pink-dark); }
 
-  /* ---------- List + filters ---------- */
-  .blog-list-section { padding-top: var(--space-2xl); }
+  /* ---------- Topic filters ---------- */
 
   /* Pills sit on the pink banner — light/translucent on pink, active = solid white */
   .topic-filters {
@@ -244,92 +234,11 @@ const featuredInitial = (featured?.author || 'D').trim().charAt(0).toUpperCase()
   .topic-pill--active { background: #fff; border-color: #fff; color: var(--color-pink-dark); }
   .topic-pill__count { opacity: 0.7; font-size: 0.85em; margin-left: 0.15rem; }
 
-  /* ---------- Cards ---------- */
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    gap: var(--space-lg);
-  }
-  .card {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    background: var(--color-pure-white);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: color-mix(in srgb, var(--color-pink) 35%, transparent);
-  }
-  .card__media { height: 180px; overflow: hidden; background: var(--color-blush); }
-  .card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-  .card:hover .card__media img { transform: scale(1.05); }
-  .card__media--placeholder {
-    display: grid;
-    place-items: center;
-    background: radial-gradient(120% 120% at 20% 0%, var(--color-cream) 0%, var(--color-blush) 70%);
-  }
-  .card__media--placeholder span {
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    color: color-mix(in srgb, var(--color-pink) 65%, var(--color-warm-gray));
-    opacity: 0.7;
-  }
-  .card__body { padding: var(--space-lg); display: flex; flex-direction: column; flex: 1; }
-  .card__tag {
-    font-family: var(--font-display);
-    font-size: var(--text-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wide);
-    color: var(--color-pink);
-    margin-bottom: 0.6rem;
-  }
-  .card__title {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 600;
-    line-height: var(--leading-snug);
-    color: var(--color-pink-dark);
-    margin-bottom: 0.6rem;
-  }
-  .card__excerpt {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    line-height: var(--leading-relaxed);
-    color: var(--color-warm-gray);
-    margin-bottom: var(--space-md);
-    flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .card__meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--color-border);
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    color: var(--color-light-gray);
-  }
-  .card__more { color: var(--color-pink); font-weight: 600; }
-
   .blog-empty { text-align: center; color: var(--color-light-gray); padding: var(--space-2xl) 0; }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 860px) {
     .feature { grid-template-columns: 1fr; }
-    .feature__media { min-height: 220px; }
+    .feature__media { min-height: 0; aspect-ratio: 4 / 3; }
   }
 </style>
