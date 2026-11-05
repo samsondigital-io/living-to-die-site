@@ -68,7 +68,7 @@ const currentYear = new Date().getFullYear();
     </div>
 
     <div class="footer__bottom">
-      <p>&copy; {currentYear} Diane Melton. All rights reserved.</p>
+      <p>&copy; {currentYear} Diane Melton. All rights reserved. · <a href="/privacy" class="footer__privacy">Privacy</a></p>
     </div>
   </div>
 </footer>
@@ -186,6 +186,9 @@ const currentYear = new Date().getFullYear();
   .footer__form.hidden {
     display: none;
   }
+
+  .footer__privacy { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .footer__privacy:hover { color: #fff; }
 
   .footer__bottom {
     padding-top: 2rem;
