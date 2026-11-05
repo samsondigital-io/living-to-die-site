@@ -1,5 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { createCommentToken } from '../lib/comments';
+
+// Signed timestamp: rejects bots that submit the instant the page loads.
+const token = createCommentToken();
+// Outcome of a form post made without JavaScript (see /api/contact).
+const sent = Astro.url.searchParams.get('sent');
 ---
 
 <BaseLayout title="Contact" description="Contact Diane Melton for speaking engagements, book club visits, and media inquiries about Living To Die." minimalNav={true}>
@@ -35,14 +41,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <div class="contact-form-wrapper">
-          <form class="contact-form" action="#" method="POST">
+          <form class="contact-form" id="contact-form" action="/api/contact" method="POST">
+            <input type="hidden" name="token" value={token} />
+            <div class="contact-form__honeypot" aria-hidden="true">
+              <label for="contact-website">Website</label>
+              <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
             <div class="form-group">
               <label for="name">Name</label>
-              <input type="text" id="name" name="name" required />
+              <input type="text" id="name" name="name" required maxlength="100" autocomplete="name" />
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" name="email" required />
+              <input type="email" id="email" name="email" required maxlength="254" autocomplete="email" />
             </div>
             <div class="form-group">
               <label for="subject">Subject</label>
@@ -55,9 +66,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             </div>
             <div class="form-group">
               <label for="message">Message</label>
-              <textarea id="message" name="message" rows="6" required></textarea>
+              <textarea id="message" name="message" rows="6" required maxlength="5000"></textarea>
             </div>
             <button type="submit" class="btn btn--primary">Send Message</button>
+            <p
+              id="contact-status"
+              class:list={['contact-form__status', { success: sent === '1', error: sent === 'error' }]}
+              role="status"
+              aria-live="polite"
+            >
+              {sent === '1' && 'Thank you! Your message has been sent. Diane will be in touch.'}
+              {sent === 'error' && 'Sorry, your message could not be sent. Please try again.'}
+            </p>
           </form>
         </div>
       </div>
@@ -202,6 +222,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     box-shadow: var(--shadow-md);
   }
 
+  .btn--primary:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+  }
+
+  .contact-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contact-form__status {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .contact-form__status:empty { display: none; }
+  .contact-form__status.success { color: #1e7d34; }
+  .contact-form__status.error { color: #b3261e; }
+
   @media (max-width: 768px) {
     .contact-grid {
       grid-template-columns: 1fr;
@@ -213,3 +256,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 </style>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('contact-status');
+
+  function show(text: string, kind: 'success' | 'error') {
+    if (!status) return;
+    status.textContent = text;
+    status.className = `contact-form__status ${kind}`;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    btn?.setAttribute('disabled', '');
+    if (status) { status.textContent = ''; status.className = 'contact-form__status'; }
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.reset();
+        show('Thank you! Your message has been sent. Diane will be in touch.', 'success');
+      } else {
+        show(data.error || 'Sorry, your message could not be sent. Please try again.', 'error');
+      }
+    } catch {
+      show('Sorry, your message could not be sent. Please check your connection and try again.', 'error');
+    } finally {
+      btn?.removeAttribute('disabled');
+    }
+  });
+</script>
