@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 
 // Resource category type
 export type ResourceCategory = 'medical-advocacy' | 'legal-resources' | 'medical-research' | 'support-communities';
@@ -24,19 +24,6 @@ export type UpdateResourceInput = Partial<Omit<Resource, 'id' | 'createdAt'>>;
 
 const RESOURCE_PREFIX = 'resource:';
 
-function getRedis(): Redis {
-  const redisUrl = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
-  const redisToken = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!redisUrl || !redisToken) {
-    throw new Error('Redis/KV not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.');
-  }
-
-  return new Redis({
-    url: redisUrl,
-    token: redisToken,
-  });
-}
 
 function generateId(): string {
   // Use crypto.randomUUID() which is built into Node.js/modern browsers

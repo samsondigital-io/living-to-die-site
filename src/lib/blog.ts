@@ -33,17 +33,11 @@ export interface RedisBlogPost {
   bodyHtml: string;
 }
 
-import { Redis } from '@upstash/redis';
+import type { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 
 const BLOG_PREFIX = 'blogpost:';
 
-/** Upstash Redis client. */
-function getRedis(): Redis {
-  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
-  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('Redis/KV not configured for blog posts.');
-  return new Redis({ url, token });
-}
 
 /** Normalize a tag for matching/dedup: trim, collapse whitespace, lowercase. */
 export function normalizeTag(tag: string): string {

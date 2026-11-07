@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { notifyNewComment } from './notify';
 
@@ -15,12 +15,6 @@ const COMMENT_PREFIX = 'comment:';
 const RATE_PREFIX = 'comment-rate:';
 const MAX_COMMENT_LENGTH = 3000;
 
-function getRedis(): Redis {
-  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
-  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('Redis/KV not configured.');
-  return new Redis({ url, token });
-}
 
 function generateId(): string {
   return crypto.randomUUID().replace(/-/g, '').slice(0, 16);

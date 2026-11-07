@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 import { createBlogPost } from './blog';
 import { getSentCampaignEmail, listSentCampaignIds } from './mailerlite';
 import { extractNewsletterArticle } from './newsletter-extract';
@@ -19,12 +19,6 @@ export type ImportResult =
   | { status: 'imported'; campaignId: string; slug: string; title: string }
   | { status: 'skipped'; campaignId: string; reason: 'already-imported' | 'not-sent' };
 
-function getRedis(): Redis {
-  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
-  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('Redis/KV not configured for blog posts.');
-  return new Redis({ url, token });
-}
 
 export async function importCampaign(campaignId: string): Promise<ImportResult> {
   const redis = getRedis();

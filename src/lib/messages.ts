@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 import { verifyCommentToken } from './comments';
 import { notifyNewMessage } from './notify';
 
@@ -31,12 +31,6 @@ const MESSAGE_PREFIX = 'contact:';
 const RATE_PREFIX = 'contact-rate:';
 const MAX_MESSAGE_LENGTH = 5000;
 
-function getRedis(): Redis {
-  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
-  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('Redis/KV not configured.');
-  return new Redis({ url, token });
-}
 
 /** Strip tags and control characters, keeping newlines. Non-strings become ''. */
 function plain(value: unknown, max: number): string {
